@@ -1,5 +1,5 @@
 import threading
-from dobot_api import DobotApiDashboard, DobotApi, MyType
+from dobot_api import DobotApiDashboard, DobotApi, MyType, alarmAlarmJsonFile
 from time import sleep
 import numpy as np
 import re
@@ -122,20 +122,40 @@ def WaitArrive(dashboard: DobotApiDashboard, p2Id):
 
 def ClearRobotError(dashboard: DobotApiDashboard):
     global robotErrorState
+    dataController, dataServo = alarmAlarmJsonFile()    # 读取控制器和伺服告警码
     while True:
         globalLockValue.acquire()  # robotErrorState加锁
         if robotErrorState:
             geterrorID = parseResultId(dashboard.GetErrorID())
             if geterrorID[0] != -2:
                 for i in range(1, len(geterrorID)):
-                    print("GetErrorID", geterrorID[i])
-                clearError = parseResultId(dashboard.ClearError())
-                if clearError[0] == 0:
-                    globalLockValue.release()
-                    break
+                    alarmState = False
+                    for item in dataController:
+                        if geterrorID[i] == item["id"]:
+                            print("机器告警 Controller GetErrorID",
+                                  i, item["zh_CN"]["description"])
+                            alarmState = True
+                            break
+                    if alarmState:
+                        continue
+
+                    for item in dataServo:
+                        if geterrorID[i] == item["id"]:
+                            print("机器告警 Servo GetErrorID", i,
+                                  item["zh_CN"]["description"])
+                            break
+
+                choose = input("输入1, 将清除错误, 机器继续运行: ")
+                if int(choose) == 1:
+                    clearError = parseResultId(dashboard.ClearError())
+                    if clearError[0] == 0:
+                        globalLockValue.release()
+                        break
         else:
             robotMode = parseResultId(dashboard.RobotMode())
             if robotMode[0] == 0 and robotMode[1] == 11:
+                print("机器发生碰撞")
+                choose = input("输入1, 将清除碰撞, 机器继续运行: ")
                 dashboard.ClearError()
         globalLockValue.release()
         sleep(5)
@@ -144,15 +164,15 @@ def ClearRobotError(dashboard: DobotApiDashboard):
 if __name__ == '__main__':
     dashboard, feedFour, feedFif = ConnectRobot()
     print("开始使能...")
-    enableState=0
-    enableRecvState=0
+    enableState = 0
+    enableRecvState = 0
     try:
-      enableRecvState=dashboard.EnableRobot()           # enablerobot  
-      enableState=parseResultId(enableRecvState)   
+        enableRecvState = dashboard.EnableRobot()           # enablerobot
+        enableState = parseResultId(enableRecvState)
     except Exception as e:
-       print(enableRecvState)             #29999端口是否被占用
-       sys.exit(0)
-    if enableState[0]==-2:
+        print(enableRecvState)  # 29999端口是否被占用
+        sys.exit(0)
+    if enableState[0] == -2:
         print("使能失败:)")
         sys.exit(0)
     print("使能成功:)")

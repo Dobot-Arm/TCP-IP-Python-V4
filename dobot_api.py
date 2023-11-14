@@ -1,5 +1,10 @@
 import socket
 import numpy as np
+import os
+import json
+
+alarmControllerFile = "files/alarm_controller.json"
+alarmServoFile = "files/alarm_servo.json"
 
 # Port Feedback
 MyType = np.dtype([(
@@ -108,6 +113,20 @@ MyType = np.dtype([(
     ('target_quaternion', np.float64, (4, )),
     ('actual_quaternion', np.float64, (4, )),
     ('reserve3', np.byte, (24, ))])
+
+# 读取控制器和伺服告警文件
+
+
+def alarmAlarmJsonFile():
+    currrntDirectory = os.path.dirname(__file__)
+    jsonContrellorPath = os.path.join(currrntDirectory, alarmControllerFile)
+    jsonServoPath = os.path.join(currrntDirectory, alarmServoFile)
+
+    with open(jsonContrellorPath, encoding='utf-8') as f:
+        dataController = json.load(f)
+    with open(jsonServoPath, encoding='utf-8') as f:
+        dataServo = json.load(f)
+    return dataController, dataServo
 
 
 class DobotApi:
@@ -1339,7 +1358,7 @@ class DobotApiDashboard(DobotApi):
 
     #######################################################################
 
-    def MovJ(self, x, y, z, rx, ry, rz, coordinateMode, user=-1, tool=-1, a=-1, v=-1, cp=-1):
+    def MovJ(self, a1, b1, c1, d1, e1, f1, coordinateMode, user=-1, tool=-1, a=-1, v=-1, cp=-1):
         """
         描述
         从当前位置以关节运动⽅式运动⾄⽬标点。
@@ -1358,10 +1377,10 @@ class DobotApiDashboard(DobotApi):
         string = ""
         if coordinateMode == 0:
             string = "MovJ(pose={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(
-                x, y, z, rx, ry, rz)
+                a1, b1, c1, d1, e1, f1)
         elif coordinateMode == 1:
             string = "MovJ(joint={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(
-                x, y, z, rx, ry, rz)
+                a1, b1, c1, d1, e1, f1)
         else:
             print("coordinateMode param is wrong")
             return ""
@@ -1382,7 +1401,7 @@ class DobotApiDashboard(DobotApi):
         self.send_data(string)
         return self.wait_reply()
 
-    def MovL(self, x, y, z, rx, ry, rz, coordinateMode, user=-1, tool=-1, a=-1, v=-1, speed=-1, cp=-1, r=-1):
+    def MovL(self, a1, b1, c1, d1, e1, f1, coordinateMode, user=-1, tool=-1, a=-1, v=-1, speed=-1, cp=-1, r=-1):
         """
         描述
         从当前位置以直线运动⽅式运动⾄⽬标点。
@@ -1404,10 +1423,10 @@ class DobotApiDashboard(DobotApi):
         string = ""
         if coordinateMode == 0:
             string = "MovL(pose={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(
-                x, y, z, rx, ry, rz)
+                a1, b1, c1, d1, e1, f1)
         elif coordinateMode == 1:
             string = "MovL(joint={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(
-                x, y, z, rx, ry, rz)
+                a1, b1, c1, d1, e1, f1)
         else:
             print("coordinateMode  param  is wrong")
             return ""
@@ -1436,7 +1455,7 @@ class DobotApiDashboard(DobotApi):
         self.send_data(string)
         return self.wait_reply()
 
-    def MovLIO(self, x, y, z, rx, ry, rz, coordinateMode, Mode, Distance, Index, Status, user=-1, tool=-1, a=-1, v=-1, speed=-1, cp=-1, r=-1):
+    def MovLIO(self, a1, b1, c1, d1, e1, f1, coordinateMode, Mode, Distance, Index, Status, user=-1, tool=-1, a=-1, v=-1, speed=-1, cp=-1, r=-1):
         """
         描述
         从当前位置以直线运动⽅式运动⾄⽬标点，运动时并⾏设置数字输出端⼝状态。
@@ -1469,10 +1488,10 @@ class DobotApiDashboard(DobotApi):
         string = ""
         if coordinateMode == 0:
             string = "MovLIO(pose={{{:f},{:f},{:f},{:f},{:f},{:f}}},{{{:d},{:d},{:d},{:d}}}".format(
-                x, y, z, rx, ry, rz, Mode, Distance, Index, Status)
+                a1, b1, c1, d1, e1, f1, Mode, Distance, Index, Status)
         elif coordinateMode == 1:
             string = "MovLIO(joint={{{:f},{:f},{:f},{:f},{:f},{:f}}},{{{:d},{:d},{:d},{:d}}}".format(
-                x, y, z, rx, ry, rz, Mode, Distance, Index, Status)
+                a1, b1, c1, d1, e1, f1, Mode, Distance, Index, Status)
         else:
             print("coordinateMode  param  is wrong")
             return ""
@@ -1501,7 +1520,7 @@ class DobotApiDashboard(DobotApi):
         self.send_data(string)
         return self.wait_reply()
 
-    def MovJIO(self, x, y, z, rx, ry, rz, coordinateMode, Mode, Distance, Index, Status, user=-1, tool=-1, a=-1, v=-1, cp=-1,):
+    def MovJIO(self,  a1, b1, c1, d1, e1, f1, coordinateMode, Mode, Distance, Index, Status, user=-1, tool=-1, a=-1, v=-1, cp=-1,):
         """
         描述
         从当前位置以关节运动⽅式运动⾄⽬标点，运动时并⾏设置数字输出端⼝状态。
@@ -1532,10 +1551,10 @@ class DobotApiDashboard(DobotApi):
         string = ""
         if coordinateMode == 0:
             string = "MovJIO(pose={{{:f},{:f},{:f},{:f},{:f},{:f}}},{{{:d},{:d},{:d},{:d}}}".format(
-                x, y, z, rx, ry, rz, Mode, Distance, Index, Status)
+                a1, b1, c1, d1, e1, f1, Mode, Distance, Index, Status)
         elif coordinateMode == 1:
             string = "MovJIO(joint={{{:f},{:f},{:f},{:f},{:f},{:f}}},{{{:d},{:d},{:d},{:d}}}".format(
-                x, y, z, rx, ry, rz, Mode, Distance, Index, Status)
+                a1, b1, c1, d1, e1, f1, Mode, Distance, Index, Status)
         else:
             print("coordinateMode  param  is wrong")
             return ""
@@ -1556,7 +1575,7 @@ class DobotApiDashboard(DobotApi):
         self.send_data(string)
         return self.wait_reply()
 
-    def Arc(self, x1, y1, z1, a1, b1, c1, x2, y2, z2, a2, b2, c2, coordinateMode, user=-1, tool=-1, a=-1, v=-1, speed=-1, cp=-1, r=-1):
+    def Arc(self, a1, b1, c1, d1, e1, f1,  a2, b2, c2, d2, e2, f2, coordinateMode, user=-1, tool=-1, a=-1, v=-1, speed=-1, cp=-1, r=-1):
         """
         描述
         从当前位置以圆弧插补⽅式运动⾄⽬标点。
@@ -1581,10 +1600,10 @@ class DobotApiDashboard(DobotApi):
         string = ""
         if coordinateMode == 0:
             string = "Arc(pose={{{:f},{:f},{:f},{:f},{:f},{:f}}},pose={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(
-                x1, y1, z1, a1, b1, c1, x2, y2, z2, a2, b2, c2)
+                a1, b1, c1, d1, e1, f1,  a2, b2, c2, d2, e2, f2)
         elif coordinateMode == 1:
             string = "Arc(joint={{{:f},{:f},{:f},{:f},{:f},{:f}}},joint={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(
-                x1, y1, z1, a1, b1, c1, x2, y2, z2, a2, b2, c2)
+                a1, b1, c1, d1, e1, f1,  a2, b2, c2, d2, e2, f2)
         else:
             print("coordinateMode  param  is wrong")
             return ""
@@ -1613,7 +1632,7 @@ class DobotApiDashboard(DobotApi):
         self.send_data(string)
         return self.wait_reply()
 
-    def Circle(self, x1, y1, z1, a1, b1, c1, x2, y2, z2, a2, b2, c2, coordinateMode, count, user=-1, tool=-1, a=-1, v=-1, speed=-1, cp=-1, r=-1):
+    def Circle(self, a1, b1, c1, d1, e1, f1,  a2, b2, c2, d2, e2, f2, coordinateMode, count, user=-1, tool=-1, a=-1, v=-1, speed=-1, cp=-1, r=-1):
         """
         描述
         从当前位置进⾏整圆插补运动，运动指定圈数后重新回到当前位置。
@@ -1639,10 +1658,10 @@ class DobotApiDashboard(DobotApi):
         string = ""
         if coordinateMode == 0:
             string = "Circle(pose={{{:f},{:f},{:f},{:f},{:f},{:f}}},pose={{{:f},{:f},{:f},{:f},{:f},{:f}}},{:d}".format(
-                x1, y1, z1, a1, b1, c1, x2, y2, z2, a2, b2, c2, count)
+                a1, b1, c1, d1, e1, f1,  a2, b2, c2, d2, e2, f2, count)
         elif coordinateMode == 1:
             string = "Circle(joint={{{:f},{:f},{:f},{:f},{:f},{:f}}},joint={{{:f},{:f},{:f},{:f},{:f},{:f}}},{:d}".format(
-                x1, y1, z1, a1, b1, c1, x2, y2, z2, a2, b2, c2, count)
+                a1, b1, c1, d1, e1, f1,  a2, b2, c2, d2, e2, f2, count)
         else:
             print("coordinateMode  param  is wrong")
             return ""

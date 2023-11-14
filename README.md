@@ -77,7 +77,7 @@ TCP-IP-CR-Python-V4 是为 Dobot 公司旗下基于TCP/IP协议的Python的封�
     
     30006端口为可配置的反馈机器人信息端口(默认为每50ms反馈)
     
-    取消30004端口
+    取消30003端口
 
 有关协议更详细的信息请查阅**《越疆TCPIP控制协议文档6AXis-V4》**
 
@@ -367,16 +367,15 @@ MyType=np.dtype([('len', np.int16, ),
 
 
 
-​    **问题三： Control Mode Is Not Tcp**
+​    **问题三： Demo机器输出如下状态**
 
-​    解决方法： 检查机器是否切换到TCP/IP模式。
-
-| **Queue command exceeds queue depth 64** | 超出队列深度64       |
+| 机器输出异常                             | 机器状态             |
 | ---------------------------------------- | -------------------- |
+| **Queue command exceeds queue depth 64** | **超出队列深度64**   |
 | **The robot is in an error state**       | **机器错误状态**     |
 | **The robot is in emergency stop state** | **机器 急停状态**    |
 | **The robot is in power down state**     | **机器下电状态**     |
-| Control Mode Is Not Tcp****              | **机器非TCP/IP模式** |
+| **Control Mode Is Not Tcp**              | **机器非TCP/IP模式** |
 
 
 
