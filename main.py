@@ -97,7 +97,6 @@ def parseResultId(valueRecv):
 
 def WaitArrive(dashboard: DobotApiDashboard, p2Id):
     global robotEnableStatus
-    i = 0
     while True:
         globalLockValue.acquire()  # robotEnableStatus加锁
         if robotEnableStatus:

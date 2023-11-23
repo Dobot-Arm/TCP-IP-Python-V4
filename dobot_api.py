@@ -695,12 +695,16 @@ class DobotApiDashboard(DobotApi):
         """
         string = "GetPose("
         params = []
-        if user != -1 or tool != -1:
-            return '必须同时传或同时不传坐标系，不传时默认为全局⽤⼾和⼯具坐标系'
+        state = True
         if user != -1:
             params.append('user={:d}'.format(user))
+            state = not state
         if tool != -1:
             params.append('tool={:d}'.format(tool))
+            state = not state
+        if not state:
+            return '必须同时传或同时不传坐标系，不传时默认为全局⽤⼾和⼯具坐标系'
+
         for ii in params:
             string = string + ',' + ii
         string = string + ')'
