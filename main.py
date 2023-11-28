@@ -46,7 +46,6 @@ def GetFeed(feed: DobotApi):
     global robotErrorState
     global robotEnableStatus
     hasRead = 0
-    i = 0
     while True:
         data = bytes()
         while hasRead < 1440:
@@ -106,10 +105,14 @@ def WaitArrive(dashboard: DobotApiDashboard, p2Id):
                 # print("GetCurrentCommandID:", currentId[1])
                 robotMode = parseResultId(dashboard.RobotMode())
                 if robotMode[0] == 0:
-                    isFinsh = (robotMode[1] == 5)
-                if currentId[1] == p2Id and isFinsh:
-                    globalLockValue.release()
-                    break
+                    if currentId[1] > p2Id:
+                        globalLockValue.release()
+                        break
+                    else:
+                        isFinsh = (robotMode[1] == 5)
+                        if currentId[1] == p2Id and isFinsh:
+                            globalLockValue.release()
+                            break
         else:
            
             print("The robot is Disabletobot")
