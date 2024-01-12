@@ -1,118 +1,94 @@
 import socket
 import numpy as np
 import os
+import re
 import json
+import threading
+from time import sleep
 
-alarmControllerFile = "files/alarm_controller.json"
-alarmServoFile = "files/alarm_servo.json"
+alarmControllerFile = "files/alarmController.json"
+alarmServoFile = "files/alarmServo.json"
 
 # Port Feedback
-MyType = np.dtype([(
-    'len',
-    np.int64,
-), (
-    'digital_input_bits',
-    np.uint64,
-), (
-    'digital_output_bits',
-    np.uint64,
-), (
-    'robot_mode',
-    np.uint64,
-), (
-    'time_stamp',
-    np.uint64,
-), (
-    'time_stamp_reserve_bit',
-    np.uint64,
-), (
-    'test_value',
-    np.uint64,
-), (
-    'test_value_keep_bit',
-    np.float64,
-), (
-    'speed_scaling',
-    np.float64,
-), (
-    'linear_momentum_norm',
-    np.float64,
-), (
-    'v_main',
-    np.float64,
-), (
-    'v_robot',
-    np.float64,
-), (
-    'i_robot',
-    np.float64,
-), (
-    'i_robot_keep_bit1',
-    np.float64,
-), (
-    'i_robot_keep_bit2',
-    np.float64,
-), ('tool_accelerometer_values', np.float64, (3, )),
-    ('elbow_position', np.float64, (3, )),
-    ('elbow_velocity', np.float64, (3, )),
-    ('q_target', np.float64, (6, )),
-    ('qd_target', np.float64, (6, )),
-    ('qdd_target', np.float64, (6, )),
-    ('i_target', np.float64, (6, )),
-    ('m_target', np.float64, (6, )),
-    ('q_actual', np.float64, (6, )),
-    ('qd_actual', np.float64, (6, )),
-    ('i_actual', np.float64, (6, )),
-    ('actual_TCP_force', np.float64, (6, )),
-    ('tool_vector_actual', np.float64, (6, )),
-    ('TCP_speed_actual', np.float64, (6, )),
-    ('TCP_force', np.float64, (6, )),
-    ('Tool_vector_target', np.float64, (6, )),
-    ('TCP_speed_target', np.float64, (6, )),
-    ('motor_temperatures', np.float64, (6, )),
-    ('joint_modes', np.float64, (6, )),
-    ('v_actual', np.float64, (6, )),
-    # ('dummy', np.float64, (9, 6))])
-    ('hand_type', np.byte, (4, )),
-    ('user', np.byte,),
-    ('tool', np.byte,),
-    ('run_queued_cmd', np.byte,),
-    ('pause_cmd_flag', np.byte,),
-    ('velocity_ratio', np.byte,),
-    ('acceleration_ratio', np.byte,),
-    ('jerk_ratio', np.byte,),
-    ('xyz_velocity_ratio', np.byte,),
-    ('r_velocity_ratio', np.byte,),
-    ('xyz_acceleration_ratio', np.byte,),
-    ('r_acceleration_ratio', np.byte,),
-    ('xyz_jerk_ratio', np.byte,),
-    ('r_jerk_ratio', np.byte,),
-    ('brake_status', np.byte,),
-    ('enable_status', np.byte,),
-    ('drag_status', np.byte,),
-    ('running_status', np.byte,),
-    ('error_status', np.byte,),
-    ('jog_status', np.byte,),
-    ('robot_type', np.byte,),
-    ('drag_button_signal', np.byte,),
-    ('enable_button_signal', np.byte,),
-    ('record_button_signal', np.byte,),
-    ('reappear_button_signal', np.byte,),
-    ('jaw_button_signal', np.byte,),
-    ('six_force_online', np.byte,),
-    ('reserve2', np.byte, (82, )),
-    ('m_actual', np.float64, (6, )),
-    ('load', np.float64,),
-    ('center_x', np.float64,),
-    ('center_y', np.float64,),
-    ('center_z', np.float64,),
-    ('user[6]', np.float64, (6, )),
-    ('tool[6]', np.float64, (6, )),
-    ('trace_index', np.float64,),
-    ('six_force_value', np.float64, (6, )),
-    ('target_quaternion', np.float64, (4, )),
-    ('actual_quaternion', np.float64, (4, )),
-    ('reserve3', np.byte, (24, ))])
+MyType = np.dtype([('len', np.int64,),
+                   ('digital_input_bits', np.uint64,),
+                   ('digital_output_bits', np.uint64,),
+                   ('robot_mode', np.uint64,),
+                   ('time_stamp', np.uint64,),
+                   ('time_stamp_reserve_bit', np.uint64,),
+                   ('test_value', np.uint64,),
+                   ('test_value_keep_bit', np.float64,),
+                   ('speed_scaling', np.float64,),
+                   ('linear_momentum_norm', np.float64,),
+                   ('v_main', np.float64,),
+                   ('v_robot', np.float64, ),
+                   ('i_robot', np.float64,),
+                   ('i_robot_keep_bit1', np.float64,),
+                   ('i_robot_keep_bit2', np.float64,),
+                   ('tool_accelerometer_values', np.float64, (3, )),
+                   ('elbow_position', np.float64, (3, )),
+                   ('elbow_velocity', np.float64, (3, )),
+                   ('q_target', np.float64, (6, )),
+                   ('qd_target', np.float64, (6, )),
+                   ('qdd_target', np.float64, (6, )),
+                   ('i_target', np.float64, (6, )),
+                   ('m_target', np.float64, (6, )),
+                   ('q_actual', np.float64, (6, )),
+                   ('qd_actual', np.float64, (6, )),
+                   ('i_actual', np.float64, (6, )),
+                   ('actual_TCP_force', np.float64, (6, )),
+                   ('tool_vector_actual', np.float64, (6, )),
+                   ('TCP_speed_actual', np.float64, (6, )),
+                   ('TCP_force', np.float64, (6, )),
+                   ('Tool_vector_target', np.float64, (6, )),
+                   ('TCP_speed_target', np.float64, (6, )),
+                   ('motor_temperatures', np.float64, (6, )),
+                   ('joint_modes', np.float64, (6, )),
+                   ('v_actual', np.float64, (6, )),
+                   ('hand_type', np.byte, (4, )),
+                   ('user', np.byte,),
+                   ('tool', np.byte,),
+                   ('run_queued_cmd', np.byte,),
+                   ('pause_cmd_flag', np.byte,),
+                   ('velocity_ratio', np.byte,),
+                   ('acceleration_ratio', np.byte,),
+                   ('jerk_ratio', np.byte,),
+                   ('xyz_velocity_ratio', np.byte,),
+                   ('r_velocity_ratio', np.byte,),
+                   ('xyz_acceleration_ratio', np.byte,),
+                   ('r_acceleration_ratio', np.byte,),
+                   ('xyz_jerk_ratio', np.byte,),
+                   ('r_jerk_ratio', np.byte,),
+                   ('brake_status', np.byte,),
+                   ('enable_status', np.byte,),
+                   ('drag_status', np.byte,),
+                   ('running_status', np.byte,),
+                   ('error_status', np.byte,),
+                   ('jog_status', np.byte,),
+                   ('robot_type', np.byte,),
+                   ('drag_button_signal', np.byte,),
+                   ('enable_button_signal', np.byte,),
+                   ('record_button_signal', np.byte,),
+                   ('reappear_button_signal', np.byte,),
+                   ('jaw_button_signal', np.byte,),
+                   ('six_force_online', np.byte,),
+                   ('reserve2', np.byte, (66, )),
+                   ('vibrationdisZ', np.float64,),
+                   ('currentcommandid', np.uint64,),
+                   ('m_actual', np.float64, (6, )),
+                   ('load', np.float64,),
+                   ('center_x', np.float64,),
+                   ('center_y', np.float64,),
+                   ('center_z', np.float64,),
+                   ('user[6]', np.float64, (6, )),
+                   ('tool[6]', np.float64, (6, )),
+                   ('trace_index', np.float64,),
+                   ('six_force_value', np.float64, (6, )),
+                   ('target_quaternion', np.float64, (4, )),
+                   ('actual_quaternion', np.float64, (4, )),
+                   ('auto_manual_mode', np.byte, (2,)),
+
+                   ('reserve3', np.byte, (22, ))])
 
 # 读取控制器和伺服告警文件
 
@@ -128,12 +104,15 @@ def alarmAlarmJsonFile():
         dataServo = json.load(f)
     return dataController, dataServo
 
+# Tcp通信接口类
+
 
 class DobotApi:
     def __init__(self, ip, port, *args):
         self.ip = ip
         self.port = port
         self.socket_dobot = 0
+        self.__globalLock = threading.Lock()
         if args:
             self.text_log = args[0]
 
@@ -143,11 +122,9 @@ class DobotApi:
                 self.socket_dobot.connect((self.ip, self.port))
             except socket.error:
                 print(socket.error)
-                raise Exception(
-                    f"Unable to set socket connection use port {self.port} !", socket.error)
+
         else:
-            raise Exception(
-                f"Connect to dashboard server need use port {self.port} !")
+            print(f"Connect to dashboard server need use port {self.port} !")
 
     def log(self, text):
         if self.text_log:
@@ -155,29 +132,79 @@ class DobotApi:
 
     def send_data(self, string):
        # self.log(f"Send to {self.ip}:{self.port}: {string}")
-        self.socket_dobot.send(str.encode(string, 'utf-8'))
+        try:
+            self.socket_dobot.send(str.encode(string, 'utf-8'))
+        except Exception as e:
+            print(e)
+            while True:
+                try:
+                    self.socket_dobot = self.reConnect(self.ip, self.port)
+                    self.socket_dobot.send(str.encode(string, 'utf-8'))
+                    break
+                except Exception:
+                    sleep(1)
 
     def wait_reply(self):
         """
         Read the return value
         """
-        data = self.socket_dobot.recv(1024)
-        data_str = str(data, encoding="utf-8")
-        # self.log(f'Receive from {self.ip}:{self.port}: {data_str}')
-        return data_str
+        data = ""
+        try:
+            data = self.socket_dobot.recv(1024)
+        except Exception as e:
+            print(e)
+            self.socket_dobot = self.reConnect(self.ip, self.port)
+
+        finally:
+            if len(data) == 0:
+                data_str = data
+            else:
+                data_str = str(data, encoding="utf-8")
+            # self.log(f'Receive from {self.ip}:{self.port}: {data_str}')
+            return data_str
 
     def close(self):
         """
         Close the port
         """
         if (self.socket_dobot != 0):
-            self.socket_dobot.close()
+            try:
+                self.socket_dobot.shutdown(socket.SHUT_RDWR)
+                self.socket_dobot.close()
+            except socket.error as e:
+                print(f"Error while closing socket: {e}")
+
+    def sendRecvMsg(self, string):
+        """
+        send-recv Sync
+        """
+        with self.__globalLock:
+            self.send_data(string)
+            recvData = self.wait_reply()
+            self.ParseResultId(recvData)
+            return recvData
 
     def __del__(self):
         self.close()
 
+    def reConnect(self, ip, port):
+        while True:
+            try:
+                socket_dobot = socket.socket()
+                socket_dobot.connect((ip, port))
+                break
+            except Exception:
+                sleep(1)
+        return socket_dobot
+
+# 控制及运动指令接口类
+
 
 class DobotApiDashboard(DobotApi):
+
+    def __init__(self, ip, port, *args):
+        super().__init__(ip, port, *args)
+
     def EnableRobot(self, load=0.0, centerX=0.0, centerY=0.0, centerZ=0.0, isCheck=-1,):
         """
             可选参数
@@ -205,8 +232,7 @@ class DobotApiDashboard(DobotApi):
                 if isCheck != -1:
                     string = string + ",{:d}".format(isCheck)
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def DisableRobot(self):
         """
@@ -214,8 +240,7 @@ class DobotApiDashboard(DobotApi):
         下使能机械臂
         """
         string = "DisableRobot()"
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def ClearError(self):
         """
@@ -224,8 +249,7 @@ class DobotApiDashboard(DobotApi):
         分报警需要解决报警原因或者重启控制柜后才能清除。
         """
         string = "ClearError()"
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def PowerOn(self):
         """
@@ -233,8 +257,7 @@ class DobotApiDashboard(DobotApi):
         Note: It takes about 10 seconds for the robot to be enabled after it is powered on.
         """
         string = "PowerOn()"
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def RunScript(self, project_name):
         """
@@ -242,32 +265,28 @@ class DobotApiDashboard(DobotApi):
         project_name ：Script file name
         """
         string = "RunScript({:s})".format(project_name)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def Stop(self):
         """
        停⽌已下发的运动指令队列或者RunScript指令运⾏的⼯程。
         """
         string = "Stop()"
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def Pause(self):
         """
        暂停已下发的运动指令队列或者RunScript指令运⾏的⼯程。
         """
         string = "Pause()"
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def Continue(self):
         """
        继续已暂停的运动指令队列或者RunScript指令运⾏的⼯程。
         """
         string = "Continue()"
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def EmergencyStop(self, mode):
         """
@@ -277,8 +296,7 @@ class DobotApiDashboard(DobotApi):
         mode int 急停操作模式。1表⽰按下急停，0表⽰松开急停
         """
         string = "EmergencyStop({:d})".format(mode)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def BrakeControl(self, axisID, value):
         """
@@ -293,8 +311,7 @@ class DobotApiDashboard(DobotApi):
         可移动）
         """
         string = "BrakeControl({:d},{:d})".format(axisID, value)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     #####################################################################
 
@@ -312,8 +329,7 @@ class DobotApiDashboard(DobotApi):
         取值范围：[1, 100]
         """
         string = "SpeedFactor({:d})".format(speed)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def User(self, index):
         """
@@ -321,8 +337,7 @@ class DobotApiDashboard(DobotApi):
         未设置时默认的全局⽤⼾坐标系为⽤⼾坐标系0。
         """
         string = "User({:d})".format(index)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def SetUser(self, index, table):
         """
@@ -334,8 +349,7 @@ class DobotApiDashboard(DobotApi):
         取。
         """
         string = "SetUser({:d},{:s})".format(index, table)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def CalcUser(self, index, matrix_direction, table):
         """
@@ -349,8 +363,7 @@ class DobotApiDashboard(DobotApi):
         """
         string = "SetUser({:d},{:d},{:s})".format(
             index, matrix_direction, table)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def Tool(self, index):
         """
@@ -358,8 +371,7 @@ class DobotApiDashboard(DobotApi):
         未设置时默认的全局⼯具坐标系为⼯具坐标系0。
         """
         string = "Tool({:d})".format(index)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def SetTool(self, index, table):
         """
@@ -371,8 +383,7 @@ class DobotApiDashboard(DobotApi):
         具坐标系的偏移量。
         """
         string = "SetTool({:d},{:s})".format(index, table)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def CalcTool(self, index, matrix_direction, table):
         """
@@ -387,8 +398,7 @@ class DobotApiDashboard(DobotApi):
         """
         string = "CalcTool({:d},{:d},{:s})".format(
             index, matrix_direction, table)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def SetPayload(self, load=0.0, X=0.0, Y=0.0, Z=0.0, name='F'):
         '''设置机械臂末端负载，⽀持两种设置⽅式。
@@ -418,8 +428,7 @@ class DobotApiDashboard(DobotApi):
                 if X != 0 or Y != 0 or Z != 0:
                     string = string + ",{:f},{:f},{:f}".format(X, Y, Z)
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def AccJ(self, speed):
         """
@@ -427,8 +436,7 @@ class DobotApiDashboard(DobotApi):
         未设置时默认值为100
         """
         string = "AccJ({:d})".format(speed)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def AccL(self, speed):
         """
@@ -436,8 +444,7 @@ class DobotApiDashboard(DobotApi):
         未设置时默认值为100。
         """
         string = "AccL({:d})".format(speed)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def VelJ(self, speed):
         """
@@ -445,8 +452,7 @@ class DobotApiDashboard(DobotApi):
         未设置时默认值为100。
         """
         string = "VelJ({:d})".format(speed)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def VelL(self, speed):
         """
@@ -454,8 +460,7 @@ class DobotApiDashboard(DobotApi):
         未设置时默认值为100。
         """
         string = "VelL({:d})".format(speed)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def CP(self, ratio):
         """
@@ -464,8 +469,7 @@ class DobotApiDashboard(DobotApi):
         平滑过渡⽐例。取值范围：[0, 100]
         """
         string = "CP({:d})".format(ratio)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def SetCollisionLevel(self, level):
         """
@@ -476,8 +480,7 @@ class DobotApiDashboard(DobotApi):
         level int 碰撞检测等级，0表⽰关闭碰撞检测，1~5数字越⼤灵敏度越⾼
         """
         string = "SetCollisionLevel({:d})".format(level)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def SetBackDistance(self, distance):
         """
@@ -488,8 +491,7 @@ class DobotApiDashboard(DobotApi):
         distance double 碰撞回退的距离，取值范围：[0,50]，单位：mm
         """
         string = "SetBackDistance({:d})".format(distance)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def SetPostCollisionMode(self, mode):
         """
@@ -501,24 +503,21 @@ class DobotApiDashboard(DobotApi):
         进⼊暂停状态
         """
         string = "SetPostCollisionMode({:d})".format(mode)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def StartDrag(self):
         """
         机械臂进⼊拖拽模式。机械臂处于报警状态下时，⽆法通过该指令进⼊拖拽模式。
         """
         string = "StartDrag()"
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def StopDrag(self):
         """
         机械臂进⼊拖拽模式。机械臂处于报警状态下时，⽆法通过该指令进⼊拖拽模式。
         """
         string = "StopDrag()"
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def DragSensivity(self, index, value):
         """
@@ -530,8 +529,7 @@ class DobotApiDashboard(DobotApi):
         value int 拖拽灵敏度，值越⼩，拖拽时的阻⼒越⼤。取值范围：[1, 90]
         """
         string = "DragSensivity({:d},{:d})".format(index, value)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def EnableSafeSkin(self, status):
         """
@@ -541,8 +539,7 @@ class DobotApiDashboard(DobotApi):
         status int 电⼦⽪肤功能开关，0表⽰关闭，1表⽰开启
         """
         string = "EnableSafeSkin({:d})".format(status)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def SetSafeSkin(self, part, status):
         """
@@ -554,8 +551,7 @@ class DobotApiDashboard(DobotApi):
         status int 灵敏度，0表⽰关闭，1表⽰low，2表⽰middle，3表⽰high
         """
         string = "SetSafeSkin({:d},{:d})".format(part, status)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def SetSafeWallEnable(self, index, value):
         """
@@ -566,8 +562,7 @@ class DobotApiDashboard(DobotApi):
         value int 安全墙开关，0表⽰关闭，1表⽰开启
         """
         string = "SetSafeWallEnable({:d},{:d})".format(index, value)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def SetWorkZoneEnable(self, index, value):
         """
@@ -578,8 +573,7 @@ class DobotApiDashboard(DobotApi):
         value int ⼲涉区开关，0表⽰关闭，1表⽰开启
         """
         string = "SetWorkZoneEnable({:d},{:d})".format(index, value)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     #########################################################################
 
@@ -601,8 +595,7 @@ class DobotApiDashboard(DobotApi):
         11 ROBOT_MODE_COLLISION 碰撞检测触发状态
         """
         string = "RobotMode()"
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def PositiveKin(self, J1, J2, J3, J4, J5, J6, user=-1, tool=-1):
         """
@@ -632,8 +625,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ','+ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def InverseKin(self, X, Y, Z, Rx, Ry, Rz, user=-1, tool=-1, useJointNear=-1, JointNear=''):
         """
@@ -673,16 +665,14 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ','+ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def GetAngle(self):
         """
         获取机械臂当前位姿的关节坐标。
         """
         string = "GetAngle()"
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def GetPose(self, user=-1, tool=-1):
         """
@@ -705,19 +695,21 @@ class DobotApiDashboard(DobotApi):
         if not state:
             return '必须同时传或同时不传坐标系，不传时默认为全局⽤⼾和⼯具坐标系'
 
-        for ii in params:
-            string = string + ',' + ii
+        for i, param in enumerate(params):
+            if i == len(params)-1:
+                string = string + param
+            else:
+                string = string + param+","
+
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def GetErrorID(self):
         """
         获取机械臂当前位姿的关节坐标。
         """
         string = "GetErrorID()"
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
      #################################################################
 
@@ -741,8 +733,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ',' + ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def DOInstant(self, index, status):
         """
@@ -753,8 +744,7 @@ class DobotApiDashboard(DobotApi):
         status int DO端⼦的状态，1：ON；0：OFF
         """
         string = "DOInstant({:d},{:d})".format(index, status)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def GetDO(self, index):
         """
@@ -764,8 +754,7 @@ class DobotApiDashboard(DobotApi):
         index int DO端⼦的编号
         """
         string = "GetDO({:d})".format(index)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def DOGroup(self, *index_value):
         """
@@ -789,8 +778,7 @@ class DobotApiDashboard(DobotApi):
             string = string + ',' + str(ii)
         string = string + ')'
 
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def GetDOGroup(self, *index_value):
         """
@@ -811,8 +799,7 @@ class DobotApiDashboard(DobotApi):
         for ii in index_value[1:]:
             string = string + ',' + str(ii)
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def ToolDO(self, index, status):
         """
@@ -823,8 +810,7 @@ class DobotApiDashboard(DobotApi):
         status int 末端DO端⼦的状态，1：ON；0：OFF
         """
         string = "ToolDO({:d},{:d})".format(index, status)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def ToolDOInstant(self, index, status):
         """
@@ -835,8 +821,7 @@ class DobotApiDashboard(DobotApi):
         status int 末端DO端⼦的状态，1：ON；0：OFF
         """
         string = "ToolDOInstant({:d},{:d})".format(index, status)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def GetToolDO(self, index):
         """
@@ -847,8 +832,7 @@ class DobotApiDashboard(DobotApi):
         status int 末端DO端⼦的状态，1：ON；0：OFF
         """
         string = "GetToolDO({:d})".format(index)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def AO(self, index, value):
         """
@@ -861,8 +845,7 @@ class DobotApiDashboard(DobotApi):
         value double AO端⼦的输出值，电压取值范围：[0,10]，单位：V；电流取值范围：[4,20]，单位：mA
         """
         string = "AO({:d},{:f})".format(index, value)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def AOInstant(self, index, value):
         """
@@ -874,8 +857,7 @@ class DobotApiDashboard(DobotApi):
         [4,20]，单位：mA
         """
         string = "AOInstant({:d},{:f})".format(index, value)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def GetAO(self, index):
         """
@@ -885,8 +867,7 @@ class DobotApiDashboard(DobotApi):
         index int AO端⼦的编号
         """
         string = "GetAO({:d})".format(index)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def DI(self, index):
         """
@@ -896,8 +877,7 @@ class DobotApiDashboard(DobotApi):
         index int DI端⼦的编号
         """
         string = "DI({:d})".format(index)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def DIGroup(self, *index_value):
         """
@@ -918,8 +898,7 @@ class DobotApiDashboard(DobotApi):
         for ii in index_value[1:]:
             string = string + ',' + str(ii)
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def ToolDI(self, index):
         """
@@ -929,8 +908,7 @@ class DobotApiDashboard(DobotApi):
         index int 末端DI端⼦的编号
         """
         string = "ToolDI({:d})".format(index)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def AI(self, index):
         """
@@ -940,8 +918,7 @@ class DobotApiDashboard(DobotApi):
         index int AI端⼦的编号
         """
         string = "AI({:d})".format(index)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def ToolAI(self, index):
         """
@@ -951,8 +928,7 @@ class DobotApiDashboard(DobotApi):
         index int 末端AI端⼦的编号
         """
         string = "ToolAI({:d})".format(index)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def SetTool485(self, index, parity='', stopbit=-1, identify=-1):
         """
@@ -988,8 +964,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ','+ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def SetToolPower(self, status, identify=-1):
         """
@@ -1016,8 +991,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ','+ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def SetToolMode(self, mode, type, identify=-1):
         """
@@ -1057,8 +1031,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ','+ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
      ##################################################################
 
@@ -1081,8 +1054,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ',' + ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def ModbusRTUCreate(self, slave_id, baud, parity='', data_bit=8, stop_bit=-1):
         """
@@ -1110,8 +1082,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ',' + ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def ModbusClose(self, index):
         """
@@ -1121,8 +1092,7 @@ class DobotApiDashboard(DobotApi):
         index int 创建主站时返回的主站索引
         """
         string = "ModbusClose({:d})".format(index)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def GetInBits(self, index, addr, count):
         """
@@ -1134,8 +1104,7 @@ class DobotApiDashboard(DobotApi):
         count int 连续读取触点寄存器的值的数量。取值范围：[1, 16]
         """
         string = "GetInBits({:d},{:d},{:d})".format(index, addr, count)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def GetInRegs(self, index, addr, count, valType=''):
         """
@@ -1162,8 +1131,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ',' + ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def GetCoils(self, index, addr, count):
         """
@@ -1175,8 +1143,7 @@ class DobotApiDashboard(DobotApi):
         count int 连续读取线圈寄存器的值的数量。取值范围：[1, 16]
         """
         string = "GetCoils({:d},{:d},{:d})".format(index, addr, count)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def SetCoils(self, index, addr, count, valTab):
         """
@@ -1196,8 +1163,7 @@ class DobotApiDashboard(DobotApi):
         """
         string = "SetCoils({:d},{:d},{:d},{:s})".format(
             index, addr, count, valTab)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def GetHoldRegs(self, index, addr, count, valType=''):
         """
@@ -1224,8 +1190,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ',' + ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def SetHoldRegs(self, index, addr, count, valTab, valType=''):
         """
@@ -1254,8 +1219,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ',' + ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
     ########################################################################
 
     def GetInputBool(self, address):
@@ -1266,8 +1230,7 @@ class DobotApiDashboard(DobotApi):
         address int 寄存器地址，取值范围[0-63]
         """
         string = "GetInputBool({:d})".format(address)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def GetInputInt(self, address):
         """
@@ -1277,8 +1240,7 @@ class DobotApiDashboard(DobotApi):
         address int 寄存器地址，取值范围[0-23]
         """
         string = "GetInputInt({:d})".format(address)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def GetInputFloat(self, address):
         """
@@ -1288,8 +1250,7 @@ class DobotApiDashboard(DobotApi):
         address int 寄存器地址，取值范围[0-23]
         """
         string = "GetInputFloat({:d})".format(address)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def GetOutputBool(self, address):
         """
@@ -1299,8 +1260,7 @@ class DobotApiDashboard(DobotApi):
         address int 寄存器地址，取值范围[0-63]
         """
         string = "GetOutputBool({:d})".format(address)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def GetOutputInt(self, address):
         """
@@ -1310,8 +1270,7 @@ class DobotApiDashboard(DobotApi):
         address int 寄存器地址，取值范围[0-23]
         """
         string = "GetOutputInt({:d})".format(address)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def GetOutputFloat(self, address):
         """
@@ -1321,8 +1280,7 @@ class DobotApiDashboard(DobotApi):
         address int 寄存器地址，取值范围[0-23]
         """
         string = "GetInputFloat({:d})".format(address)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def SetOutputBool(self, address, value):
         """
@@ -1333,8 +1291,7 @@ class DobotApiDashboard(DobotApi):
         value int 要设置的值，⽀持0或1
         """
         string = "GetInputFloat({:d},{:d})".format(address, value)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def SetOutputInt(self, address, value):
         """
@@ -1345,8 +1302,7 @@ class DobotApiDashboard(DobotApi):
         value int 要设置的值，⽀持整型数
         """
         string = "SetOutputInt({:d},{:d})".format(address, value)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def SetOutputFloat(self, address, value):
         """
@@ -1357,8 +1313,7 @@ class DobotApiDashboard(DobotApi):
         value int 要设置的值，⽀持整型数
         """
         string = "SetOutputFloat({:d},{:d})".format(address, value)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     #######################################################################
 
@@ -1402,8 +1357,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ','+ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def MovL(self, a1, b1, c1, d1, e1, f1, coordinateMode, user=-1, tool=-1, a=-1, v=-1, speed=-1, cp=-1, r=-1):
         """
@@ -1456,8 +1410,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ',' + ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def MovLIO(self, a1, b1, c1, d1, e1, f1, coordinateMode, Mode, Distance, Index, Status, user=-1, tool=-1, a=-1, v=-1, speed=-1, cp=-1, r=-1):
         """
@@ -1521,8 +1474,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ',' + ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def MovJIO(self,  a1, b1, c1, d1, e1, f1, coordinateMode, Mode, Distance, Index, Status, user=-1, tool=-1, a=-1, v=-1, cp=-1,):
         """
@@ -1576,8 +1528,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ',' + ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def Arc(self, a1, b1, c1, d1, e1, f1,  a2, b2, c2, d2, e2, f2, coordinateMode, user=-1, tool=-1, a=-1, v=-1, speed=-1, cp=-1, r=-1):
         """
@@ -1633,8 +1584,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ',' + ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def Circle(self, a1, b1, c1, d1, e1, f1,  a2, b2, c2, d2, e2, f2, coordinateMode, count, user=-1, tool=-1, a=-1, v=-1, speed=-1, cp=-1, r=-1):
         """
@@ -1691,8 +1641,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ',' + ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def MoveJog(self, axis_id='', coordType=-1, user=-1, tool=-1):
         """
@@ -1718,8 +1667,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ',' + ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def GetStartPose(self, trace_name):
         """
@@ -1733,8 +1681,7 @@ class DobotApiDashboard(DobotApi):
         会导致中⽂接收异常
         """
         string = "GetStartPose({:s})".format(trace_name)
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def StartPath(self, trace_name, isConst=-1, multi=-1.0, user=-1, tool=-1):
         """
@@ -1771,8 +1718,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ',' + ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def RelMovJTool(self, offset_x, offset_y, offset_z, offset_rx, offset_ry, offset_rz, user=-1, tool=-1, a=-1, v=-1, cp=-1):
         """
@@ -1810,8 +1756,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ',' + ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def RelMovLTool(self, offset_x, offset_y, offset_z, offset_rx, offset_ry, offset_rz, user=-1, tool=-1, a=-1, v=-1, speed=-1, cp=-1, r=-1):
         """
@@ -1861,8 +1806,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ',' + ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def RelMovJUser(self, offset_x, offset_y, offset_z, offset_rx, offset_ry, offset_rz, user=-1, tool=-1, a=-1, v=-1, cp=-1):
         """
@@ -1900,8 +1844,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ',' + ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def RelMovLUser(self, offset_x, offset_y, offset_z, offset_rx, offset_ry, offset_rz, user=-1, tool=-1, a=-1, v=-1, speed=-1, cp=-1, r=-1):
         """
@@ -1950,8 +1893,7 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ',' + ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def RelJointMovJ(self, offset_x, offset_y, offset_z, offset_rx, offset_ry, offset_rz, a=-1, v=-1, cp=-1):
         """
@@ -1983,13 +1925,80 @@ class DobotApiDashboard(DobotApi):
         for ii in params:
             string = string + ',' + ii
         string = string + ')'
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
 
     def GetCurrentCommandID(self):
         """
         获取当前执⾏指令的算法队列ID，可以⽤于判断当前机器⼈执⾏到了哪⼀条指令。
         """
         string = "GetCurrentCommandID()"
-        self.send_data(string)
-        return self.wait_reply()
+        return self.sendRecvMsg(string)
+
+    def ParseResultId(self, valueRecv):
+        """
+        解析Tcp返回值
+        """
+        if valueRecv.find("Not Tcp") != -1:  # 通过返回值判断机器是否处于tcp模式
+            print("Control Mode Is Not Tcp")
+            return
+        recvData = re.findall(r'-?\d+', valueRecv)
+        recvData = [int(num) for num in recvData]
+        if len(recvData) > 0:
+            if recvData[0] != 0:
+                # 根据返回值来判断机器处于什么状态
+                if recvData[0] == -1:
+                    print("Command execution failed")
+                elif recvData[0] == -2:
+                    print("The robot is in an error state")
+                elif recvData[0] == -3:
+                    print("The robot is in emergency stop state")
+                elif recvData[0] == -4:
+                    print("The robot is in power down state")
+                else:
+                    print("ErrorId is ", recvData[0])
+        else:
+            print("ERROR VALUE")
+
+
+# 反馈数据接口类
+
+
+class DobotApiFeedBack(DobotApi):
+    def __init__(self, ip, port, *args):
+        super().__init__(ip, port, *args)
+        self.__MyType = []
+        self.__Lock = threading.Lock()
+        feed_thread = threading.Thread(target=self.recvFeedData)  # 机器状态反馈线程
+        feed_thread.daemon = True
+        feed_thread.start()
+        sleep(1)
+
+    def recvFeedData(self):
+        """
+        接收实时反馈端口数据
+        """
+        hasRead = 0
+        while True:
+            data = bytes()
+            while hasRead < 1440:
+                try:
+                    temp = self.socket_dobot.recv(1440 - hasRead)
+                    if len(temp) > 0:
+                        hasRead += len(temp)
+                        data += temp
+                except Exception as e:
+                    print(e)
+                    self.socket_dobot = self.reConnect(self.ip, self.port)
+
+            hasRead = 0
+            with self.__Lock:
+                self.__MyType = []
+                self.__MyType = np.frombuffer(data, dtype=MyType)
+
+    def feedBackData(self):
+        """
+        返回机械臂状态
+        """
+        with self.__Lock:
+            return self.__MyType
+

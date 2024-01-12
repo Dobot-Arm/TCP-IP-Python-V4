@@ -36,7 +36,7 @@ TCP-IP-CR-Python-V4 是为 Dobot 公司旗下基于TCP/IP协议的Python的封�
 
 |   版本   |  修改日期  |
 | :------: | :--------: |
-| v1.0.0.0 | 2023-10-20 |
+| v1.0.0.0 | 2023-11-20 |
 
 
 
@@ -85,7 +85,7 @@ TCP-IP-CR-Python-V4 是为 Dobot 公司旗下基于TCP/IP协议的Python的封�
 
 # 4. 获取TCP-IP-CR-Python-V4  
 
-1. 从GitHub 下载或者克隆dobot  TCP-IP-4Axis-Python-CMD 二次开发api程序
+1. 从GitHub 下载或者克隆Dobot  TCP-IP-CR-Python-V4  二次开发api程序
 
    ```bash
    `git clone https://github.com/Dobot-Arm/TCP-IP-CR-Python-V4.git
@@ -108,13 +108,14 @@ TCP-IP-CR-Python-V4 是为 Dobot 公司旗下基于TCP/IP协议的Python的封�
 
 dobot_api目录中的类说明：
 
-| Class             | Define                                        |
-| ----------------- | --------------------------------------------- |
-| DobotApi          | 基于tcp通信的接口类，封装了通信的基础业务     |
-| DobotApiDashboard | 继承于DobotClient，实现了具体的机器人基本功能 |
-| MyType            | 数据类型对象，反馈机器人的状态列表            |
-| alarm_controller  | 警告报警配置信息                              |
-| alarm_servo       | 伺服报警配置信息                              |
+| Class             | Define                                       |
+| :---------------- | -------------------------------------------- |
+| DobotApi          | 基于tcp通信的接口类，封装了通信的基础业务    |
+| DobotApiDashboard | 继承于DobotApi，实现了具体的机器人基本功能   |
+| DobotApiFeedBack  | 继承于DobotApi，用于实时反馈机器人的状态信息 |
+| MyType            | 数据类型对象，反馈机器人的状态列表           |
+| alarm_controller  | 警告报警配置信息                             |
+| alarm_servo       | 伺服报警配置信息                             |
 
 **DobotApi**  
 
@@ -124,7 +125,7 @@ dobot_api目录中的类说明：
 class DobotApi:
     def __init__(self, ip, port, *args):
     ""
-    if self.port == 29999 or self.port == 30003 or self.port == 30004:
+    if self.port == 29999 or self.port == 30004:
             try:
                 self.socket_dobot = socket.socket()
                 self.socket_dobot.connect((self.ip, self.port))
@@ -133,7 +134,7 @@ class DobotApi:
 
 **DobotApiDashboard**  
 
-   继承于DobotClient，  能发送控制及运动指令给机器人。实现了具体的机器人基本功能。  
+ 继承于DobotApi，  能发送控制及运动指令给机器人。实现了具体的机器人基本功能。  
 
 ```c++
 class DobotApiDashboard(DobotApi):
@@ -149,11 +150,28 @@ class DobotApiDashboard(DobotApi):
       """
 ```
 
+**DobotApiFeedBack**
+
+继承于DobotApi，  实时反馈机械臂状态信息。  
+
+```python
+ class DobotApiFeedBack(DobotApi):
+    def __init__(self, ip, port, *args):
+        super().__init__(ip, port, *args)
+        self.__MyType = []
+        self.__Lock = threading.Lock()
+        feed_thread = threading.Thread(target=self.recvFeedData)  # 机器状态反馈线程
+        feed_thread.daemon = True
+        feed_thread.start()
+        """
+    
+```
+
 **MyType**
 
-数据类型对象，能反馈机器人的状态信息。
+数据类型对象
 
-```c++
+```python
 MyType=np.dtype([('len', np.int16, ), 
                 ('Reserve', np.int16, (3,) ),
                 ('digital_input_bits', np.int64, ), 
@@ -161,43 +179,10 @@ MyType=np.dtype([('len', np.int16, ),
 
                 ('Reserve3', np.int8, (24,)),
                 ])
+                ""
 ```
 
-分别创建控制类端口对象 ，反馈类端口对象，进行Tcp连接
-
-```python
-    ip = "192.168.5.1"
-    dashboardPort = 29999
-    feedPort = 30004
-    print("正在建立连接...")
-    dashboard = DobotApiDashboard(ip, dashboardPort)
-    feed = DobotApi(ip, feedPort)
-    
-```
-
-使用控制端口下发控制指令信息，进行使能，下使能操作
-
-```python
-     dashboard.EnableRobot()
-     dashboard.DisableRobot()
-```
-
-通过反馈端口获取机器状态
-
-```python
-    data = bytes()
-    while hasRead < 1440:
-        temp = feed.socket_dobot.recv(1440 - hasRead)
-        if len(temp) > 0:
-            hasRead += len(temp)
-            data += temp
-    hasRead = 0
-    feedInfo = np.frombuffer(data, dtype=MyType)
-    if hex((feedInfo['test_value'][0])) == '0x123456789abcdef':
-        print(feedInfo['EnableStatus'][0])   #输出机器使能状态
-```
-
-   **具体使用详情请查看代码示例PythonExample.py和Demo示例**
+**具体使用详情请查看代码Demo示例**
 
 
 
@@ -281,6 +266,15 @@ MyType=np.dtype([('len', np.int16, ),
 
 * Pause()、Continue()指令对脚本运行生效，运动指令（队列相关）也生效，调用Pause()指令后机器人进入暂停状态，算法队列暂停；可使用Continue()指令继续运行队列指令。MovJog(点动)指令属于单次运行状态，不可暂停和继续
 
+* 目前的TCP的指令之间不支持插入无关的字符  可以使用如下两种格式来写
+    ① MovJ()MovJ()MovJ()
+
+    ②
+    MovJ()
+    MovJ()
+    MovJ()
+
+
 
 
 # 8. 示例
@@ -351,7 +345,229 @@ MyType=np.dtype([('len', np.int16, ),
 
    ![](/runpy.png)
 
+
+
+
+#### DobotDemo
+
+Tcp连接：自主选择连接机械臂的端口 ， 与机械臂建立连接
+
+```python
+class DobotDemo:
+    def __init__(self, ip):
+        self.ip = ip
+        self.dashboardPort = 29999   
+        self.feedPortFour = 30004
+      #  self.feedPortFour = 30005
+      #  self.feedPortFour = 30006
+        self.dashboard = None
+        ... ...
+```
+
+
+
+实例化对象： 下发端口类DobotApiDashboard和信息反馈类DobotApiFeedBack
+
+```python
+    def start(self):
+        self.dashboard = DobotApiDashboard(self.ip, self.dashboardPort)
+        self.feedFour = DobotApiFeedBack(self.ip, self.feedPortFour)
+        enableState = self.parseResultId(self.dashboard.EnableRobot())
+        if enableState[0] != 0:
+            print("使能失败: 检查29999端口是否被占用)")
+            return
+        print("使能成功:)")
+        ...  ...
+```
+
+
+
+控制机械臂运动： 下发运行指令，控制机械臂运动
+
+```python
+    point_a = [-90, 20, 0, 0, 0, 0]
+    point_b = [90, 20, 0, 0, 0, 0]
+
+    while True:
+        while True:
+            p2Id = self.RunPoint(point_a)
+            if p2Id[0] == 0:  # 运动指令返回值正确
+                self.WaitArrive(p2Id[1])  # 传入运动指令commandID ,进入等待指令完成
+                break
+            else:
+                sleep(5)  # 运动指令返回值错误(如非tcp模式等) 休眠5s后继续运行
+
    
+# 封装机械臂运动功能，下发运动指令，返回机械臂运行结果
+ def RunPoint(self, point_list: list):
+        recvmovemess = self.dashboard.MovJ(
+            point_list[0], point_list[1], point_list[2], point_list[3], point_list[4], point_list[5], 1)
+        print("Movj", recvmovemess)
+        commandArrID = self.parseResultId(recvmovemess)  # 解析Movj指令的返回值
+        return commandArrID
+    
+    ... ...  ...  ...               
+                    
+```
+
+
+
+运行指令完成标志： 等待机械臂运动指令完成 ，类似与 Sync功能。
+
+```python
+  # 通过CommandID和robotMode来判断
+    def WaitArrive(self, p2Id):
+        while True:
+            while not self.__robotSyncBreak.is_set():
+                self.__globalLockValue.acquire()  #
+                if self.feedData.robotEnableStatus:
+                    if self.feedData.robotCurrentCommandID > p2Id:
+                        self.__globalLockValue.release()
+                        break
+                    else:
+                        isFinsh = (self.feedData.robotMode == 5)
+                        if self.feedData.robotCurrentCommandID == p2Id and isFinsh:
+                            self.__globalLockValue.release()
+                            break
+                self.__globalLockValue.release()
+                sleep(0.01)
+            self.__robotSyncBreak.clear()
+            break
+```
+
+
+
+解析返回信息函数： 解析下发指令后，机械臂的返回信息。
+
+```python
+  #解析信息，返回列表 
+ def parseResultId(self, valueRecv):
+        if valueRecv.find("Not Tcp") != -1:  # 通过返回值判断机器是否处于tcp模式
+            print("Control Mode Is Not Tcp")
+            return [1]
+        recvData = re.findall(r'-?\d+', valueRecv)
+        recvData = [int(num) for num in recvData]
+        #  返回tcp指令返回值的所有数字数组
+        if len(recvData) == 0:
+            return [1]
+        return recvData
+    
+ # 通过判断列表返回值来判断机械臂状态（见下表）
+  parseResultId函数：解析所有的数字
+    
+ #  0,{1846},MovJ(joint={90,20,0,0,00,00});            [0,1846,90,20,0,0,0,0]
+ #  0,{},clearerror()                                  [0]
+ #  0,{[[30,132],[],[],[],[],[],[]]},geterrorid();     [0,30,132]  
+ #  Control Mode Is Not Tcp                            [1]  
+ #  -1,{},MovJ(joint={90,20,0,0,00,00});               [-1,90,20，...]  
+ #  -2,{},MovJ(joint={90,20,0,0,0,0});                 [-2,90,20，...]  
+ # -30001,{},MovJ(joi={90,20,0,0,0,0});                [-30001,90,20，...]  
+```
+
+
+
+######  解析信息，返回列表 list
+
+| 返回值  \|   列表下标 | list[0]                          | list[1] | list[...] |
+| :-------------------- | -------------------------------- | :------ | :-------- |
+| 0                     | 指令下发成功                     | -       | -         |
+| 1                     | 机械臂非TCP模式                  | -       | -         |
+| 2                     | 其它程序异常                     | -       | -         |
+| -1                    | 没有执行成功                     | -       | -         |
+| -2                    | 当前处于错误状态拒绝执行指令     | -       | -         |
+| -3                    | 当前处于急停拍下状态拒绝执行指令 | -       | -         |
+| -4                    | 当前处于下电状态拒绝执行指令     | -       | -         |
+| -10000                | 命令错误                         | -       | -         |
+| -20000                | 参数数量错误                     | -       | -         |
+| -30001                | 第一个参数的参数类型错误         | -       | -         |
+| -30002                | 第二个参数的参数类型错误         | -       | -         |
+| ... ...               |                                  |         |           |
+| -40001                | 第一个参数的参数范围错误         | -       | -         |
+| ... ...               |                                  |         |           |
+| -50001                | 可选参数第一个参数的参数类型错误 | -       | -         |
+| ... ...               |                                  |         |           |
+| -60001                | 可选参数第一个参数的参数范围错误 | -       | -         |
+| ... ...               |                                  |         |           |
+
+list[1]及list[n]值为特殊指令的返回值
+
+```python
+ # 通过判断列表返回值来判断机械臂状态
+ #  0,{1846},MovJ(joint={90,20,0,0,00,00});            list[1]为commandArrID 1846
+ #  0,{[[30,132],[],[],[],[],[],[]]},geterrorid();     list[1]，list[2]为机械臂告警码
+```
+
+
+
+获取机械臂信息： 获取反馈端口机械臂状态信息
+
+```python
+ ...  ...   
+    def GetFeed(self):
+        while True:
+            feedInfo = self.feedFour.feedBackData()
+            if hex((feedInfo['test_value'][0])) == '0x123456789abcdef':
+                self.__globalLockValue.acquire()  
+                
+                # 自主添加所需机械臂反馈的数据   详情查 **MyType**
+                # .......................................................
+                self.feedData.robotErrorState = feedInfo['error_status'][0]
+                self.feedData.robotEnableStatus = feedInfo['enable_status'][0]
+                self.feedData.robotMode = feedInfo['robot_mode'][0]
+                self.feedData.robotCurrentCommandID = feedInfo['currentcommandid'][0]
+                # .......................................................
+                
+                self.__globalLockValue.release()
+            sleep(0.004)
+  ...  ...  
+
+     # 机器状态反馈线程
+         feed_thread = threading.Thread(
+                target=self.GetFeed)  
+         feed_thread.daemon = True
+         feed_thread.start()
+```
+
+
+
+监控机器状态： 监控机械臂异常状态和机械臂清错功能
+
+```python
+ def ClearRobotError(self):
+        # 读取控制器和伺服告警码
+        dataController, dataServo = alarmAlarmJsonFile()    
+        while True:
+            self.__globalLockValue.acquire()  # robotErrorState加锁
+            if self.feedData.robotErrorState:
+                geterrorID = self.parseResultId(self.dashboard.GetErrorID())
+                if geterrorID[0] == 0:
+                    for i in range(1, len(geterrorID)):
+                        alarmState = False
+                        
+                        # 读取控制器告警码
+                        for item in dataController:
+                            if geterrorID[i] == item["id"]:
+                                print("机器告警 Controller GetErrorID",
+                                      i, item["zh_CN"]["description"])
+                                alarmState = True
+                                break
+                        if alarmState:
+                            continue
+                      
+                       # 读取伺服告警码
+                        for item in dataServo:
+                            if geterrorID[i] == item["id"]:
+                                print("机器告警 Servo GetErrorID", i,
+                                      item["zh_CN"]["description"])
+                        
+                         # 是否对机械臂进行清错操作
+                        choose = input("输入1, 将清除错误, 机器继续运行: ")
+                        ...  ...
+```
+
+
+
+
 
   **常见问题：**
 
@@ -371,7 +587,7 @@ MyType=np.dtype([('len', np.int16, ),
 
 | 机器输出异常                             | 机器状态             |
 | ---------------------------------------- | -------------------- |
-| **Queue command exceeds queue depth 64** | **超出队列深度64**   |
+| **Command execution failed**             | **没有执行成功**     |
 | **The robot is in an error state**       | **机器错误状态**     |
 | **The robot is in emergency stop state** | **机器 急停状态**    |
 | **The robot is in power down state**     | **机器下电状态**     |
