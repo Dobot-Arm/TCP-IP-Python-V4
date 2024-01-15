@@ -1,0 +1,2 @@
+1/12   1. 完成python-api 增加控制, 运动指令及反馈功能接口类DobotApiDashMove 
+       2. 新增DobotDemo2, DobotApiDashMove类使用示例
