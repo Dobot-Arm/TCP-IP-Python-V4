@@ -615,7 +615,7 @@ class DobotApiDashboard(DobotApi):
        User string 不指定时使⽤全局⽤⼾坐标系。
        Tool string  格式为"tool=index"，index为已标定的⼯具坐标系索引。不指定时使⽤全局⼯具坐标系。
         """
-        string = "PositiveKin(pose={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(
+        string = "PositiveKin({:f},{:f},{:f},{:f},{:f},{:f}".format(
             J1, J2, J3, J4, J5, J6)
         params = []
         if user != -1:
@@ -651,7 +651,7 @@ class DobotApiDashboard(DobotApi):
             "useJointNear=1"表⽰根据JointNear就近选解。
         jointNear string 格式为"jointNear={j1,j2,j3,j4,j5,j6}"，⽤于就近选解的关节坐标。
         """
-        string = "InverseKin(pose={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(
+        string = "InverseKin({:f},{:f},{:f},{:f},{:f},{:f}".format(
             X, Y, Z, Rx, Ry, Rz)
         params = []
         if user != -1:
