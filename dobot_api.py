@@ -514,7 +514,7 @@ class DobotApiDashboard(DobotApi):
 
     def StopDrag(self):
         """
-        机械臂进⼊拖拽模式。机械臂处于报警状态下时，⽆法通过该指令进⼊拖拽模式。
+        退出拖拽
         """
         string = "StopDrag()"
         return self.sendRecvMsg(string)
