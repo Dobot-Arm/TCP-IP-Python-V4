@@ -261,7 +261,10 @@ class RobotUI(object):
 
     def move_jog(self, text):
         if self.global_state["connect"]:
-            self.client_dash.MoveJog(text)
+            if text[0] == "J":
+                self.client_dash.MoveJog(text)
+            else:
+                self.client_dash.MoveJog(text,coordType=1)
 
     def move_stop(self, event):
         if self.global_state["connect"]:
