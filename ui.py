@@ -166,7 +166,7 @@ class RobotUI(object):
                       default_value="120", entry_value=540, rely=0.5, master=self.frame_move)
 
         self.set_button(master=self.frame_move,
-                        text="JointMovJ", rely=0.45, x=610, command=self.joint_movj)
+                        text="MovJ", rely=0.45, x=610, command=self.joint_movj)
 
         self.frame_feed_log = Frame(
             self.root, bg="#FFFFFF", width=870, pady=10, height=400, border=2)
@@ -351,15 +351,15 @@ class RobotUI(object):
 
     def movj(self):
         self.client_dash.MovJ(1, float(self.entry_dict["X:"].get()), float(self.entry_dict["Y:"].get()), float(self.entry_dict["Z:"].get()),
-                              float(self.entry_dict["Rx:"].get()), float(self.entry_dict["Ry:"].get()), float(self.entry_dict["Rz:"].get()))
+                              float(self.entry_dict["Rx:"].get()), float(self.entry_dict["Ry:"].get()), float(self.entry_dict["Rz:"].get()),0)
 
     def movl(self):
         self.client_dash.MovL(1, float(self.entry_dict["X:"].get()), float(self.entry_dict["Y:"].get()), float(self.entry_dict["Z:"].get()),
-                              float(self.entry_dict["Rx:"].get()), float(self.entry_dict["Ry:"].get()), float(self.entry_dict["Rz:"].get()))
+                              float(self.entry_dict["Rx:"].get()), float(self.entry_dict["Ry:"].get()), float(self.entry_dict["Rz:"].get()),0)
 
     def joint_movj(self):
-        self.client_dash.JointMovJ(1, float(self.entry_dict["J1:"].get()), float(self.entry_dict["J2:"].get()), float(self.entry_dict["J3:"].get()),
-                                   float(self.entry_dict["J4:"].get()), float(self.entry_dict["J5:"].get()), float(self.entry_dict["J6:"].get()))
+        self.client_dash.MovJ(1, float(self.entry_dict["J1:"].get()), float(self.entry_dict["J2:"].get()), float(self.entry_dict["J3:"].get()),
+                                   float(self.entry_dict["J4:"].get()), float(self.entry_dict["J5:"].get()), float(self.entry_dict["J6:"].get()),1)
 
     def confirm_do(self):
         if self.combo_status.get() == "On":
