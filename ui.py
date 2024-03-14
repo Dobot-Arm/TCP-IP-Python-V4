@@ -69,11 +69,11 @@ class RobotUI(object):
         self.entry_dash.place(rely=0.2, x=320)
 
         self.label_feed = Label(self.frame_robot, text="Feedback Port:")
-        self.label_feed.place(rely=0.2, x=580)
+        self.label_feed.place(rely=0.2, x=420)
         feed_port = IntVar(self.root, value=30004)
         self.entry_feed = Entry(
             self.frame_robot, width=7, textvariable=feed_port)
-        self.entry_feed.place(rely=0.2, x=680)
+        self.entry_feed.place(rely=0.2, x=520)
 
         # Connect/DisConnect
         self.button_connect = self.set_button(master=self.frame_robot,
@@ -264,7 +264,7 @@ class RobotUI(object):
             if text[0] == "J":
                 self.client_dash.MoveJog(text)
             else:
-                self.client_dash.MoveJog(text,coordType=1)
+                self.client_dash.MoveJog(text,coordtype=1,user=0,tool=0)
 
     def move_stop(self, event):
         if self.global_state["connect"]:
@@ -350,15 +350,15 @@ class RobotUI(object):
         self.client_dash.SpeedFactor(int(self.entry_speed.get()))
 
     def movj(self):
-        self.client_dash.MovJ(1, float(self.entry_dict["X:"].get()), float(self.entry_dict["Y:"].get()), float(self.entry_dict["Z:"].get()),
+        self.client_dash.MovJ(float(self.entry_dict["X:"].get()), float(self.entry_dict["Y:"].get()), float(self.entry_dict["Z:"].get()),
                               float(self.entry_dict["Rx:"].get()), float(self.entry_dict["Ry:"].get()), float(self.entry_dict["Rz:"].get()),0)
 
     def movl(self):
-        self.client_dash.MovL(1, float(self.entry_dict["X:"].get()), float(self.entry_dict["Y:"].get()), float(self.entry_dict["Z:"].get()),
+        self.client_dash.MovL(float(self.entry_dict["X:"].get()), float(self.entry_dict["Y:"].get()), float(self.entry_dict["Z:"].get()),
                               float(self.entry_dict["Rx:"].get()), float(self.entry_dict["Ry:"].get()), float(self.entry_dict["Rz:"].get()),0)
 
     def joint_movj(self):
-        self.client_dash.MovJ(1, float(self.entry_dict["J1:"].get()), float(self.entry_dict["J2:"].get()), float(self.entry_dict["J3:"].get()),
+        self.client_dash.MovJ(float(self.entry_dict["J1:"].get()), float(self.entry_dict["J2:"].get()), float(self.entry_dict["J3:"].get()),
                                    float(self.entry_dict["J4:"].get()), float(self.entry_dict["J5:"].get()), float(self.entry_dict["J6:"].get()),1)
 
     def confirm_do(self):
@@ -454,7 +454,6 @@ class RobotUI(object):
                 if a["robot_mode"] == 9:
                     self.display_error_info()
 
-            time.sleep(0.005)
 
     def display_error_info(self):
         error_list = self.client_dash.GetErrorID().split("{")[1].split("}")[0]
@@ -473,7 +472,7 @@ class RobotUI(object):
 
     def form_error(self, index, alarm_dict: dict, type_text):
         if index in alarm_dict.keys():
-            date = datetime.datetime.now().strftime("%Y.%m.%d:%H:%M:%S ")
+            date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             error_info = f"Time Stamp:{date}\n"
             error_info = error_info + f"ID:{index}\n"
             error_info = error_info + \
