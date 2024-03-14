@@ -2249,7 +2249,7 @@ class DobotApiDashboard(DobotApi):
         string = string + ')'
         return self.sendRecvMsg(string)
 
-    def MoveJog(self, axis_id='', coordType=-1, user=-1, tool=-1):
+    def MoveJog(self, axis_id='', coordtype=-1, user=-1, tool=-1):
         """
         Joint motion
         axis_id: Joint motion axis, optional string value:
@@ -2264,8 +2264,8 @@ class DobotApiDashboard(DobotApi):
         """
         string = "MoveJog({:s}".format(axis_id)
         params = []
-        if coordType != -1:
-            params.append('coordType={:d}'.format(coordType))
+        if coordtype != -1:
+            params.append('coordtype={:d}'.format(coordtype))
         if user != -1:
             params.append('user={:d}'.format(user))
         if tool != -1:
