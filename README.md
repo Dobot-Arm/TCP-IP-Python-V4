@@ -42,12 +42,6 @@ TCP-IP-CR-Python-V4 是为 Dobot 公司旗下基于TCP/IP协议的Python的封�
 
 # 2. 技术支持
 
-在使用过程中如遇问题或者一些建议， 您可以通过以下方式获取dobot的技术支持 :
-
-* 发送邮件到futingxing@dobot-robots.com，详细描述您遇到的问题和使用场景
-* 发送邮件到 wuyongfeng@dobot-robots.com ，详细描述您遇到的问题和使用场景
-
-
 
 
 # 3. TCP-IP-CR-Python-V4  控制协议
