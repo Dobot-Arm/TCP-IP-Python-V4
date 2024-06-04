@@ -35,10 +35,6 @@ Dobot   TCP-IP-CR-Python-V4   secondary development API interface ([TCP-IP-CR-Py
 
 # 2\. Technical support
 
-If you have any questions or suggestions, you can contact Dobot's technical support:
-
-* Send an email to futingxing@dobot-robots.com with a detailed description of the problem you are experiencing and the scenario in which you are using it.
-* Send an email to wuyongfeng@dobot-robots.com with a detailed description of the problem you are experiencing and the scenario in which you are using it.
 
 # 3\. TCP-IP-CR-Python-V4 control protocol
 
