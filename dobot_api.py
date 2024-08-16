@@ -1934,6 +1934,68 @@ class DobotApiDashboard(DobotApi):
         string = string + ')'
         return self.sendRecvMsg(string)
 
+    def ServoJ(self, J1, J2, J3, J4, J5, J6, t=-1.0,aheadtime=-1.0, gain=-1.0):
+        """
+        参数名 类型 含义
+        参数范围
+        J1 double 点J1 轴位置，单位：度 是
+        J2 double 点J2 轴位置，单位：度 是
+        J3 double 点J3 轴位置，单位：度 是
+        J4 double 点J4 轴位置，单位：度 是
+        J5 double 点J5 轴位置，单位：度 是
+        J6 double 点J6 轴位置，单位：度 是
+        t float 该点位的运行时间，默认0.1,单位：s 否 [0.02,3600.0]
+        aheadtime float 作用类似于PID的D项，默认50，标量，无单位 否 [20.0,100.0]
+        gain float 目标位置的比例放大器，作用类似于PID的P项，默认500，标量，无单位 否 [200.0,1000.0]
+        Joint string Target point joint variables
+        t float Optional parameter.Running time of the point, unit: s, value range: [0.02,3600.0], default value:0.1
+        aheadtime float Optional parameter.Advanced time, similar to the D in PID control. Scalar, no unit, valuerange: [20.0,100.0], default value: 50.
+        gain float Optional parameter.Proportional gain of the target position, similar to the P in PID control.Scalar, no unit, value range: [200.0,1000.0], default value: 500.
+        """
+        string = ""
+        string = "ServoJ({:f},{:f},{:f},{:f},{:f},{:f}".format(J1, J2, J3, J4, J5, J6)
+        params = []
+        if t != -1:
+            params.append('t={:f}'.format(t))
+        if aheadtime != -1:
+            params.append('aheadtime={:f}'.format(aheadtime))
+        if gain != -1:
+            params.append('gain={:f}'.format(gain))
+        for ii in params:
+            string = string + ','+ii
+        string = string + ')'
+        return self.sendRecvMsg(string)
+    def ServoP(self, X, Y, Z, RX, RY, RZ, t=-1.0,aheadtime=-1.0, gain=-1.0):
+        """
+        参数名 类型 含义 是否必填 参数范围
+        X double X 轴位置，单位：毫米 是
+        Y double Y 轴位置，单位：毫米 是
+        Z double Z 轴位置，单位：毫米 是
+        Rx double Rx 轴位置，单位：度 是
+        Ry double Ry 轴位置，单位：度 是
+        Rz double Rz 轴位置，单位：度 是
+        t float 该点位的运行时间，默认0.1,单位：s 否 [0.02,3600.0]
+        aheadtime float 作用类似于PID的D项，默认50，标量，无单位 否 [20.0,100.0]
+        gain float 目标位置的比例放大器，作用类似于PID的P项，默认500，标量，无单位 否 [200.0,1000.0]
+        Pose string  Target point posture variables. The reference coordinate system is the global user and tool coordinate system, see the User and Tool command descriptions in Settings command (the default values are both 0
+        t float Optional parameter.Running time of the point, unit: s, value range: [0.02,3600.0], default value:0.1
+        aheadtime float Optional parameter.Advanced time, similar to the D in PID control. Scalar, no unit, valuerange: [20.0,100.0], default value: 50.
+        gain float Optional parameter.Proportional gain of the target position, similar to the P in PID control.Scalar, no unit, value range: [200.0,1000.0], default value: 500.
+        """
+        string = ""
+        string = "ServoP({:f},{:f},{:f},{:f},{:f},{:f}".format(X, Y, Z, RX, RY, RZ)
+        params = []
+        if t != -1:
+            params.append('t={:f}'.format(t))
+        if aheadtime != -1:
+            params.append('aheadtime={:f}'.format(aheadtime))
+        if gain != -1:
+            params.append('gain={:f}'.format(gain))
+        for ii in params:
+            string = string + ','+ii
+        string = string + ')'
+        return self.sendRecvMsg(string)
+
     def MovLIO(self, a1, b1, c1, d1, e1, f1, coordinateMode, Mode, Distance, Index, Status, user=-1, tool=-1, a=-1, v=-1, speed=-1, cp=-1, r=-1):
         """
         描述
