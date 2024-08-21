@@ -74,7 +74,7 @@ class DobotDemo:
                 self.feedData.robotMode = feedInfo['robot_mode'][0]
                 self.feedData.robotCurrentCommandID = feedInfo['currentcommandid'][0]
                 self.__globalLockValue.release()
-            sleep(0.01)
+            sleep(0.005)
 
     def RunPoint(self, point_list: list):
         recvmovemess = self.dashboard.MovJ(
