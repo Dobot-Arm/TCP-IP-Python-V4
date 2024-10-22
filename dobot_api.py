@@ -3008,7 +3008,7 @@ class DobotApiDashMove(DobotApiDashboard):
                     self.__feedData.targetQuaternion = feedInfo['target_quaternion'][0]
                     self.__feedData.actualQuaternion = feedInfo['actual_quaternion'][0]
                     self.__feedData.autoManualMode = feedInfo['auto_manual_mode'][0]
-            sleep(0.01)
+            sleep(0.005)
 
     def getFeedData(self):
         """
@@ -3033,7 +3033,7 @@ class DobotApiDashMove(DobotApiDashboard):
                             isFinsh = (self.__feedData.robotMode == 5)
                             if self.__feedData.robotCurrentCommandID == p2Id and isFinsh:
                                 break
-                sleep(0.01)
+                sleep(0.005)
             self.__robotSyncBreak.clear()
             break
 
