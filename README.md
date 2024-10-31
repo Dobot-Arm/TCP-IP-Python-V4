@@ -350,11 +350,10 @@ Tcp连接：自主选择连接机械臂的端口 ， 与机械臂建立连接
 class DobotDemo:
     def __init__(self, ip):
         self.ip = ip
-        self.dashboardPort = 29999   
+        self.dashboardPort = 29999
         self.feedPortFour = 30004
-      #  self.feedPortFour = 30005
-      #  self.feedPortFour = 30006
-        self.dashboard = None
+        self.dashboardmove = None
+        self.feedInfo = []
         ... ...
 ```
 
@@ -363,14 +362,13 @@ class DobotDemo:
 实例化对象： 下发端口类DobotApiDashboard和信息反馈类DobotApiFeedBack
 
 ```python
-    def start(self):
-        self.dashboard = DobotApiDashboard(self.ip, self.dashboardPort)
-        self.feedFour = DobotApiFeedBack(self.ip, self.feedPortFour)
-        enableState = self.parseResultId(self.dashboard.EnableRobot())
-        if enableState[0] != 0:
-            print("使能失败: 检查29999端口是否被占用)")
+     def start(self):
+        # 启动机器人并使能
+        self.dashboardmove = DobotApiDashMove(self.ip, self.dashboardPort, self.feedPortFour)
+        if self.parseResultId(self.dashboardmove.EnableRobot())[0] != 0:
+            print("使能失败: 检查29999端口是否被占用")
             return
-        print("使能成功:)")
+        print("使能成功")
         ...  ...
 ```
 
@@ -379,54 +377,35 @@ class DobotDemo:
 控制机械臂运动： 下发运行指令，控制机械臂运动
 
 ```python
-    point_a = [-90, 20, 0, 0, 0, 0]
-    point_b = [90, 20, 0, 0, 0, 0]
+    point_a = [-70, 0, -60, 0, 90, 0]
+    point_b = [-40, 0, -60, 0, 90, 0]
 
+    # 走点循环
     while True:
-        while True:
-            p2Id = self.RunPoint(point_a)
-            if p2Id[0] == 0:  # 运动指令返回值正确
-                self.WaitArrive(p2Id[1])  # 传入运动指令commandID ,进入等待指令完成
-                break
-            else:
-                sleep(5)  # 运动指令返回值错误(如非tcp模式等) 休眠5s后继续运行
+        self.RunPoint(point_a)
+        self.RunPoint(point_b)
+        sleep(1)
 
    
 # 封装机械臂运动功能，下发运动指令，返回机械臂运行结果
- def RunPoint(self, point_list: list):
-        recvmovemess = self.dashboard.MovJ(
-            point_list[0], point_list[1], point_list[2], point_list[3], point_list[4], point_list[5], 1)
-        print("Movj", recvmovemess)
-        commandArrID = self.parseResultId(recvmovemess)  # 解析Movj指令的返回值
-        return commandArrID
+    def RunPoint(self, point_list):
+        # 走点指令
+        recvmovemess = self.dashboardmove.MovJ(*point_list, 1)
+        print("MovJ:", recvmovemess)
+        print(self.parseResultId(recvmovemess))
+        currentCommandID = self.parseResultId(recvmovemess)[1]
+        print("指令 ID:", currentCommandID)
+        #sleep(0.02)
+        while True:  #完成判断循环
+            
+            print(self.feedData.robotMode)
+            if self.feedData.robotMode == 5 and self.feedData.robotCurrentCommandID == currentCommandID:
+                print("运动结束")
+                break
+            sleep(0.1)
     
     ... ...  ...  ...               
                     
-```
-
-
-
-运行指令完成标志： 等待机械臂运动指令完成 ，类似与 Sync功能。
-
-```python
-  # 通过CommandID和robotMode来判断
-    def WaitArrive(self, p2Id):
-        while True:
-            while not self.__robotSyncBreak.is_set():
-                self.__globalLockValue.acquire()  #
-                if self.feedData.robotEnableStatus:
-                    if self.feedData.robotCurrentCommandID > p2Id:
-                        self.__globalLockValue.release()
-                        break
-                    else:
-                        isFinsh = (self.feedData.robotMode == 5)
-                        if self.feedData.robotCurrentCommandID == p2Id and isFinsh:
-                            self.__globalLockValue.release()
-                            break
-                self.__globalLockValue.release()
-                sleep(0.01)
-            self.__robotSyncBreak.clear()
-            break
 ```
 
 
@@ -436,15 +415,12 @@ class DobotDemo:
 ```python
   #解析信息，返回列表 
  def parseResultId(self, valueRecv):
-        if valueRecv.find("Not Tcp") != -1:  # 通过返回值判断机器是否处于tcp模式
+        # 解析返回值，确保机器人在 TCP 控制模式
+        if "Not Tcp" in valueRecv:
             print("Control Mode Is Not Tcp")
             return [1]
-        recvData = re.findall(r'-?\d+', valueRecv)
-        recvData = [int(num) for num in recvData]
-        #  返回tcp指令返回值的所有数字数组
-        if len(recvData) == 0:
-            return [1]
-        return recvData
+        return [int(num) for num in re.findall(r'-?\d+', valueRecv)] or [2]
+
     
  # 通过判断列表返回值来判断机械臂状态（见下表）
   parseResultId函数：解析所有的数字
@@ -498,65 +474,23 @@ list[1]及list[n]值为特殊指令的返回值
 ```python
  ...  ...   
     def GetFeed(self):
+        # 获取机器人状态
         while True:
             feedInfo = self.feedFour.feedBackData()
             if hex((feedInfo['test_value'][0])) == '0x123456789abcdef':
-                self.__globalLockValue.acquire()  
-                
-                # 自主添加所需机械臂反馈的数据   详情查 **MyType**
-                # .......................................................
-                self.feedData.robotErrorState = feedInfo['error_status'][0]
-                self.feedData.robotEnableStatus = feedInfo['enable_status'][0]
                 self.feedData.robotMode = feedInfo['robot_mode'][0]
                 self.feedData.robotCurrentCommandID = feedInfo['currentcommandid'][0]
-                # .......................................................
-                
-                self.__globalLockValue.release()
-            sleep(0.004)
+                # 自主添加所需机械臂反馈的数据
+                '''
+                self.feedData.robotErrorState = feedInfo['error_status'][0]
+                self.feedData.robotEnableStatus = feedInfo['enable_status'][0]
+                self.feedData.robotCurrentCommandID = feedInfo['currentcommandid'][0]
+                '''
+            sleep(0.01)
   ...  ...  
 
-     # 机器状态反馈线程
-         feed_thread = threading.Thread(
-                target=self.GetFeed)  
-         feed_thread.daemon = True
-         feed_thread.start()
-```
-
-
-
-监控机器状态： 监控机械臂异常状态和机械臂清错功能
-
-```python
- def ClearRobotError(self):
-        # 读取控制器和伺服告警码
-        dataController, dataServo = alarmAlarmJsonFile()    
-        while True:
-            self.__globalLockValue.acquire()  # robotErrorState加锁
-            if self.feedData.robotErrorState:
-                geterrorID = self.parseResultId(self.dashboard.GetErrorID())
-                if geterrorID[0] == 0:
-                    for i in range(1, len(geterrorID)):
-                        alarmState = False
-                        
-                        # 读取控制器告警码
-                        for item in dataController:
-                            if geterrorID[i] == item["id"]:
-                                print("机器告警 Controller GetErrorID",
-                                      i, item["zh_CN"]["description"])
-                                alarmState = True
-                                break
-                        if alarmState:
-                            continue
-                      
-                       # 读取伺服告警码
-                        for item in dataServo:
-                            if geterrorID[i] == item["id"]:
-                                print("机器告警 Servo GetErrorID", i,
-                                      item["zh_CN"]["description"])
-                        
-                         # 是否对机械臂进行清错操作
-                        choose = input("输入1, 将清除错误, 机器继续运行: ")
-                        ...  ...
+     # 状态反馈线程
+        threading.Thread(target=self.GetFeed, daemon=True).start()
 ```
 
 

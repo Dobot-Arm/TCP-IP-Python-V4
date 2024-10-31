@@ -1,4 +1,4 @@
-from dobot_api import DobotApiDashboard, DobotApiFeedBack,  alarmAlarmJsonFile
+from dobot_api import DobotApiFeedBack,DobotApiDashMove
 import threading
 from time import sleep
 import re
@@ -9,15 +9,11 @@ class DobotDemo:
         self.ip = ip
         self.dashboardPort = 29999
         self.feedPortFour = 30004
-        self.dashboard = None
-        self.feedFour = None
-        self.__globalLockValue = threading.Lock()
-        self.__robotSyncBreak = threading.Event()
-
+        self.dashboardmove = None
+        self.feedInfo = []
+        
         class item:
             def __init__(self):
-                self.robotErrorState = ''     #
-                self.robotEnableStatus = 0     #
                 self.robotMode = 0     #
                 self.robotCurrentCommandID = 0
                 # 自定义添加所需反馈数据
@@ -25,138 +21,65 @@ class DobotDemo:
         self.feedData = item()  # 定义结构对象
 
     def start(self):
-        self.dashboard = DobotApiDashboard(self.ip, self.dashboardPort)
+        # 启动机器人并使能
+        self.dashboardmove = DobotApiDashMove(self.ip, self.dashboardPort)
         self.feedFour = DobotApiFeedBack(self.ip, self.feedPortFour)
-        enableState = self.parseResultId(self.dashboard.EnableRobot())
-        if enableState[0] != 0:
-            print("使能失败: 检查29999端口是否被占用)")
+        if self.parseResultId(self.dashboardmove.EnableRobot())[0] != 0:
+            print("使能失败: 检查29999端口是否被占用")
             return
-        print("使能成功:)")
+        print("使能成功")
 
-        feed_thread = threading.Thread(
-            target=self.GetFeed)  # 机器状态反馈线程
-        feed_thread.daemon = True
-        feed_thread.start()
+        # 启动状态反馈线程
+        threading.Thread(target=self.GetFeed, daemon=True).start()
 
-        feed_thread1 = threading.Thread(
-            target=self.ClearRobotError)  # 机器错误状态清错线程
-        feed_thread1.daemon = True
-        feed_thread1.start()
-        
-        point_a = [-90, 20, 0, 0, 0, 0]
-        point_b = [90, 20, 0, 0, 0, 0]
+        # 定义两个目标点
+        point_a = [-70, 0, -60, 0, 90, 0]
+        point_b = [-40, 0, -60, 0, 90, 0]
 
-        # point_a = [7.92, 0, 0, 0, 0, 0]
-        # point_b = [-23, 0, 0, 0, 0, 0]
-
+        # 走点循环
         while True:
+            self.RunPoint(point_a)
+            self.RunPoint(point_b)
             sleep(1)
-            while True:
-                p2Id = self.RunPoint(point_a)
-                if p2Id[0] == 0:  # 运动指令返回值正确
-                    self.WaitArrive(p2Id[1])  # 传入运动指令commandID ,进入等待指令完成
-                    break
-
-            while True:
-                p2Id = self.RunPoint(point_b)
-                if p2Id[0] == 0:
-                    self.WaitArrive(p2Id[1])
-                    break
 
     def GetFeed(self):
+        # 获取机器人状态
         while True:
             feedInfo = self.feedFour.feedBackData()
             if hex((feedInfo['test_value'][0])) == '0x123456789abcdef':
-                # Refresh Properties
-                self.__globalLockValue.acquire()  # 互斥量    robotErrorState robotEnableStatus加锁
-                self.feedData.robotErrorState = feedInfo['error_status'][0]
-                self.feedData.robotEnableStatus = feedInfo['enable_status'][0]
                 self.feedData.robotMode = feedInfo['robot_mode'][0]
                 self.feedData.robotCurrentCommandID = feedInfo['currentcommandid'][0]
-                self.__globalLockValue.release()
-            sleep(0.005)
+                # 自主添加所需机械臂反馈的数据
+                '''
+                self.feedData.robotErrorState = feedInfo['error_status'][0]
+                self.feedData.robotEnableStatus = feedInfo['enable_status'][0]
+                self.feedData.robotCurrentCommandID = feedInfo['currentcommandid'][0]
+                '''
+            sleep(0.01)
 
-    def RunPoint(self, point_list: list):
-        recvmovemess = self.dashboard.MovJ(
-            point_list[0], point_list[1], point_list[2], point_list[3], point_list[4], point_list[5], 1)
-        print("Movj", recvmovemess)
-        commandArrID = self.parseResultId(recvmovemess)  # 解析Movj指令的返回值
-        return commandArrID
-
-    def WaitArrive(self, p2Id):
-        while True:
-            while not self.__robotSyncBreak.is_set():
-                self.__globalLockValue.acquire()  # robotEnableStatus加锁
-                if self.feedData.robotEnableStatus:
-                    if self.feedData.robotCurrentCommandID > p2Id:
-                        self.__globalLockValue.release()
-                        break
-                    else:
-                        isFinsh = (self.feedData.robotMode == 5)
-                        if self.feedData.robotCurrentCommandID == p2Id and isFinsh:
-                            self.__globalLockValue.release()
-                            break
-                self.__globalLockValue.release()
-                sleep(0.01)
-            self.__robotSyncBreak.clear()
-            break
-
-    def ExitSync(self):
-        self.__robotSyncBreak.set()
+    def RunPoint(self, point_list):
+        # 走点指令
+        recvmovemess = self.dashboardmove.MovJ(*point_list, 1)
+        print("MovJ:", recvmovemess)
+        print(self.parseResultId(recvmovemess))
+        currentCommandID = self.parseResultId(recvmovemess)[1]
+        print("指令 ID:", currentCommandID)
+        #sleep(0.02)
+        while True:  #完成判断循环
+            
+            print(self.feedData.robotMode)
+            if self.feedData.robotMode == 5 and self.feedData.robotCurrentCommandID == currentCommandID:
+                print("运动结束")
+                break
+            sleep(0.1)
 
     def parseResultId(self, valueRecv):
-        if valueRecv.find("Not Tcp") != -1:  # 通过返回值判断机器是否处于tcp模式
+        # 解析返回值，确保机器人在 TCP 控制模式
+        if "Not Tcp" in valueRecv:
             print("Control Mode Is Not Tcp")
             return [1]
-        recvData = re.findall(r'-?\d+', valueRecv)
-        recvData = [int(num) for num in recvData]
-        #  返回tcp指令返回值的所有数字数组
-        if len(recvData) == 0:
-            return [2]
-        return recvData
-
-    def ClearRobotError(self):
-        dataController, dataServo = alarmAlarmJsonFile()    # 读取控制器和伺服告警码
-        while True:
-            self.__globalLockValue.acquire()  # robotErrorState加锁
-            if self.feedData.robotErrorState:
-                geterrorID = self.parseResultId(self.dashboard.GetErrorID())
-                if geterrorID[0] == 0:
-                    for i in range(1, len(geterrorID)):
-                        alarmState = False
-                        for item in dataController:
-                            if geterrorID[i] == item["id"]:
-                                print("机器告警 Controller GetErrorID",
-                                      i, item["zh_CN"]["description"])
-                                alarmState = True
-                                break
-                        if alarmState:
-                            continue
-
-                        for item in dataServo:
-                            if geterrorID[i] == item["id"]:
-                                print("机器告警 Servo GetErrorID", i,
-                                      item["zh_CN"]["description"])
-                                break
-
-                    choose = input("输入1, 将清除错误, 机器继续运行: ")
-                    if int(choose) == 1:
-                        clearError = self.parseResultId(
-                            self.dashboard.ClearError())
-                        if clearError[0] == 0:
-                            self.__globalLockValue.release()
-                            print("--机器清错成功--")
-                            break
-            else:
-                robotMode = self.parseResultId(self.dashboard.RobotMode())
-                if robotMode[0] == 0 and robotMode[1] == 11:
-                    print("机器发生碰撞")
-                    choose = input("输入1, 将清除碰撞, 机器继续运行: ")
-                    self.dashboard.ClearError()
-            self.__globalLockValue.release()
-            sleep(5)
-
+        return [int(num) for num in re.findall(r'-?\d+', valueRecv)] or [2]
 
     def __del__(self):
-        del self.dashboard
+        del self.dashboardmove
         del self.feedFour
