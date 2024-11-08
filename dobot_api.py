@@ -2754,315 +2754,40 @@ class DobotApiFeedBack(DobotApi):
     def __init__(self, ip, port, *args):
         super().__init__(ip, port, *args)
         self.__MyType = []
-        self.__Lock = threading.Lock()
-        feed_thread = threading.Thread(target=self.recvFeedData)  # 机器状态反馈线程 Robot status feedback thread
-        feed_thread.daemon = True
-        feed_thread.start()
-        sleep(1)
+        self.last_recv_time = time.perf_counter()
+        
 
-    def recvFeedData(self):
-        """
-        接收实时反馈端口数据
-        Receive real-time feedback
-        """
-        self.socket_dobot.setblocking(True)  # 设置为阻塞模式
-        interval = 0
-        data = bytes()
-        current_recv_time = time.perf_counter()
-        while True:
-            try:
-                #print(f"Time interval since last receive: {interval:.3f} ms")
-                last_recv_time = current_recv_time
-                temp = self.socket_dobot.recv(144000)
-                while True:
-                    current_recv_time = time.perf_counter()
-                    interval = (current_recv_time - last_recv_time) * 1000  # 转换为毫秒
-                    if len(temp) <= 1440:
-                        break  # 如果数据长度不超过 1440，则退出循环
-                    if len(temp) > 96000 and interval > 100:
-                        raise Exception("Exceeded 100 data packets without processing.")
-                    if interval > 50:
-                        raise Exception("data receive timeout.")
-                    else:
-                        temp = self.socket_dobot.recv(144000)
-                #print(len(temp))
-                data =temp[0:1440]
-                self.__MyType = []
-                self.__MyType = np.frombuffer(data, dtype=MyType)
-                
-                
-            except Exception as e:
-                print(f"Exception occurred: {e}")
-                self.socket_dobot = self.reConnect(self.ip, self.port)
-                data = bytes()  # 清空数据缓冲
-
-           
     def feedBackData(self):
         """
         返回机械臂状态
         Return the robot status
         """
-        with self.__Lock:
-            return self.__MyType
-
-# 控制，运动指令及反馈功能接口类 Control, motion command and feedback interface
-class DobotApiDashMove(DobotApiDashboard):
-    def __init__(self, ip, portDash, portFeed=30005, *args):
-        self.ip = ip
-        self.portDash = portDash
-        self.portFeed = portFeed
-        DobotApiDashboard.__init__(
-            self, self.ip, self.portDash, *args)  # 运动指令端口 Motion command interface
-        if portFeed == 30004 or portFeed == 30005:
-            try:
-                self.socket_dobot_feed = socket.socket()
-                self.socket_dobot_feed.connect(
-                    (self.ip, self.portFeed))  # 反馈端口 Feedback interface
-            except socket.error:
-                print("feedback error ", socket.error)
-
-        self.__Lock = threading.Lock()
-        self.__globalLockValue = threading.Lock()
-        self.__robotSyncBreak = threading.Event()
-        self.__MyType = []
-
-        class item:
-            def __init__(self):
-                self.len = 0
-                self.digitalInputBits = 0
-                self.digitalOutputBits = 0
-                self.robotMode = 0
-                self.timeStamp = 0
-                self.timeStampReserve_bit = 0
-                self.testValue = 0
-                self.testValueKeepBit = 0.0
-                self.speedScaling = 0.0
-                self.linearMomentumNorm = 0.0
-                self.vMain = 0.0
-                self.vRobot = 0.0
-                self.iRobot = 0.0
-                self.iRobotKeepBit1 = 0.0
-                self.iRobotKeepBit2 = 0.0
-                self.toolAccelerometerValues = []
-                self.elbowPosition = []
-                self.elbowVelocity = []
-                self.qTarget = []
-                self.qdTarget = []
-                self.qddTarget = []
-                self.iTarget = []
-                self.mTarget = []
-                self.qActual = []
-                self.qdActual = []
-                self.iActual = []
-                self.actualTCPForce = []
-                self.toolVectorActual = []
-                self.TCPSpeedActual = []
-                self.TCPForce = []
-                self.ToolVectorTarget = []
-                self.TCPSpeedTarget = []
-                self.motorTemperatures = []
-                self.jointModes = []
-                self.vActual = []
-                self.handType = []
-                self.user = 0
-                self.tool = 0
-                self.runQueuedCmd = 0
-                self.pauseCmdFlag = 0
-                self.velocityRatio = 0
-                self.accelerationRatio = 0
-                self.jerkRatio = 0
-                self.xyzVelocityRatio = 0
-                self.rVelocityRatio = 0
-                self.xyzAccelerationRatio = 0
-                self.rAccelerationRatio = 0
-                self.xyzJerkRatio = 0
-                self.rJerkRatio = 0
-                self.brakeStatus = 0
-                self.robotEnableStatus = 0
-                self.dragStatus = 0
-                self.runningStatus = 0
-                self.robotErrorState = 0
-                self.jogStatus = 0
-                self.robotType = 0
-                self.dragButtonSignal = 0
-                self.enableButtonSignal = 0
-                self.recordButtonSignal = 0
-                self.reappearButtonSignal = 0
-                self.jawButtonSignal = 0
-                self.sixForceOnline = 0
-                self.vibrationdisZ = 0.0
-                self.robotCurrentCommandID = 0
-                self.mActual = []
-                self.load = 0.0
-                self.centerX = 0.0
-                self.centerY = 0.0
-                self.centerZ = 0.0
-                self.UserValu = []
-                self.ToolValu = []
-                self.traceIndex = 0.0
-                self.sixForceValue = []
-                self.targetQuaternion = []
-                self.actualQuaternion = []
-                self.autoManualMode = []
-        self.__feedData = item()  # 定义结构对象  Define the object
-
-        feed_thread = threading.Thread(target=self.recvFeedData)  # 机器状态反馈线程 Robot status feedback thread
-        feed_thread.daemon = True
-        feed_thread.start()
-
-        parse_thread = threading.Thread(
-            target=self.parseFeedData)  # 解析机器状态线程  Parse the robot status thread   
-        parse_thread.daemon = True
-        parse_thread.start()
-
-    def recvFeedData(self):
-        """
-        接收实时反馈端口数据
-        Receive real-time feedback
-        """
         self.socket_dobot.setblocking(True)  # 设置为阻塞模式
-        interval = 0
         data = bytes()
-        current_recv_time = time.perf_counter()
-        while True:
-            try:
-                #print(f"Time interval since last receive: {interval:.3f} ms")
-                last_recv_time = current_recv_time
+        current_recv_time = time.perf_counter() #计时，获取当前时间
+        temp = self.socket_dobot.recv(144000) #缓冲区
+        if len(temp) > 1440:    
+            temp = self.socket_dobot.recv(144000)
+        #print("get:",len(temp))
+        i=0
+        if len(temp) < 1440:
+            while i < 5 :
+                #print("重新接收")
                 temp = self.socket_dobot.recv(144000)
-                while True:
-                    current_recv_time = time.perf_counter()
-                    interval = (current_recv_time - last_recv_time) * 1000  # 转换为毫秒
-                    if len(temp) <= 1440:
-                        break  # 如果数据长度不超过 1440，则退出循环
-                    if len(temp) > 96000 and interval > 100:
-                        raise Exception("Exceeded 100 data packets without processing.")
-                    if interval > 50:
-                        raise Exception("data receive timeout.")
-                    else:
-                        temp = self.socket_dobot.recv(144000)
-                #print(len(temp))
-                data =temp[0:1440]
-                self.__MyType = []
-                self.__MyType = np.frombuffer(data, dtype=MyType)
-            
-            except Exception as e:
-                print(f"Exception occurred: {e}")
-                self.socket_dobot = self.reConnect(self.ip, self.port)
-                data = bytes()  # 清空数据缓冲
+                if len(temp) > 1440:
+                    break
+                i+=1
+            if i >= 5:
+                raise Exception("接收数据包缺失，请检查网络环境")
+        
+        interval = (current_recv_time - self.last_recv_time) * 1000  # 转换为毫秒
+        self.last_recv_time = current_recv_time
+        #print(f"Time interval since last receive: {interval:.3f} ms")
+        
+        data = temp[0:1440] #截取1440字节
+        #print(len(data))
 
-    def parseFeedData(self):
-        while True:
-            feedInfo = []
-            with self.__Lock:
-                feedInfo = self.__MyType
-
-            if feedInfo and hex((feedInfo['test_value'][0])) == '0x123456789abcdef':
-                with self.__globalLockValue:
-                    # Refresh Properties
-                    self.__feedData.len = feedInfo['len'][0]
-                    self.__feedData.digitalInputBits = feedInfo['digital_input_bits'][0]
-                    self.__feedData.digitalOutputBits = feedInfo['digital_output_bits'][0]
-                    self.__feedData.robotMode = feedInfo['robot_mode'][0]
-                    self.__feedData.timeStamp = feedInfo['time_stamp'][0]
-                    self.__feedData.timeStampReserve_bit = feedInfo['time_stamp_reserve_bit'][0]
-                    self.__feedData.testValue = feedInfo['test_value'][0]
-                    self.__feedData.testValueKeepBit = feedInfo['test_value_keep_bit'][0]
-                    self.__feedData.speedScaling = feedInfo['speed_scaling'][0]
-                    self.__feedData.linearMomentumNorm = feedInfo['linear_momentum_norm'][0]
-                    self.__feedData.vMain = feedInfo['v_main'][0]
-                    self.__feedData.vRobot = feedInfo['v_robot'][0]
-                    self.__feedData.iRobot = feedInfo['i_robot'][0]
-                    self.__feedData.iRobotKeepBit1 = feedInfo['i_robot_keep_bit1'][0]
-                    self.__feedData.iRobotKeepBit2 = feedInfo['i_robot_keep_bit2'][0]
-                    self.__feedData.toolAccelerometerValues = feedInfo['tool_accelerometer_values'][0]
-                    self.__feedData.elbowPosition = feedInfo['elbow_position'][0]
-                    self.__feedData.elbowVelocity = feedInfo['elbow_velocity'][0]
-                    self.__feedData.qTarget = feedInfo['q_target'][0]
-                    self.__feedData.qdTarget = feedInfo['qd_target'][0]
-                    self.__feedData.qddTarget = feedInfo['qdd_target'][0]
-                    self.__feedData.iTarget = feedInfo['i_target'][0]
-                    self.__feedData.mTarget = feedInfo['m_target'][0]
-                    self.__feedData.qActual = feedInfo['q_actual'][0]
-                    self.__feedData.qdActual = feedInfo['qd_actual'][0]
-                    self.__feedData.iActual = feedInfo['i_actual'][0]
-                    self.__feedData.actualTCPForce = feedInfo['actual_TCP_force'][0]
-                    self.__feedData.toolVectorActual = feedInfo['tool_vector_actual'][0]
-                    self.__feedData.TCPSpeedActual = feedInfo['TCP_speed_actual'][0]
-                    self.__feedData.TCPForce = feedInfo['TCP_force'][0]
-                    self.__feedData.ToolVectorTarget = feedInfo['Tool_vector_target'][0]
-                    self.__feedData.TCPSpeedTarget = feedInfo['TCP_speed_target'][0]
-                    self.__feedData.motorTemperatures = feedInfo['motor_temperatures'][0]
-                    self.__feedData.jointModes = feedInfo['joint_modes'][0]
-                    self.__feedData.vActual = feedInfo['v_actual'][0]
-                    self.__feedData.handType = feedInfo['hand_type'][0]
-                    self.__feedData.user = feedInfo['user'][0]
-                    self.__feedData.tool = feedInfo['tool'][0]
-                    self.__feedData.runQueuedCmd = feedInfo['run_queued_cmd'][0]
-                    self.__feedData.pauseCmdFlag = feedInfo['pause_cmd_flag'][0]
-                    self.__feedData.velocityRatio = feedInfo['velocity_ratio'][0]
-                    self.__feedData.accelerationRatio = feedInfo['acceleration_ratio'][0]
-                    self.__feedData.jerkRatio = feedInfo['jerk_ratio'][0]
-                    self.__feedData.xyzVelocityRatio = feedInfo['xyz_velocity_ratio'][0]
-                    self.__feedData.rVelocityRatio = feedInfo['r_velocity_ratio'][0]
-                    self.__feedData.xyzAccelerationRatio = feedInfo['xyz_acceleration_ratio'][0]
-                    self.__feedData.rAccelerationRatio = feedInfo['r_acceleration_ratio'][0]
-                    self.__feedData.xyzJerkRatio = feedInfo['xyz_jerk_ratio'][0]
-                    self.__feedData.rJerkRatio = feedInfo['r_jerk_ratio'][0]
-                    self.__feedData.brakeStatus = feedInfo['brake_status'][0]
-                    self.__feedData.robotEnableStatus = feedInfo['enable_status'][0]
-                    self.__feedData.dragStatus = feedInfo['drag_status'][0]
-                    self.__feedData.runningStatus = feedInfo['running_status'][0]
-                    self.__feedData.robotErrorState = feedInfo['error_status'][0]
-                    self.__feedData.jogStatus = feedInfo['jog_status'][0]
-                    self.__feedData.robotType = feedInfo['robot_type'][0]
-                    self.__feedData.dragButtonSignal = feedInfo['drag_button_signal'][0]
-                    self.__feedData.enableButtonSignal = feedInfo['enable_button_signal'][0]
-                    self.__feedData.recordButtonSignal = feedInfo['record_button_signal'][0]
-                    self.__feedData.reappearButtonSignal = feedInfo['reappear_button_signal'][0]
-                    self.__feedData.jawButtonSignal = feedInfo['jaw_button_signal'][0]
-                    self.__feedData.sixForceOnline = feedInfo['six_force_online'][0]
-                    self.__feedData.vibrationdisZ = feedInfo['vibrationdisZ'][0]
-                    self.__feedData.robotCurrentCommandID = feedInfo['currentcommandid'][0]
-                    self.__feedData.mActual = feedInfo['m_actual'][0]
-                    self.__feedData.load = feedInfo['load'][0]
-                    self.__feedData.centerX = feedInfo['center_x'][0]
-                    self.__feedData.centerY = feedInfo['center_y'][0]
-                    self.__feedData.centerZ = feedInfo['center_z'][0]
-                    self.__feedData.UserValu = feedInfo['user[6]'][0]
-                    self.__feedData.ToolValu = feedInfo['tool[6]'][0]
-                    self.__feedData.traceIndex = feedInfo['trace_index'][0]
-                    self.__feedData.sixForceValue = feedInfo['six_force_value'][0]
-                    self.__feedData.targetQuaternion = feedInfo['target_quaternion'][0]
-                    self.__feedData.actualQuaternion = feedInfo['actual_quaternion'][0]
-                    self.__feedData.autoManualMode = feedInfo['auto_manual_mode'][0]
-            sleep(0.01)
-
-    def getFeedData(self):
-        """
-        返回机械臂状态
-        Return the robot status
-        """
-        with self.__globalLockValue:
-            return self.__feedData
-
-    def WaitArrive(self, p2Id):
-        """
-        等待运动指令完成
-        Wait for the robot to complete the motion command
-        """
-        while True:
-            while not self.__robotSyncBreak.is_set():
-                with self.__globalLockValue:
-                    if self.__feedData.robotEnableStatus:
-                        if self.__feedData.robotCurrentCommandID > p2Id:
-                            break
-                        else:
-                            isFinsh = (self.__feedData.robotMode == 5)
-                            if self.__feedData.robotCurrentCommandID == p2Id and isFinsh:
-                                break
-                sleep(0.01)
-            self.__robotSyncBreak.clear()
-            break
-
-    def ExitSync(self):
-        self.__robotSyncBreak.set()
+        self.__MyType = []
+        self.__MyType = np.frombuffer(data, dtype=MyType)
+        return self.__MyType
+        
