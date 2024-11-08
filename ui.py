@@ -417,18 +417,18 @@ class RobotUI(object):
             self.frame_feed, text_list[2][5], rely=0.7, x=x4, command=lambda: self.move_jog(text_list[2][0]))
 
     def feed_back(self):
-        hasRead = 0
         while True:
             print("self.global_state(connect)", self.global_state["connect"])
             if not self.global_state["connect"]:
                 break
+
+            self.client_feed.socket_dobot.setblocking(True)  # 设置为阻塞模式
             data = bytes()
-            while hasRead < 1440:
-                temp = self.client_feed.socket_dobot.recv(1440 - hasRead)
-                if len(temp) > 0:
-                    hasRead += len(temp)
-                    data += temp
-            hasRead = 0
+            temp = self.client_feed.socket_dobot.recv(144000)
+            if len(temp) > 1440:
+                temp = self.client_feed.socket_dobot.recv(144000)
+            data = temp[0:1440]
+        
 
             a = np.frombuffer(data, dtype=MyType)
             print("robot_mode:", a["robot_mode"][0])
