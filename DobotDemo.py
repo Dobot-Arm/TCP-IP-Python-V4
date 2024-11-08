@@ -1,4 +1,4 @@
-from dobot_api import DobotApiFeedBack,DobotApiDashMove
+from dobot_api import DobotApiFeedBack,DobotApiDashboard
 import threading
 from time import sleep
 import re
@@ -9,7 +9,7 @@ class DobotDemo:
         self.ip = ip
         self.dashboardPort = 29999
         self.feedPortFour = 30004
-        self.dashboardmove = None
+        self.dashboard = None
         self.feedInfo = []
         
         class item:
@@ -22,9 +22,9 @@ class DobotDemo:
 
     def start(self):
         # 启动机器人并使能
-        self.dashboardmove = DobotApiDashMove(self.ip, self.dashboardPort)
+        self.dashboard = DobotApiDashboard(self.ip, self.dashboardPort)
         self.feedFour = DobotApiFeedBack(self.ip, self.feedPortFour)
-        if self.parseResultId(self.dashboardmove.EnableRobot())[0] != 0:
+        if self.parseResultId(self.dashboard.EnableRobot())[0] != 0:
             print("使能失败: 检查29999端口是否被占用")
             return
         print("使能成功")
@@ -33,14 +33,14 @@ class DobotDemo:
         threading.Thread(target=self.GetFeed, daemon=True).start()
 
         # 定义两个目标点
-        point_a = [-70, 0, -60, 0, 90, 0]
-        point_b = [-40, 0, -60, 0, 90, 0]
+        point_a = [0, 0, 202, -4, 9, -164]
+        point_b = [-10, 0, 202, -4, 9, -164]
 
         # 走点循环
         while True:
-            self.RunPoint(point_a)
-            self.RunPoint(point_b)
-            sleep(1)
+            #self.RunPoint(point_a)
+            #self.RunPoint(point_b)
+            sleep(10000)
 
     def GetFeed(self):
         # 获取机器人状态
@@ -55,11 +55,10 @@ class DobotDemo:
                 self.feedData.robotEnableStatus = feedInfo['enable_status'][0]
                 self.feedData.robotCurrentCommandID = feedInfo['currentcommandid'][0]
                 '''
-            sleep(0.01)
 
     def RunPoint(self, point_list):
         # 走点指令
-        recvmovemess = self.dashboardmove.MovJ(*point_list, 1)
+        recvmovemess = self.dashboard.MovJ(*point_list, 1)
         print("MovJ:", recvmovemess)
         print(self.parseResultId(recvmovemess))
         currentCommandID = self.parseResultId(recvmovemess)[1]
@@ -81,5 +80,5 @@ class DobotDemo:
         return [int(num) for num in re.findall(r'-?\d+', valueRecv)] or [2]
 
     def __del__(self):
-        del self.dashboardmove
+        del self.dashboard
         del self.feedFour
