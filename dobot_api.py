@@ -4,6 +4,7 @@ import os
 import re
 import json
 import threading
+import time
 from time import sleep
 
 alarmControllerFile = "files/alarmController.json"
@@ -122,6 +123,7 @@ class DobotApi:
             try:
                 self.socket_dobot = socket.socket()
                 self.socket_dobot.connect((self.ip, self.port))
+                self.socket_dobot.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 144000)
             except socket.error:
                 print(socket.error)
 
@@ -2763,24 +2765,38 @@ class DobotApiFeedBack(DobotApi):
         接收实时反馈端口数据
         Receive real-time feedback
         """
-        hasRead = 0
+        self.socket_dobot.setblocking(True)  # 设置为阻塞模式
+        interval = 0
+        data = bytes()
+        current_recv_time = time.perf_counter()
         while True:
-            data = bytes()
-            while hasRead < 1440:
-                try:
-                    temp = self.socket_dobot.recv(1440 - hasRead)
-                    if len(temp) > 0:
-                        hasRead += len(temp)
-                        data += temp
-                except Exception as e:
-                    print(e)
-                    self.socket_dobot = self.reConnect(self.ip, self.port)
-
-            hasRead = 0
-            with self.__Lock:
+            try:
+                #print(f"Time interval since last receive: {interval:.3f} ms")
+                last_recv_time = current_recv_time
+                temp = self.socket_dobot.recv(144000)
+                while True:
+                    current_recv_time = time.perf_counter()
+                    interval = (current_recv_time - last_recv_time) * 1000  # 转换为毫秒
+                    if len(temp) <= 1440:
+                        break  # 如果数据长度不超过 1440，则退出循环
+                    if len(temp) > 96000 and interval > 100:
+                        raise Exception("Exceeded 100 data packets without processing.")
+                    if interval > 50:
+                        raise Exception("data receive timeout.")
+                    else:
+                        temp = self.socket_dobot.recv(144000)
+                #print(len(temp))
+                data =temp[0:1440]
                 self.__MyType = []
                 self.__MyType = np.frombuffer(data, dtype=MyType)
+                
+                
+            except Exception as e:
+                print(f"Exception occurred: {e}")
+                self.socket_dobot = self.reConnect(self.ip, self.port)
+                data = bytes()  # 清空数据缓冲
 
+           
     def feedBackData(self):
         """
         返回机械臂状态
@@ -2904,24 +2920,35 @@ class DobotApiDashMove(DobotApiDashboard):
         接收实时反馈端口数据
         Receive real-time feedback
         """
-        hasRead = 0
+        self.socket_dobot.setblocking(True)  # 设置为阻塞模式
+        interval = 0
+        data = bytes()
+        current_recv_time = time.perf_counter()
         while True:
-            data = bytes()
-            while hasRead < 1440:
-                try:
-                    temp = self.socket_dobot_feed.recv(1440 - hasRead)
-                    if len(temp) > 0:
-                        hasRead += len(temp)
-                        data += temp
-                except Exception as e:
-                    print(e)
-                    self.socket_dobot_feed = self.reConnect(
-                        self.ip, self.portFeed)
-
-            hasRead = 0
-            with self.__Lock:
+            try:
+                #print(f"Time interval since last receive: {interval:.3f} ms")
+                last_recv_time = current_recv_time
+                temp = self.socket_dobot.recv(144000)
+                while True:
+                    current_recv_time = time.perf_counter()
+                    interval = (current_recv_time - last_recv_time) * 1000  # 转换为毫秒
+                    if len(temp) <= 1440:
+                        break  # 如果数据长度不超过 1440，则退出循环
+                    if len(temp) > 96000 and interval > 100:
+                        raise Exception("Exceeded 100 data packets without processing.")
+                    if interval > 50:
+                        raise Exception("data receive timeout.")
+                    else:
+                        temp = self.socket_dobot.recv(144000)
+                #print(len(temp))
+                data =temp[0:1440]
                 self.__MyType = []
                 self.__MyType = np.frombuffer(data, dtype=MyType)
+            
+            except Exception as e:
+                print(f"Exception occurred: {e}")
+                self.socket_dobot = self.reConnect(self.ip, self.port)
+                data = bytes()  # 清空数据缓冲
 
     def parseFeedData(self):
         while True:
@@ -3008,7 +3035,7 @@ class DobotApiDashMove(DobotApiDashboard):
                     self.__feedData.targetQuaternion = feedInfo['target_quaternion'][0]
                     self.__feedData.actualQuaternion = feedInfo['actual_quaternion'][0]
                     self.__feedData.autoManualMode = feedInfo['auto_manual_mode'][0]
-            sleep(0.005)
+            sleep(0.01)
 
     def getFeedData(self):
         """
@@ -3033,7 +3060,7 @@ class DobotApiDashMove(DobotApiDashboard):
                             isFinsh = (self.__feedData.robotMode == 5)
                             if self.__feedData.robotCurrentCommandID == p2Id and isFinsh:
                                 break
-                sleep(0.005)
+                sleep(0.01)
             self.__robotSyncBreak.clear()
             break
 
