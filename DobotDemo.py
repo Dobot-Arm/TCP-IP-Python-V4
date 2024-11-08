@@ -38,8 +38,8 @@ class DobotDemo:
 
         # 走点循环
         while True:
-            #self.RunPoint(point_a)
-            #self.RunPoint(point_b)
+            self.RunPoint(point_a)
+            self.RunPoint(point_b)
             sleep(10000)
 
     def GetFeed(self):
