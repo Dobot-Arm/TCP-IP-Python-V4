@@ -38,23 +38,24 @@ class DobotDemo:
 
         # 走点循环
         while True:
-            self.RunPoint(point_a)
-            self.RunPoint(point_b)
+            #self.RunPoint(point_a)
+            #self.RunPoint(point_b)
             sleep(10000)
 
     def GetFeed(self):
         # 获取机器人状态
         while True:
             feedInfo = self.feedFour.feedBackData()
-            if hex((feedInfo['test_value'][0])) == '0x123456789abcdef':
-                self.feedData.robotMode = feedInfo['robot_mode'][0]
-                self.feedData.robotCurrentCommandID = feedInfo['currentcommandid'][0]
-                # 自主添加所需机械臂反馈的数据
-                '''
-                self.feedData.robotErrorState = feedInfo['error_status'][0]
-                self.feedData.robotEnableStatus = feedInfo['enable_status'][0]
-                self.feedData.robotCurrentCommandID = feedInfo['currentcommandid'][0]
-                '''
+            if feedInfo != None:   
+                if hex((feedInfo['test_value'][0])) == '0x123456789abcdef':
+                    self.feedData.robotMode = feedInfo['robot_mode'][0]
+                    self.feedData.robotCurrentCommandID = feedInfo['currentcommandid'][0]
+                    # 自主添加所需机械臂反馈的数据
+                    '''
+                    self.feedData.robotErrorState = feedInfo['error_status'][0]
+                    self.feedData.robotEnableStatus = feedInfo['enable_status'][0]
+                    self.feedData.robotCurrentCommandID = feedInfo['currentcommandid'][0]
+                    '''
 
     def RunPoint(self, point_list):
         # 走点指令
