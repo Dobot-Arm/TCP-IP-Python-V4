@@ -2784,10 +2784,12 @@ class DobotApiFeedBack(DobotApi):
         self.last_recv_time = current_recv_time
         #print(f"Time interval since last receive: {interval:.3f} ms")
         
-        data = temp[0:1440] #截取1440字节
+        #data = temp[0:1440] #截取1440字节
         #print(len(data))
+        self.__MyType = None   
 
-        self.__MyType = []
-        self.__MyType = np.frombuffer(data, dtype=MyType)
+        if len(data) == 1440:        
+            self.__MyType = np.frombuffer(data, dtype=MyType)
+
         return self.__MyType
         
