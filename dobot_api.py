@@ -11,85 +11,90 @@ alarmControllerFile = "files/alarmController.json"
 alarmServoFile = "files/alarmServo.json"
 
 # Port Feedback
-MyType = np.dtype([('len', np.int64,),
-                   ('digital_input_bits', np.uint64,),
-                   ('digital_output_bits', np.uint64,),
-                   ('robot_mode', np.uint64,),
-                   ('time_stamp', np.uint64,),
-                   ('time_stamp_reserve_bit', np.uint64,),
-                   ('test_value', np.uint64,),
-                   ('test_value_keep_bit', np.float64,),
-                   ('speed_scaling', np.float64,),
-                   ('linear_momentum_norm', np.float64,),
-                   ('v_main', np.float64,),
-                   ('v_robot', np.float64, ),
-                   ('i_robot', np.float64,),
-                   ('i_robot_keep_bit1', np.float64,),
-                   ('i_robot_keep_bit2', np.float64,),
-                   ('tool_accelerometer_values', np.float64, (3, )),
-                   ('elbow_position', np.float64, (3, )),
-                   ('elbow_velocity', np.float64, (3, )),
-                   ('q_target', np.float64, (6, )),
-                   ('qd_target', np.float64, (6, )),
-                   ('qdd_target', np.float64, (6, )),
-                   ('i_target', np.float64, (6, )),
-                   ('m_target', np.float64, (6, )),
-                   ('q_actual', np.float64, (6, )),
-                   ('qd_actual', np.float64, (6, )),
-                   ('i_actual', np.float64, (6, )),
-                   ('actual_TCP_force', np.float64, (6, )),
-                   ('tool_vector_actual', np.float64, (6, )),
-                   ('TCP_speed_actual', np.float64, (6, )),
-                   ('TCP_force', np.float64, (6, )),
-                   ('Tool_vector_target', np.float64, (6, )),
-                   ('TCP_speed_target', np.float64, (6, )),
-                   ('motor_temperatures', np.float64, (6, )),
-                   ('joint_modes', np.float64, (6, )),
-                   ('v_actual', np.float64, (6, )),
-                   ('hand_type', np.byte, (4, )),
-                   ('user', np.byte,),
-                   ('tool', np.byte,),
-                   ('run_queued_cmd', np.byte,),
-                   ('pause_cmd_flag', np.byte,),
-                   ('velocity_ratio', np.byte,),
-                   ('acceleration_ratio', np.byte,),
-                   ('jerk_ratio', np.byte,),
-                   ('xyz_velocity_ratio', np.byte,),
-                   ('r_velocity_ratio', np.byte,),
-                   ('xyz_acceleration_ratio', np.byte,),
-                   ('r_acceleration_ratio', np.byte,),
-                   ('xyz_jerk_ratio', np.byte,),
-                   ('r_jerk_ratio', np.byte,),
-                   ('brake_status', np.byte,),
-                   ('enable_status', np.byte,),
-                   ('drag_status', np.byte,),
-                   ('running_status', np.byte,),
-                   ('error_status', np.byte,),
-                   ('jog_status', np.byte,),
-                   ('robot_type', np.byte,),
-                   ('drag_button_signal', np.byte,),
-                   ('enable_button_signal', np.byte,),
-                   ('record_button_signal', np.byte,),
-                   ('reappear_button_signal', np.byte,),
-                   ('jaw_button_signal', np.byte,),
-                   ('six_force_online', np.byte,),
-                   ('reserve2', np.byte, (66, )),
-                   ('vibrationdisZ', np.float64,),
-                   ('currentcommandid', np.uint64,),
-                   ('m_actual', np.float64, (6, )),
-                   ('load', np.float64,),
-                   ('center_x', np.float64,),
-                   ('center_y', np.float64,),
-                   ('center_z', np.float64,),
-                   ('user[6]', np.float64, (6, )),
-                   ('tool[6]', np.float64, (6, )),
-                   ('trace_index', np.float64,),
-                   ('six_force_value', np.float64, (6, )),
-                   ('target_quaternion', np.float64, (4, )),
-                   ('actual_quaternion', np.float64, (4, )),
-                   ('auto_manual_mode', np.byte, (2,)),
-
-                   ('reserve3', np.byte, (22, ))])
+MyType = np.dtype([('len', np.uint16,),
+                   ('reserve', np.byte, (6, )),
+                   ('DigitalInputs', np.uint64,),
+                   ('DigitalOutputs', np.uint64,),
+                   ('RobotMode', np.uint64,),
+                   ('TimeStamp', np.uint64,),
+                   ('RunTime', np.uint64,),
+                   ('TestValue', np.uint64,),
+                   ('reserve2', np.byte, (8, )),
+                   ('SpeedScaling', np.float64,),
+                   ('reserve3', np.byte, (16, )),
+                   ('VRobot', np.float64, ),      
+                   ('IRobot', np.float64,),
+                   ('ProgramState', np.float64,),
+                   ('SafetyOIn', np.uint16,),
+                   ('SafetyOOut', np.uint16,),
+                   ('reserve4', np.byte, (76, )),
+                   ('QTarget', np.float64, (6, )),
+                   ('QDTarget', np.float64, (6, )),
+                   ('QDDTarget', np.float64, (6, )),
+                   ('ITarget', np.float64, (6, )),
+                   ('MTarget', np.float64, (6, )),
+                   ('QActual', np.float64, (6, )),
+                   ('QDActual', np.float64, (6, )),
+                   ('IActual', np.float64, (6, )),
+                   ('ActualTCPForce', np.float64, (6, )),
+                   ('ToolVectorActual', np.float64, (6, )),
+                   ('TCPSpeedActual', np.float64, (6, )),
+                   ('TCPForce', np.float64, (6, )),
+                   ('ToolVectorTarget', np.float64, (6, )),
+                   ('TCPSpeedTarget', np.float64, (6, )),
+                   ('MotorTemperatures', np.float64, (6, )),
+                   ('JointModes', np.float64, (6, )),
+                   ('VActual', np.float64, (6, )),
+                   ('HandType', np.byte, (4, )),
+                   ('User', np.byte,),
+                   ('Tool', np.byte,),
+                   ('RunQueuedCmd', np.byte,),
+                   ('PauseCmdFlag', np.byte,),
+                   ('VelocityRatio', np.byte,),
+                   ('AccelerationRatio', np.byte,),
+                   ('reserve5', np.byte, ),
+                   ('XYZVelocityRatio', np.byte,),
+                   ('RVelocityRatio', np.byte,),
+                   ('XYZAccelerationRatio', np.byte,),
+                   ('RAccelerationRatio', np.byte,),
+                   ('reserve6', np.byte,(2,)),
+                   ('BrakeStatus', np.byte,),
+                   ('EnableStatus', np.byte,),
+                   ('DragStatus', np.byte,),
+                   ('RunningStatus', np.byte,),
+                   ('ErrorStatus', np.byte,),
+                   ('JogStatusCR', np.byte,),   
+                   ('CRRobotType', np.byte,),
+                   ('DragButtonSignal', np.byte,),
+                   ('EnableButtonSignal', np.byte,),
+                   ('RecordButtonSignal', np.byte,),
+                   ('ReappearButtonSignal', np.byte,),
+                   ('JawButtonSignal', np.byte,),
+                   ('SixForceOnline', np.byte,),
+                   ('CollisionState', np.byte,),
+                   ('ArmApproachState', np.byte,),
+                   ('J4ApproachState', np.byte,),
+                   ('J5ApproachState', np.byte,),
+                   ('J6ApproachState', np.byte,),
+                   ('reserve7', np.byte, (61, )),
+                   ('VibrationDisZ', np.float64,),
+                   ('CurrentCommandId', np.uint64,),
+                   ('MActual', np.float64, (6, )),
+                   ('Load', np.float64,),
+                   ('CenterX', np.float64,),
+                   ('CenterY', np.float64,),
+                   ('CenterZ', np.float64,),
+                   ('UserValue[6]', np.float64, (6, )),
+                   ('ToolValue[6]', np.float64, (6, )),
+                   ('reserve8', np.byte, (8, )),
+                   ('SixForceValue', np.float64, (6, )),
+                   ('TargetQuaternion', np.float64, (4, )),
+                   ('ActualQuaternion', np.float64, (4, )),
+                   ('AutoManualMode', np.uint16, ),
+                   ('ExportStatus', np.uint16, ),
+                   ('SafetyState', np.byte, ),
+                   ('reserve9', np.byte,(19,))
+                   ])
 
 # 读取控制器和伺服告警文件
 # Read controller and servo alarm files
@@ -1946,7 +1951,7 @@ class DobotApiDashboard(DobotApi):
         J4 double 点J4 轴位置，单位：度 是
         J5 double 点J5 轴位置，单位：度 是
         J6 double 点J6 轴位置，单位：度 是
-        t float 该点位的运行时间，默认0.1,单位：s 否 [0.02,3600.0]
+        t float 该点位的运行时间，默认0.1,单位：s 否 [0.004,3600.0]
         aheadtime float 作用类似于PID的D项，默认50，标量，无单位 否 [20.0,100.0]
         gain float 目标位置的比例放大器，作用类似于PID的P项，默认500，标量，无单位 否 [200.0,1000.0]
         Joint string Target point joint variables
@@ -1976,7 +1981,7 @@ class DobotApiDashboard(DobotApi):
         Rx double Rx 轴位置，单位：度 是
         Ry double Ry 轴位置，单位：度 是
         Rz double Rz 轴位置，单位：度 是
-        t float 该点位的运行时间，默认0.1,单位：s 否 [0.02,3600.0]
+        t float 该点位的运行时间，默认0.1,单位：s 否 [0.004,3600.0]
         aheadtime float 作用类似于PID的D项，默认50，标量，无单位 否 [20.0,100.0]
         gain float 目标位置的比例放大器，作用类似于PID的P项，默认500，标量，无单位 否 [200.0,1000.0]
         Pose string  Target point posture variables. The reference coordinate system is the global user and tool coordinate system, see the User and Tool command descriptions in Settings command (the default values are both 0
@@ -2745,6 +2750,282 @@ class DobotApiDashboard(DobotApi):
         else:
             print("ERROR VALUE")
 
+    ###################################460新增#############################
+    
+    ##轨迹恢复指令
+    def SetResumeOffset(self, distance):
+        """
+       该指令仅用于焊接工艺。设置轨迹恢复的目标点位相对暂停时的点位沿焊缝回退的距离
+        """
+        string = "SetResumeOffset({:f})".format(distance)
+        return self.sendRecvMsg(string)
+    
+    def PathRecovery(self):
+        """
+        开始轨迹恢复：工程暂停后，控制机器人回到暂停时的位姿。
+        """
+        string = "PathRecovery()"
+        return self.sendRecvMsg(string)
+
+    def PathRecoveryStop(self):
+        """
+        轨迹恢复的过程中停止机器人。
+        """
+        string = "PathRecoveryStop()"
+        return self.sendRecvMsg(string)
+
+    def PathRecoveryStatus(self):
+        """
+        查询轨迹恢复的状态。
+        """
+        string = "PathRecoveryStatus()"
+        return self.sendRecvMsg(string)
+    
+    ##日志导出指令
+    def LogExportUSB(self, range):
+        """
+       将机器人日志导出至插在机器人控制柜USB接口的U盘根目录。
+       导出范围。
+        0   导出logs/all 和logs/user文件夹的内容。
+        1   导出logs文件夹所有内容。
+        """
+        string = "SetResumeOffset({:d})".format(range)
+        return self.sendRecvMsg(string)
+    
+    def GetExportStatus(self):
+        """
+        获取日志导出的状态。
+        其中status表示日志导出状态。
+        0：未开始导出
+        1：导出中
+        2：导出完成
+        3：导出失败，找不到U盘
+        4：导出失败，U盘空间不足
+        5：导出失败，导出过程中U盘被拔出
+        导出完成和导出失败的状态会保持到下次用户使用导出功能
+        """
+        string = "GetExportStatus()"
+        return self.sendRecvMsg(string)
+
+    ##力控指令
+    def EnableFTSensor(self, status):
+        """
+       开启/关闭力传感器。
+        """
+        string = "EnableFTSensor({:d})".format(status)
+        return self.sendRecvMsg(string)
+
+    def SixForceHome(self):
+        """
+        将力传感器当前数值置0，即以传感器当前受力状态作为零点。
+        """
+        string = "SixForceHome()"
+        return self.sendRecvMsg(string)
+    
+    def GetForce(self, tool = -1):
+        """
+        获取力传感器当前数值。
+        tool int 用于指定获取数值时参考的工具坐标系，取值范围：[0,50]。
+        不指定时使用全局工具坐标系
+        """
+        if tool == -1:
+            string = "GetForce()"
+        else:
+            string = "GetForce({:d})".format(tool)
+        return self.sendRecvMsg(string)
+
+    def ForceDriveMode(self, x, y, z, rx, ry, rz, user=-1):
+        """
+        指定可拖拽的方向并进入力控拖拽模式。
+        {x,y,z,rx,ry,rz} string
+        用于指定可拖拽的方向。
+        0代表该方向不能拖拽，1代表该方向可以拖拽。
+        例：
+        {1,1,1,1,1,1}表示机械臂可在各轴方向上自由拖动
+        {1,1,1,0,0,0}表示机械臂仅可在XYZ轴方向上拖动
+        {0,0,0,1,1,1}表示机械臂仅可在RxRyRz轴方向上旋转
+        """
+        string = ""
+        string = "ForceDriveMode("+"{"+"{:d},{:d},{:d},{:d},{:d},{:d}".format(x,y,z,rx,ry,rz)+"}"
+        if user != -1:
+            string = string + ',{:d}'.format(user)
+        string = string + ')'
+        return self.sendRecvMsg(string)
+    
+    def ForceDriveSpeed(self, speed):
+        """
+        设置力控拖拽速度比例。
+        speed int 力控拖拽速度比例，取值范围：[1,100]。
+        """
+        string = "ForceDriveSpeed({:d})".format(speed)
+        return self.sendRecvMsg(string)
+    
+    def FCForceMode(self, x, y, z, rx, ry, rz, fx,fy,fz,frx,fry,frz, reference=-1, user=-1,tool=-1):
+        """
+        以用户指定的配置参数开启力控。
+        {x,y,z,rx,ry,rz} 
+            开启/关闭笛卡尔空间某个方向的力控调节。
+            0表示关闭该方向的力控。
+            1表示开启该方向的力控。
+        {fx,fy,fz,frx,fry,frz} 
+            目标力：是工具末端与作用对象之间接触力的目标值，是一种模拟力，可以由用户自行设定；目标力方向分别对应笛卡尔空间的{x,y,z,rx,ry,rz}方向。
+            位移方向的目标力范围[-200,200]，单位N；姿态方向的目标力范围[-12,12]，单位N/m。
+            目标力为0时处于柔顺模式，柔顺模式与力控拖动类似。
+        如果某个方向未开启力控调节，则该方向的目标力也不会生效。
+        reference 
+            格式为“reference=value”。value表示参考坐标系，默认参考工具坐标系。
+            reference=0表示参考工具坐标系，即沿工具坐标系进行力控调节。
+            reference=1表示参考用户坐标系，即沿用户坐标系进行力控调节。
+        user  
+            格式为"user=index"，index为已标定的用户坐标系索引。取值范围：[0,50]。
+        tool  
+            格式为"tool=index"，index为已标定的工具坐标系索引。取值范围：[0,50]。
+        """
+        string = ""
+        string = "FCForceMode("+"{"+"{:d},{:d},{:d},{:d},{:d},{:d}".format(x,y,z,rx,ry,rz)+"},"+"{"+"{:d},{:d},{:d},{:d},{:d},{:d}".format(fx,fy,fz,frx,fry,frz)+"}"
+        params = []
+        if reference != -1:
+            params.append('reference={:d}'.format(reference))
+        if user != -1:
+            params.append('user={:d}'.format(user))
+        if tool != -1:
+            params.append('tool={:d}'.format(tool))
+        for ii in params:
+            string = string + ','+ii
+        string = string + ')'
+        return self.sendRecvMsg(string)
+
+    def FCSetDeviation(self, x, y, z, rx, ry, rz, controltype=-1):
+        """
+        设置力控模式下的位移和姿态偏差，若力控过程中恒力偏移了较大的距离，机器人进会行相应处理。
+        x、y、z
+        代表力控模式下的位移偏差，单位为mm。取值范围：(0,1000]，默认值100mm。
+        rx、ry、rz
+        代表力控模式下的姿态偏差，单位为度。取值范围：(0,360]，默认值36度。
+        controltype
+        表示力控过程中超过规定阈值时，机械臂的处理方式。
+        0：超过阈值时，机械臂报警（默认值）。
+        1：超过阈值时，机械臂停止搜寻而在原有轨迹上继续运动。
+        """
+        string = ""
+        string = "FCSetDeviation("+"{"+"{:d},{:d},{:d},{:d},{:d},{:d}".format(x,y,z,rx,ry,rz)+"}"
+        if controltype != -1:
+            string = string + ',{:d}'.format(controltype)
+        string = string + ')'
+        return self.sendRecvMsg(string)
+    
+    def FCSetForceLimit(self, x, y, z, rx, ry, rz):
+        """
+        设置各方向的最大力限制（该设置对所有方向均生效，包含未启用力控的方向）。
+        """
+        string = ""
+        string = "FCSetForceLimit("+"{:d},{:d},{:d},{:d},{:d},{:d}".format(x,y,z,rx,ry,rz)
+        string = string + ')'
+        return self.sendRecvMsg(string)
+    
+    def FCSetMass(self, x, y, z, rx, ry, rz):
+        """
+        设置力控模式下各方向的惯性系数。
+        """
+        string = ""
+        string = "FCSetMass("+"{:d},{:d},{:d},{:d},{:d},{:d}".format(x,y,z,rx,ry,rz)
+        string = string + ')'
+        return self.sendRecvMsg(string)
+    
+    def FCSetStiffness(self, x, y, z, rx, ry, rz):
+        """
+        设置力控模式下各方向的弹性系数。
+        """
+        string = ""
+        string = "FCSetStiffness("+"{:d},{:d},{:d},{:d},{:d},{:d}".format(x,y,z,rx,ry,rz)
+        string = string + ')'
+        return self.sendRecvMsg(string)
+    
+    def FCSetDamping(self, x, y, z, rx, ry, rz):
+        """
+        设置力控模式下各方向的阻尼系数。
+        """
+        string = ""
+        string = "FCSetDamping("+"{:d},{:d},{:d},{:d},{:d},{:d}".format(x,y,z,rx,ry,rz)
+        string = string + ')'
+        return self.sendRecvMsg(string)
+
+    def FCOff(self):
+        """
+        退出力控模式，与FCForceMode配合使用，两者之间的运动指令都会进行力的柔顺控制。
+        """
+        string = "FCOff()"
+        return self.sendRecvMsg(string)
+
+    def FCSetForceSpeedLimit(self, x, y, z, rx, ry, rz):
+        """
+        设置各方向的力控调节速度。力控速度上限较小时，力控调节速度较慢，适合低速平缓的接触面。
+        力控速度上限较大时，力控调节速度快，适合高速力控应用。需要根据具体的应用场景进行调整。
+        """
+        string = ""
+        string = "FCSetForceSpeedLimit("+"{:d},{:d},{:d},{:d},{:d},{:d}".format(x,y,z,rx,ry,rz)
+        string = string + ')'
+        return self.sendRecvMsg(string)
+    
+    def FCSetForce(self, x, y, z, rx, ry, rz):
+        """
+        实时调整各方向的恒力设置。
+        """
+        string = ""
+        string = "FCSetForce("+"{:d},{:d},{:d},{:d},{:d},{:d}".format(x,y,z,rx,ry,rz)
+        string = string + ')'
+        return self.sendRecvMsg(string)
+    
+    def RequestControl(self):
+        """
+        Request control of the robot.
+        Note: This function sends a request for the control of the robot, which may be approved or denied.
+        """
+        string = "RequestControl()"
+        return self.sendRecvMsg(string)
+    
+    ## 新增运动指令
+
+    def RelPointTool(self, coordinateMode,a1, b1, c1, d1, e1, f1, x, y, z, rx, ry, rz):
+        """
+        沿工具坐标系笛卡尔点偏移。
+        """
+        string = ""
+        if coordinateMode == 0:
+            string = "RelPointTool(pose={{{:f},{:f},{:f},{:f},{:f},{:f}}},".format(
+                a1, b1, c1, d1, e1, f1)
+        elif coordinateMode == 1:
+            string = "RelPointTool(joint={{{:f},{:f},{:f},{:f},{:f},{:f}}},".format(
+                a1, b1, c1, d1, e1, f1)
+        string = string + "{"+"{:f},{:f},{:f},{:f},{:f},{:f}".format(x,y,z,rx,ry,rz)+"}"
+        string = string + ')'
+        return self.sendRecvMsg(string)
+    
+    def RelPointUser(self,coordinateMode,a1, b1, c1, d1, e1, f1, x, y, z, rx, ry, rz):
+        """
+        沿用户坐标系笛卡尔点偏移。
+        """
+        string = ""
+        string = ""
+        if coordinateMode == 0:
+            string = "RelPointUser(pose={{{:f},{:f},{:f},{:f},{:f},{:f}}},".format(
+                a1, b1, c1, d1, e1, f1)
+        elif coordinateMode == 1:
+            string = "RelPointUser(joint={{{:f},{:f},{:f},{:f},{:f},{:f}}},".format(
+                a1, b1, c1, d1, e1, f1)
+        string =string + "{"+"{:f},{:f},{:f},{:f},{:f},{:f}".format(x,y,z,rx,ry,rz)+"}"
+        string = string + ')'
+        return self.sendRecvMsg(string)
+
+    def RelPointTool(self, J1, J2, J3, J4, J5, J6, x, y, z, rx, ry, rz):
+        """
+        关节点位偏移。
+        """
+        string = ""
+        string = "RelPointTool("+"{:f},{:f},{:f},{:f},{:f},{:f}".format(J1,J2,J3,J4,J5,J6)+"{"+"{:f},{:f},{:f},{:f},{:f},{:f}".format(x,y,z,rx,ry,rz)+"}"
+        string = string + ')'
+        return self.sendRecvMsg(string)
+    
 
 # Feedback interface
 # 反馈数据接口类
@@ -2784,8 +3065,9 @@ class DobotApiFeedBack(DobotApi):
         self.last_recv_time = current_recv_time
         #print(f"Time interval since last receive: {interval:.3f} ms")
         
-        #data = temp[0:1440] #截取1440字节
+        data = temp[0:1440] #截取1440字节
         #print(len(data))
+        #print(f"Single element size of MyType: {MyType.itemsize} bytes")
         self.__MyType = None   
 
         if len(data) == 1440:        
