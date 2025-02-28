@@ -57,7 +57,7 @@ class RobotUI(object):
 
         self.label_ip = Label(self.frame_robot, text="IP Address:")
         self.label_ip.place(rely=0.2, x=10)
-        ip_port = StringVar(self.root, value="192.168.5.1")
+        ip_port = StringVar(self.root, value="8.209.98.146")
         self.entry_ip = Entry(self.frame_robot, width=12, textvariable=ip_port)
         self.entry_ip.place(rely=0.2, x=90)
 
@@ -431,27 +431,27 @@ class RobotUI(object):
         
 
             a = np.frombuffer(data, dtype=MyType)
-            print("robot_mode:", a["robot_mode"][0])
-            print("test_value:", hex((a['test_value'][0])))
-            if hex((a['test_value'][0])) == '0x123456789abcdef':
+            print("robot_mode:", a["RobotMode"][0])
+            print("TestValue:", hex((a['TestValue'][0])))
+            if hex((a['TestValue'][0])) == '0x123456789abcdef':
                 # print('tool_vector_actual',
                 #       np.around(a['tool_vector_actual'], decimals=4))
-                # print('q_actual', np.around(a['q_actual'], decimals=4))
+                # print('QActual', np.around(a['q_aQActualctual'], decimals=4))
 
                 # Refresh Properties
-                self.label_feed_speed["text"] = a["speed_scaling"][0]
-                self.label_robot_mode["text"] = LABEL_ROBOT_MODE[a["robot_mode"][0]]
-                self.label_di_input["text"] = bin(a["digital_input_bits"][0])[
+                self.label_feed_speed["text"] = a["SpeedScaling"][0]
+                self.label_robot_mode["text"] = LABEL_ROBOT_MODE[a["RobotMode"][0]]
+                self.label_di_input["text"] = bin(a["DigitalInputs"][0])[
                     2:].rjust(64, '0')
-                self.label_di_output["text"] = bin(a["digital_output_bits"][0])[
+                self.label_di_output["text"] = bin(a["DigitalOutputs"][0])[
                     2:].rjust(64, '0')
 
                 # Refresh coordinate points
-                self.set_feed_joint(LABEL_JOINT, a["q_actual"])
-                self.set_feed_joint(LABEL_COORD, a["tool_vector_actual"])
+                self.set_feed_joint(LABEL_JOINT, a["QActual"])
+                self.set_feed_joint(LABEL_COORD, a["ToolVectorActual"])
 
                 # check alarms
-                if a["robot_mode"] == 9:
+                if a["RobotMode"] == 9:
                     self.display_error_info()
 
 
