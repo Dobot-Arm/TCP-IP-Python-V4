@@ -47,14 +47,14 @@ class DobotDemo:
         while True:
             feedInfo = self.feedFour.feedBackData()
             if feedInfo != None:   
-                if hex((feedInfo['test_value'][0])) == '0x123456789abcdef':
-                    self.feedData.robotMode = feedInfo['robot_mode'][0]
-                    self.feedData.robotCurrentCommandID = feedInfo['currentcommandid'][0]
+                if hex((feedInfo['TestValue'][0])) == '0x123456789abcdef':
+                    self.feedData.robotMode = feedInfo['RobotMode'][0]
+                    self.feedData.robotCurrentCommandID = feedInfo['CurrentCommandId'][0]
                     # 自主添加所需机械臂反馈的数据
                     '''
-                    self.feedData.robotErrorState = feedInfo['error_status'][0]
-                    self.feedData.robotEnableStatus = feedInfo['enable_status'][0]
-                    self.feedData.robotCurrentCommandID = feedInfo['currentcommandid'][0]
+                    self.feedData.robotErrorState = feedInfo['ErrorStatus'][0]
+                    self.feedData.robotEnableStatus = feedInfo['EnableStatus'][0]
+                    self.feedData.robotCurrentCommandID = feedInfo['CurrentCommandId'][0]
                     '''
 
     def RunPoint(self, point_list):
