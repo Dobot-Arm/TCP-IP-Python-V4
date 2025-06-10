@@ -19,6 +19,7 @@ class DobotDemo:
                 self.MessageSize = -1
                 self.DigitalInputs =-1
                 self.DigitalOutputs = -1
+                self.robotCurrentCommandID = -1
                 # 自定义添加所需反馈数据
 
         self.feedData = item()  # 定义结构对象
@@ -61,6 +62,7 @@ class DobotDemo:
                         self.feedData.robotMode = feedInfo['RobotMode'][0]
                         self.feedData.DigitalInputs = feedInfo['DigitalInputs'][0]
                         self.feedData.DigitalOutputs = feedInfo['DigitalOutputs'][0]
+                        self.feedData.robotCurrentCommandID = feedInfo['CurrentCommandId'][0]
                         # 自定义添加所需反馈数据
                         '''
                         self.feedData.DigitalOutputs = int(feedInfo['DigitalOutputs'][0])
