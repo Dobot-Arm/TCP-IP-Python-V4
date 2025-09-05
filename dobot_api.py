@@ -6,6 +6,7 @@ import json
 import threading
 import time
 from time import sleep
+import requests
 
 alarmControllerFile = "files/alarmController.json"
 alarmServoFile = "files/alarmServo.json"
@@ -3025,6 +3026,67 @@ class DobotApiDashboard(DobotApi):
         string = "RelPointTool("+"{:f},{:f},{:f},{:f},{:f},{:f}".format(J1,J2,J3,J4,J5,J6)+"{"+"{:f},{:f},{:f},{:f},{:f},{:f}".format(x,y,z,rx,ry,rz)+"}"
         string = string + ')'
         return self.sendRecvMsg(string)
+    
+    def GetError(self, language="zh_cn"):
+        """
+        获取机器人报警信息
+        参数:
+        language: 语言设置，支持的值:
+                 "zh_cn" - 简体中文
+                 "zh_hant" - 繁体中文  
+                 "en" - 英语
+                 "ja" - 日语
+                 "de" - 德语
+                 "vi" - 越南语
+                 "es" - 西班牙语
+                 "fr" - 法语
+                 "ko" - 韩语
+                 "ru" - 俄语
+        返回:
+        dict: 包含报警信息的字典，格式如下:
+        {
+            "errMsg": [
+                {
+                    "id": xxx,
+                    "level": xxx,
+                    "description": "xxx",
+                    "solution": "xxx",
+                    "mode": "xxx",
+                    "date": "xxxx",
+                    "time": "xxxx"
+                }
+            ]
+        }
+        """
+        try:
+            # 首先设置语言
+            language_url = f"http://{self.ip}:22000/interface/language"
+            language_data = {"type": language}
+            
+            # 发送POST请求设置语言
+            response = requests.post(language_url, json=language_data, timeout=5)
+            if response.status_code != 200:
+                print(f"设置语言失败: HTTP {response.status_code}")
+            
+            # 获取报警信息
+            alarm_url = f"http://{self.ip}:22000/protocol/getAlarm"
+            response = requests.get(alarm_url, timeout=5)
+            
+            if response.status_code == 200:
+                return response.json()
+            else:
+                print(f"获取报警信息失败: HTTP {response.status_code}")
+                return {"errMsg": []}
+                
+        except requests.exceptions.RequestException as e:
+            print(f"HTTP请求异常: {e}")
+            return {"errMsg": []}
+        except json.JSONDecodeError as e:
+            print(f"JSON解析异常: {e}")
+            return {"errMsg": []}
+        except Exception as e:
+            print(f"获取报警信息时发生未知错误: {e}")
+            return {"errMsg": []}
     
 
 # Feedback interface

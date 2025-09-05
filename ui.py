@@ -456,20 +456,48 @@ class RobotUI(object):
 
 
     def display_error_info(self):
-        error_list = self.client_dash.GetErrorID().split("{")[1].split("}")[0]
+        # Try to use GetError interface first / 优先尝试使用GetError接口
+        try:
+            error_info = self.client_dash.GetError("en")  # Use English for UI display
+            if error_info and "errMsg" in error_info and error_info["errMsg"]:
+                # Use new GetError interface / 使用新的GetError接口
+                for error in error_info["errMsg"]:
+                    self.form_error_new(error)
+                return
+        except Exception as e:
+            print(f"GetError interface failed, using fallback method: {e}")
+        
+        # Fallback to original method / 回退到原来的方法
+        try:
+            error_list = self.client_dash.GetErrorID().split("{")[1].split("}")[0]
+            error_list = json.loads(error_list)
+            print("error_list:", error_list)
+            if error_list[0]:
+                for i in error_list[0]:
+                    self.form_error(i, self.alarm_controller_dict,
+                                    "Controller Error")
 
-        error_list = json.loads(error_list)
-        print("error_list:", error_list)
-        if error_list[0]:
-            for i in error_list[0]:
-                self.form_error(i, self.alarm_controller_dict,
-                                "Controller Error")
+            for m in range(1, len(error_list)):
+                if error_list[m]:
+                    for n in range(len(error_list[m])):
+                        self.form_error(n, self.alarm_servo_dict, "Servo Error")
+        except Exception as e:
+            print(f"Both error retrieval methods failed: {e}")
 
-        for m in range(1, len(error_list)):
-            if error_list[m]:
-                for n in range(len(error_list[m])):
-                    self.form_error(n, self.alarm_servo_dict, "Servo Error")
-
+    def form_error_new(self, error_data):
+        """Handle error data from GetError interface / 处理GetError接口返回的错误数据"""
+        try:
+            error_info = f"Time Stamp:{error_data.get('date', 'N/A')} {error_data.get('time', 'N/A')}\n"
+            error_info += f"ID:{error_data.get('id', 'N/A')}\n"
+            error_info += f"Type:{error_data.get('mode', 'N/A')}\n"
+            error_info += f"Level:{error_data.get('level', 'N/A')}\n"
+            error_info += f"Description:{error_data.get('description', 'N/A')}\n"
+            error_info += f"Solution:{error_data.get('solution', 'N/A')}\n\n"
+            
+            self.text_err.insert(END, error_info)
+        except Exception as e:
+            print(f"Error formatting new error data: {e}")
+    
     def form_error(self, index, alarm_dict: dict, type_text):
         if index in alarm_dict.keys():
             date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
