@@ -2703,7 +2703,7 @@ class DobotApiDashboard(DobotApi):
         v     int     velocity rate of the robot arm when executing this command. Range: (0,100].
         cp     int     continuous path rate. Range: [0,100].
         """
-        string = "RelMovJUser({:f},{:f},{:f},{:f},{:f},{:f}".format(
+        string = "RelJointMovJ({:f},{:f},{:f},{:f},{:f},{:f}".format(
             offset_x, offset_y, offset_z, offset_rx, offset_ry, offset_rz)
         params = []
         if a != -1:
