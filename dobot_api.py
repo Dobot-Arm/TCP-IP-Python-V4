@@ -11,6 +11,10 @@ import requests
 alarmControllerFile = "files/alarmController.json"
 alarmServoFile = "files/alarmServo.json"
 
+#brief dobot_v4_api:CRA\E6\CRAF\NovaLite
+#author futingxing
+#date 2025-12-15
+
 # Port Feedback
 MyType = np.dtype([('len', np.uint16,),
                    ('reserve', np.byte, (6, )),
@@ -99,8 +103,6 @@ MyType = np.dtype([('len', np.uint16,),
 
 # 读取控制器和伺服告警文件
 # Read controller and servo alarm files
-
-
 def alarmAlarmJsonFile():
     currrntDirectory = os.path.dirname(__file__)
     jsonContrellorPath = os.path.join(currrntDirectory, alarmControllerFile)
@@ -191,7 +193,6 @@ class DobotApi:
         with self.__globalLock:
             self.send_data(string)
             recvData = self.wait_reply()
-            self.ParseResultId(recvData)
             return recvData
 
     def __del__(self):
@@ -215,6 +216,23 @@ class DobotApiDashboard(DobotApi):
 
     def __init__(self, ip, port, *args):
         super().__init__(ip, port, *args)
+
+    def _fmt(self, v):
+        if isinstance(v, (list, tuple)):
+            return "{" + ",".join([self._fmt(x) for x in v]) + "}"
+        if isinstance(v, float):
+            return ("{:f}".format(v))
+        if isinstance(v, int):
+            return ("{:d}".format(v))
+        return str(v)
+
+    def _build_cmd(self, name, *args, **kwargs):
+        parts = []
+        for a in args:
+            parts.append(self._fmt(a))
+        for k, v in kwargs.items():
+            parts.append(f"{k}={self._fmt(v)}")
+        return f"{name}(" + ",".join(parts) + ")"
 
     def EnableRobot(self, load=0.0, centerX=0.0, centerY=0.0, centerZ=0.0, isCheck=-1,):
         """
@@ -2725,32 +2743,6 @@ class DobotApiDashboard(DobotApi):
         string = "GetCurrentCommandID()"
         return self.sendRecvMsg(string)
 
-    def ParseResultId(self, valueRecv):
-        """
-        解析Tcp返回值
-        Parse the TCP return values
-        """
-        if valueRecv.find("Not Tcp") != -1:  # 通过返回值判断机器是否处于tcp模式 Judge whether the robot is in TCP mode by the return value
-            print("Control Mode Is Not Tcp")
-            return
-        recvData = re.findall(r'-?\d+', valueRecv)
-        recvData = [int(num) for num in recvData]
-        if len(recvData) > 0:
-            if recvData[0] != 0:
-                # 根据返回值来判断机器处于什么状态 Judge what status the robot is in based on the return value
-                if recvData[0] == -1:
-                    print("Command execution failed")
-                elif recvData[0] == -2:
-                    print("The robot is in an error state")
-                elif recvData[0] == -3:
-                    print("The robot is in emergency stop state")
-                elif recvData[0] == -4:
-                    print("The robot is in power down state")
-                else:
-                    print("ErrorId is ", recvData[0])
-        else:
-            print("ERROR VALUE")
-
     ###################################460新增#############################
     
     ##轨迹恢复指令
@@ -2790,7 +2782,7 @@ class DobotApiDashboard(DobotApi):
         0   导出logs/all 和logs/user文件夹的内容。
         1   导出logs文件夹所有内容。
         """
-        string = "SetResumeOffset({:d})".format(range)
+        string = "LogExportUSB({:d})".format(range)
         return self.sendRecvMsg(string)
     
     def GetExportStatus(self):
@@ -3018,13 +3010,12 @@ class DobotApiDashboard(DobotApi):
         string = string + ')'
         return self.sendRecvMsg(string)
 
-    def RelPointTool(self, J1, J2, J3, J4, J5, J6, x, y, z, rx, ry, rz):
+    def RelJoint(self, j1, j2, j3, j4, j5, j6, offset1, offset2, offset3, offset4, offset5, offset6):
         """
-        关节点位偏移。
+        RelJoint command
         """
-        string = ""
-        string = "RelPointTool("+"{:f},{:f},{:f},{:f},{:f},{:f}".format(J1,J2,J3,J4,J5,J6)+"{"+"{:f},{:f},{:f},{:f},{:f},{:f}".format(x,y,z,rx,ry,rz)+"}"
-        string = string + ')'
+        string = "RelJoint({:f},{:f},{:f},{:f},{:f},{:f},{{{:f},{:f},{:f},{:f},{:f},{:f}}})".format(
+            j1, j2, j3, j4, j5, j6, offset1, offset2, offset3, offset4, offset5, offset6)
         return self.sendRecvMsg(string)
     
     def GetError(self, language="zh_cn"):
@@ -3087,7 +3078,412 @@ class DobotApiDashboard(DobotApi):
         except Exception as e:
             print(f"获取报警信息时发生未知错误: {e}")
             return {"errMsg": []}
-    
+
+    def ArcIO(self, a1, b1, c1, d1, e1, f1, a2, b2, c2, d2, e2, f2, coordinateMode, *io_params, user=-1, tool=-1, a=-1, v=-1, speed=-1, cp=-1, r=-1, mode=-1):
+        """
+        圆弧运动过程中并行设置数字输出端口的状态，可设置多组。
+        """
+        string = ""
+        if coordinateMode == 0:
+            string = "ArcIO(pose={{{:f},{:f},{:f},{:f},{:f},{:f}}},pose={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(
+                a1, b1, c1, d1, e1, f1, a2, b2, c2, d2, e2, f2)
+        elif coordinateMode == 1:
+            string = "ArcIO(joint={{{:f},{:f},{:f},{:f},{:f},{:f}}},joint={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(
+                a1, b1, c1, d1, e1, f1, a2, b2, c2, d2, e2, f2)
+        else:
+            print("coordinateMode  param  is wrong")
+            return ""
+        
+        for io_param in io_params:
+            if isinstance(io_param, (list, tuple)) and len(io_param) == 4:
+                string += ",{{{:d},{:d},{:d},{:d}}}".format(*io_param)
+            else:
+                 print("io_param format is wrong")
+
+        params = []
+        if user != -1:
+            params.append('user={:d}'.format(user))
+        if tool != -1:
+            params.append('tool={:d}'.format(tool))
+        if a != -1:
+            params.append('a={:d}'.format(a))
+        if v != -1 and speed != -1:
+            params.append('speed={:d}'.format(speed))
+        elif speed != -1:
+            params.append('speed={:d}'.format(speed))
+        elif v != -1:
+            params.append('v={:d}'.format(v))
+        if cp != -1 and r != -1:
+            params.append('r={:d}'.format(r))
+        elif r != -1:
+            params.append('r={:d}'.format(r))
+        elif cp != -1:
+            params.append('cp={:d}'.format(cp))
+        if mode != -1:
+            params.append('mode={:d}'.format(mode))
+        
+        for ii in params:
+            string += ',' + ii
+        string += ')'
+        return self.sendRecvMsg(string)
+
+    def ArcTrackStart(self):
+        return self.sendRecvMsg("ArcTrackStart()")
+
+    def ArcTrackParams(self, sampleTime, coordinateType, upDownCompensationMin, upDownCompensationMax, upDownCompensationOffset, leftRightCompensationMin, leftRightCompensationMax, leftRightCompensationOffset):
+        string = "ArcTrackParams({:d},{:d},{:f},{:f},{:f},{:f},{:f},{:f})".format(
+            sampleTime, coordinateType, upDownCompensationMin, upDownCompensationMax, upDownCompensationOffset, leftRightCompensationMin, leftRightCompensationMax, leftRightCompensationOffset)
+        return self.sendRecvMsg(string)
+
+    def ArcTrackEnd(self):
+        return self.sendRecvMsg("ArcTrackEnd()")
+
+    def CheckMovC(self, j1a, j2a, j3a, j4a, j5a, j6a, j1b, j2b, j3b, j4b, j5b, j6b, j1c, j2c, j3c, j4c, j5c, j6c, user=-1, tool=-1, a=-1, v=-1, cp=-1):
+        string = "CheckMovC(joint={{{:f},{:f},{:f},{:f},{:f},{:f}}},joint={{{:f},{:f},{:f},{:f},{:f},{:f}}},joint={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(
+            j1a, j2a, j3a, j4a, j5a, j6a, j1b, j2b, j3b, j4b, j5b, j6b, j1c, j2c, j3c, j4c, j5c, j6c)
+        params = []
+        if user != -1: params.append('user={:d}'.format(user))
+        if tool != -1: params.append('tool={:d}'.format(tool))
+        if a != -1: params.append('a={:d}'.format(a))
+        if v != -1: params.append('v={:d}'.format(v))
+        if cp != -1: params.append('cp={:d}'.format(cp))
+        if params: string += "," + ",".join(params)
+        string += ")"
+        return self.sendRecvMsg(string)
+
+    def CheckMovJ(self, j1a, j2a, j3a, j4a, j5a, j6a, j1b, j2b, j3b, j4b, j5b, j6b, user=-1, tool=-1, a=-1, v=-1, cp=-1):
+        string = "CheckMovJ(joint={{{:f},{:f},{:f},{:f},{:f},{:f}}},joint={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(
+            j1a, j2a, j3a, j4a, j5a, j6a, j1b, j2b, j3b, j4b, j5b, j6b)
+        params = []
+        if user != -1: params.append('user={:d}'.format(user))
+        if tool != -1: params.append('tool={:d}'.format(tool))
+        if a != -1: params.append('a={:d}'.format(a))
+        if v != -1: params.append('v={:d}'.format(v))
+        if cp != -1: params.append('cp={:d}'.format(cp))
+        if params: string += "," + ",".join(params)
+        string += ")"
+        return self.sendRecvMsg(string)
+
+    def CheckOddMovC(self, j1a, j2a, j3a, j4a, j5a, j6a, j1b, j2b, j3b, j4b, j5b, j6b, j1c, j2c, j3c, j4c, j5c, j6c, user=-1, tool=-1, a=-1, v=-1, cp=-1):
+        string = "CheckOddMovC(joint={{{:f},{:f},{:f},{:f},{:f},{:f}}},joint={{{:f},{:f},{:f},{:f},{:f},{:f}}},joint={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(
+            j1a, j2a, j3a, j4a, j5a, j6a, j1b, j2b, j3b, j4b, j5b, j6b, j1c, j2c, j3c, j4c, j5c, j6c)
+        params = []
+        if user != -1: params.append('user={:d}'.format(user))
+        if tool != -1: params.append('tool={:d}'.format(tool))
+        if a != -1: params.append('a={:d}'.format(a))
+        if v != -1: params.append('v={:d}'.format(v))
+        if cp != -1: params.append('cp={:d}'.format(cp))
+        if params: string += "," + ",".join(params)
+        string += ")"
+        return self.sendRecvMsg(string)
+
+    def CheckOddMovJ(self, j1a, j2a, j3a, j4a, j5a, j6a, j1b, j2b, j3b, j4b, j5b, j6b, user=-1, tool=-1, a=-1, v=-1, cp=-1):
+        string = "CheckOddMovJ(joint={{{:f},{:f},{:f},{:f},{:f},{:f}}},joint={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(
+            j1a, j2a, j3a, j4a, j5a, j6a, j1b, j2b, j3b, j4b, j5b, j6b)
+        params = []
+        if user != -1: params.append('user={:d}'.format(user))
+        if tool != -1: params.append('tool={:d}'.format(tool))
+        if a != -1: params.append('a={:d}'.format(a))
+        if v != -1: params.append('v={:d}'.format(v))
+        if cp != -1: params.append('cp={:d}'.format(cp))
+        if params: string += "," + ",".join(params)
+        string += ")"
+        return self.sendRecvMsg(string)
+
+    def CheckOddMovL(self, j1a, j2a, j3a, j4a, j5a, j6a, j1b, j2b, j3b, j4b, j5b, j6b, user=-1, tool=-1, a=-1, v=-1, cp=-1):
+        string = "CheckOddMovL(joint={{{:f},{:f},{:f},{:f},{:f},{:f}}},joint={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(
+            j1a, j2a, j3a, j4a, j5a, j6a, j1b, j2b, j3b, j4b, j5b, j6b)
+        params = []
+        if user != -1: params.append('user={:d}'.format(user))
+        if tool != -1: params.append('tool={:d}'.format(tool))
+        if a != -1: params.append('a={:d}'.format(a))
+        if v != -1: params.append('v={:d}'.format(v))
+        if cp != -1: params.append('cp={:d}'.format(cp))
+        if params: string += "," + ",".join(params)
+        string += ")"
+        return self.sendRecvMsg(string)
+
+    def CnvInit(self, index):
+        """
+        CnvInit command
+        """
+        string = "CnvInit({:d})".format(index)
+        return self.sendRecvMsg(string)
+
+    def CnvMovL(self, j1, j2, j3, j4, j5, j6, user=-1, tool=-1, a=-1, v=-1, cp=-1, r=-1):
+        string = "CnvMovL(pose={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(
+            j1, j2, j3, j4, j5, j6)
+        params = []
+        if user != -1: params.append('user={:d}'.format(user))
+        if tool != -1: params.append('tool={:d}'.format(tool))
+        if a != -1: params.append('a={:d}'.format(a))
+        if v != -1: params.append('v={:d}'.format(v))
+        if cp != -1: params.append('cp={:d}'.format(cp))
+        if r != -1: params.append('r={:d}'.format(r))
+        if params: string += "," + ",".join(params)
+        string += ")"
+        return self.sendRecvMsg(string)
+
+    def CnvMovC(self, j1a, j2a, j3a, j4a, j5a, j6a, j1b, j2b, j3b, j4b, j5b, j6b, user=-1, tool=-1, a=-1, v=-1, cp=-1, r=-1, mode=1):
+        string = "CnvMovC(pose={{{:f},{:f},{:f},{:f},{:f},{:f}}},pose={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(
+            j1a, j2a, j3a, j4a, j5a, j6a, j1b, j2b, j3b, j4b, j5b, j6b)
+        params = []
+        if user != -1: params.append('user={:d}'.format(user))
+        if tool != -1: params.append('tool={:d}'.format(tool))
+        if a != -1: params.append('a={:d}'.format(a))
+        if v != -1: params.append('v={:d}'.format(v))
+        if cp != -1: params.append('cp={:d}'.format(cp))
+        if r != -1: params.append('r={:d}'.format(r))
+        if mode != 1: params.append('mode={:d}'.format(mode))
+        if params: string += "," + ",".join(params)
+        string += ")"
+        return self.sendRecvMsg(string)
+
+    def CreateTray(self, *args, **kwargs):
+        """
+        CreateTray command
+        Due to missing documentation on exact parameters, this function uses dynamic arguments.
+        Example: CreateTray(rows=3, cols=4, ...)
+        """
+        return self.sendRecvMsg(self._build_cmd("CreateTray", *args, **kwargs))
+
+    def EndRTOffset(self):
+        return self.sendRecvMsg("EndRTOffset()")
+
+    def StartRTOffset(self):
+        """
+        StartRTOffset command
+        """
+        return self.sendRecvMsg("StartRTOffset()")
+
+    def FCCollisionSwitch(self, enable):
+        return self.sendRecvMsg("FCCollisionSwitch(enable={:d})".format(enable))
+
+    def SetFCCollision(self, force, torque):
+        return self.sendRecvMsg("SetFCCollision({:f},{:f})".format(force, torque))
+
+    def GetCnvObject(self, objId):
+        return self.sendRecvMsg("GetCnvObject({:d})".format(objId))
+
+    def DOGroupDEC(self, group, value):
+        return self.sendRecvMsg("DOGroupDEC({:d},{:d})".format(group, value))
+
+    def GetDOGroupDEC(self, group, value):
+        return self.sendRecvMsg("GetDOGroupDEC({:d},{:d})".format(group, value))
+
+    def DIGroupDEC(self, group, value):
+        return self.sendRecvMsg("DIGroupDEC({:d},{:d})".format(group, value))
+
+    def InverseSolution(self, a1, b1, c1, d1, e1, f1, user=-1, tool=-1, isJoint=0):
+        """
+        InverseSolution command
+        """
+        string = "InverseSolution(pose={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(
+            a1, b1, c1, d1, e1, f1)
+        
+        params = []
+        if user != -1:
+            params.append('user={:d}'.format(user))
+        if tool != -1:
+            params.append('tool={:d}'.format(tool))
+        if isJoint != 0:
+            params.append('isJoint={:d}'.format(isJoint))
+            
+        for ii in params:
+            string += ',' + ii
+        string += ')'
+        return self.sendRecvMsg(string)
+
+    def MoveL(self, a1, b1, c1, d1, e1, f1, user=-1, tool=-1, a=-1, v=-1, speed=-1, cp=-1, r=-1):
+        """
+        MoveL command
+        """
+        string = "MoveL(pose={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(
+            a1, b1, c1, d1, e1, f1)
+        
+        params = []
+        if user != -1:
+            params.append('user={:d}'.format(user))
+        if tool != -1:
+            params.append('tool={:d}'.format(tool))
+        if a != -1:
+            params.append('a={:d}'.format(a))
+        if v != -1 and speed != -1:
+            params.append('speed={:d}'.format(speed))
+        elif speed != -1:
+            params.append('speed={:d}'.format(speed))
+        elif v != -1:
+            params.append('v={:d}'.format(v))
+        if cp != -1 and r != -1:
+            params.append('r={:d}'.format(r))
+        elif r != -1:
+            params.append('r={:d}'.format(r))
+        elif cp != -1:
+            params.append('cp={:d}'.format(cp))
+            
+        for ii in params:
+            string += ',' + ii
+        string += ')'
+        return self.sendRecvMsg(string)
+
+    def MovS(self, file=None, coordinateMode=-1, points=None, user=-1, tool=-1, v=-1, speed=-1, a=-1, freq=-1):
+        """
+        MovS command
+        """
+        string = "MovS("
+        if file is not None:
+             string += "file={:s}".format(file)
+        elif points is not None and coordinateMode != -1:
+             # points should be a list of tuples/lists
+             pts_str = []
+             for pt in points:
+                 if coordinateMode == 0:
+                     pts_str.append("pose={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(*pt))
+                 elif coordinateMode == 1:
+                     pts_str.append("joint={{{:f},{:f},{:f},{:f},{:f},{:f}}}".format(*pt))
+             string += ",".join(pts_str)
+        else:
+             print("MovS param is wrong")
+             return ""
+        
+        params = []
+        if user != -1:
+            params.append('user={:d}'.format(user))
+        if tool != -1:
+            params.append('tool={:d}'.format(tool))
+        if v != -1 and speed != -1:
+            params.append('speed={:d}'.format(speed))
+        elif speed != -1:
+            params.append('speed={:d}'.format(speed))
+        elif v != -1:
+            params.append('v={:d}'.format(v))
+        if a != -1:
+             params.append('a={:d}'.format(a))
+        if freq != -1:
+             params.append('freq={:d}'.format(freq))
+             
+        if len(params) > 0:
+             if file is not None or (points is not None and len(points) > 0):
+                  string += ","
+             string += ",".join(params)
+             
+        string += ")"
+        return self.sendRecvMsg(string)
+
+    def OffsetPara(self, x, y, z, rx, ry, rz):
+        """
+        OffsetPara command
+        """
+        string = "OffsetPara({:f},{:f},{:f},{:f},{:f},{:f})".format(x, y, z, rx, ry, rz)
+        return self.sendRecvMsg(string)
+
+
+    def GetTrayPoint(self, *args, **kwargs):
+        """
+        GetTrayPoint command
+        Due to missing documentation on exact parameters, this function uses dynamic arguments.
+        Example: GetTrayPoint(trayName)
+        """
+        return self.sendRecvMsg(self._build_cmd("GetTrayPoint", *args, **kwargs))
+
+    def ResetRobot(self):
+        return self.sendRecvMsg("ResetRobot()")
+
+    def RunTo(self, a1, b1, c1, d1, e1, f1, moveType, user=-1, tool=-1, a=-1, v=-1):
+        """
+        RunTo command
+        """
+        string = ""
+        if moveType == 0:
+            string = "RunTo(pose={{{:f},{:f},{:f},{:f},{:f},{:f}}},moveType=0".format(
+                a1, b1, c1, d1, e1, f1)
+        elif moveType == 1:
+            string = "RunTo(joint={{{:f},{:f},{:f},{:f},{:f},{:f}}},moveType=1".format(
+                a1, b1, c1, d1, e1, f1)
+        else:
+             print("moveType param is wrong")
+             return ""
+        
+        params = []
+        if user != -1:
+            params.append('user={:d}'.format(user))
+        if tool != -1:
+            params.append('tool={:d}'.format(tool))
+        if a != -1:
+            params.append('a={:d}'.format(a))
+        if v != -1:
+            params.append('v={:d}'.format(v))
+        
+        for ii in params:
+            string += ',' + ii
+        string += ')'
+        return self.sendRecvMsg(string)
+
+    def SetArcTrackOffset(self, offsetX, offsetY, offsetZ, offsetRx, offsetRy, offsetRz):
+        string = "SetArcTrackOffset({{{:f},{:f},{:f},{:f},{:f},{:f}}})".format(
+            offsetX, offsetY, offsetZ, offsetRx, offsetRy, offsetRz)
+        return self.sendRecvMsg(string)
+
+    def SetCnvPointOffset(self, xOffset, yOffset):
+        return self.sendRecvMsg("SetCnvPointOffset({:f},{:f})".format(xOffset, yOffset))
+
+    def SetCnvTimeCompensation(self, time):
+        return self.sendRecvMsg("SetCnvTimeCompensation({:d})".format(time))
+
+    def StartSyncCnv(self):
+        return self.sendRecvMsg("StartSyncCnv()")
+
+    def StopSyncCnv(self):
+        return self.sendRecvMsg("StopSyncCnv()")
+
+    def TcpSendAndParse(self, cmd):
+        """
+        TcpSendAndParse command
+        """
+        return self.sendRecvMsg("TcpSendAndParse(\"{:s}\")".format(cmd))
+
+    def Sleep(self, count):
+        return self.sendRecvMsg("Sleep({:d})".format(count))
+
+    def RelPointWeldLine(self, StartX, EndX, Y, Z, WorkAngle, TravelAngle, P1, P2):
+        string = "RelPointWeldLine({:f},{:f},{:f},{:f},{:f},{:f},{{{:f},{:f},{:f},{:f},{:f},{:f}}},{{{:f},{:f},{:f},{:f},{:f},{:f}}})".format(
+            StartX, EndX, Y, Z, WorkAngle, TravelAngle, P1[0], P1[1], P1[2], P1[3], P1[4], P1[5], P2[0], P2[1], P2[2], P2[3], P2[4], P2[5])
+        return self.sendRecvMsg(string)
+
+    def RelPointWeldArc(self, StartX, EndX, Y, Z, WorkAngle, TravelAngle, P1, P2, P3):
+        string = "RelPointWeldArc({:f},{:f},{:f},{:f},{:f},{:f},{{{:f},{:f},{:f},{:f},{:f},{:f}}},{{{:f},{:f},{:f},{:f},{:f},{:f}}},{{{:f},{:f},{:f},{:f},{:f},{:f}}})".format(
+            StartX, EndX, Y, Z, WorkAngle, TravelAngle, P1[0], P1[1], P1[2], P1[3], P1[4], P1[5], P2[0], P2[1], P2[2], P2[3], P2[4], P2[5], P3[0], P3[1], P3[2], P3[3], P3[4], P3[5])
+        return self.sendRecvMsg(string)
+
+    def WeaveStart(self):
+        return self.sendRecvMsg("WeaveStart()")
+
+    def WeaveParams(self, weldType, frequency, leftAmplitude, rightAmplitude, direction, stopMode, stopTime1, stopTime2, stopTime3, stopTime4, radius, radian, **kwargs):
+        string = "WeaveParams({:d},{:f},{:f},{:f},{:d},{:d},{:d},{:d},{:d},{:d},{:f},{:f}".format(
+            weldType, frequency, leftAmplitude, rightAmplitude, direction, stopMode, stopTime1, stopTime2, stopTime3, stopTime4, radius, radian)
+        if kwargs:
+            for key, value in kwargs.items():
+                string += ",{}={}".format(key, value)
+        string += ")"
+        return self.sendRecvMsg(string)
+
+    def WeaveEnd(self):
+        return self.sendRecvMsg("WeaveEnd()")
+
+    def WeldArcSpeedStart(self):
+        return self.sendRecvMsg("WeldArcSpeedStart()")
+
+    def WeldArcSpeed(self, speed):
+        return self.sendRecvMsg("WeldArcSpeed({:f})".format(speed))
+
+    def WeldArcSpeedEnd(self):
+        return self.sendRecvMsg("WeldArcSpeedEnd()")
+
+    def WeldWeaveStart(self, weldType, frequency, leftAmplitude, rightAmplitude, direction, stopMode, stopTime1, stopTime2, stopTime3, stopTime4, radius, radian):
+        string = "WeldWeaveStart({:d},{:f},{:f},{:f},{:d},{:d},{:d},{:d},{:d},{:d},{:f},{:f})".format(
+            weldType, frequency, leftAmplitude, rightAmplitude, direction, stopMode, stopTime1, stopTime2, stopTime3, stopTime4, radius, radian)
+        return self.sendRecvMsg(string)
+
 
 # Feedback interface
 # 反馈数据接口类
