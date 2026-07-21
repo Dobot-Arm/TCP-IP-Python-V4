@@ -107,7 +107,7 @@ pip install tkinter  # Usually comes with Python
 - Convenient for international users to understand and use
 
 ## Project Directory Structure
-
+```bash
 TCP-IP-Python-V4/
 ├── main.py                    # Main program entry
 ├── dobot_api.py               # Core API interface
@@ -118,7 +118,7 @@ TCP-IP-Python-V4/
 ├── GetError_README_EN.md      # GetError English documentation
 ├── README.md                  # Project documentation
 └── files/                     # Other support files
-
+```
 ## Quick Start
 
 ### 1. Environment Setup
