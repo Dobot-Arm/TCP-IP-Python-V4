@@ -381,7 +381,7 @@ motion.Circle(p1, p2, count, coord_type, user=-1, tool=-1, a=-1, v=-1, speed=-1,
 **示例**:
 
 ```python
-# 画2圈圆
+# 沿同一圆形轨迹运动两圈
 robot.motion.Circle(mid_point, end_point, 2, CoordinateType.CARTESIAN)
 ```
 
@@ -932,7 +932,7 @@ io.DO(index, status, time=None) -> str
 | ------ | ----- | ----------------------------------------- |
 | index  | int   | DO端口索引（1-64）                               |
 | status | int   | 0-Off，1-On                                  |
-| time   | float | 输出持续时间（秒），当status=1时有效，到达时间后自动变为0（可选）     |
+| time   | float | 输出持续时间（秒，可选），仅在 `status` 为 1 时有效。时间到后，数字输出状态自动变为 0。     |
 
 **示例**:
 
@@ -1189,7 +1189,7 @@ robot_control.PowerOn() -> str
 robot.robot_control.PowerOn()
 ```
 
-#### DisableRobot() - 机器人下使能（下电）
+#### DisableRobot() - 机器人下使能
 
 ```python
 robot_control.DisableRobot() -> str
@@ -1267,13 +1267,9 @@ response = robot.robot_control.GetAngle()
 print(response)  # ErrorID,{j1,j2,j3,j4,j5,j6},GetAngle();
 ```
 
-#### GetSpeed() - 获取当前速度
+#### 获取当前速度比例
 
-注：该指令在当前固件版本中未单独提供，速度信息可通过30004端口实时反馈的SpeedScaling字段获取（robot.GetStatus().speed_scaling）
-
-```python
-robot_control.GetSpeed() -> str
-```
+当前速度比例以百分比表示，可通过 30004 端口实时反馈中的 `SpeedScaling` 字段获取。SDK 中可通过 `robot.GetStatus().speed_scaling` 读取该值。
 
 **示例**:
 
@@ -1718,7 +1714,7 @@ plugins.FCForceMode(direction, force, reference=0, user=-1, tool=-1) -> str
 | 参数        | 类型            | 说明                                                                                                                                                                                   |
 | --------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | direction | Sequence[int] | 6个方向的力控开关 [x,y,z,rx,ry,rz]，1表示开启，0表示关闭                                                                                                                                                      |
-| force     | Sequence[float] | 6个方向的目标力 [fx,fy,fz,frx,fry,frz]。位移方向目标力范围[-200,200]N，姿态方向目标力范围[-12,12]N/m。目标力为0时处于柔顺模式                                                                                                                   |
+| force     | Sequence[float] | 目标力和目标力矩 `[fx, fy, fz, frx, fry, frz]`。平移方向的目标力范围为 [-200, 200] N，旋转方向的目标力矩范围为 [-12, 12] N·m。目标力为 0 时，机器人处于柔顺模式。                                                                                                                   |
 | reference | int           | （可选）参考坐标系类型。0-工具坐标系（默认），1-用户坐标系                                                                                                                                                                        |
 | user      | int           | （可选）用户坐标系编号(0-50)，默认为-1表示当前用户坐标系                                                                                                                                                                             |
 | tool      | int           | （可选）工具坐标系编号(0-50)，默认为-1表示当前工具坐标系                                                                                                                                                                             |
@@ -1764,9 +1760,9 @@ plugins.FCSetForceLimit(x, y, z, rx, ry, rz) -> str
 | x  | float  | X方向最大力限制(N)，范围(0, 500]，默认500                                                      |
 | y  | float  | Y方向最大力限制(N)，范围(0, 500]，默认500                                                      |
 | z  | float  | Z方向最大力限制(N)，范围(0, 500]，默认500                                                      |
-| rx | float  | Rx方向最大力矩限制(N/m)，范围(0, 50]，默认50                                                  |
-| ry | float  | Ry方向最大力矩限制(N/m)，范围(0, 50]，默认50                                                  |
-| rz | float  | Rz方向最大力矩限制(N/m)，范围(0, 50]，默认50                                                  |
+| rx | float  | Rx 轴力矩上限（N·m），范围(0, 50]，默认50                                                  |
+| ry | float  | Ry 轴力矩上限（N·m），范围(0, 50]，默认50                                                  |
+| rz | float  | Rz 轴力矩上限（N·m），范围(0, 50]，默认50                                                  |
 
 **示例**:
 
@@ -1866,7 +1862,7 @@ plugins.FCSetForceSpeedLimit(x, y, z, rx, ry, rz) -> str
 robot.plugins.FCSetForceSpeedLimit(20, 20, 20, 20, 20, 20)
 ```
 
-#### FCSetForce() - 实时调整恒力设置
+#### FCSetForce() - 实时调整恒力和恒力矩
 
 ```python
 plugins.FCSetForce(x, y, z, rx, ry, rz) -> str
@@ -1879,14 +1875,14 @@ plugins.FCSetForce(x, y, z, rx, ry, rz) -> str
 | x  | float  | X方向恒力值(N)，范围[-200, 200]                                              |
 | y  | float  | Y方向恒力值(N)，范围[-200, 200]                                              |
 | z  | float  | Z方向恒力值(N)，范围[-200, 200]                                              |
-| rx | float  | Rx方向恒力值(N/m)，范围[-12, 12]                                          |
-| ry | float  | Ry方向恒力值(N/m)，范围[-12, 12]                                          |
-| rz | float  | Rz方向恒力值(N/m)，范围[-12, 12]                                          |
+| rx | float  | Rx 轴恒力矩（N·m），范围[-12, 12]                                          |
+| ry | float  | Ry 轴恒力矩（N·m），范围[-12, 12]                                          |
+| rz | float  | Rz 轴恒力矩（N·m），范围[-12, 12]                                          |
 
 **示例**:
 
 ```python
-# XYZ方向恒力50N，姿态方向恒力10N/m
+# 各平移轴的恒力设为 50 N，各旋转轴的恒力矩设为 10 N·m
 robot.plugins.FCSetForce(50, 50, 50, 10, 10, 10)
 ```
 
@@ -1964,7 +1960,7 @@ plugins.CnvMovL(index, pose, offset, mode) -> str
 | 参数     | 类型           | 说明                                                                 |
 | ------ | ------------ | ------------------------------------------------------------------ |
 | index  | int          | 传送带编号。取值范围：0~7。                                                     |
-| pose   | Sequence[float] | 参考世界坐标系下的目标点位置 \[x, y, z, rx, ry, rz]                             |
+| pose   | Sequence[float] | 世界坐标系下的目标位姿 `[x, y, z, rx, ry, rz]`                             |
 | offset | Sequence[float] | 传送带跟踪偏移位置 \[x, y, z, rx, ry, rz]                                  |
 | mode   | int          | 运行模式。 0：按位姿跟踪。 1：按路径跟踪。                                             |
 
@@ -2107,7 +2103,7 @@ if status:
     print(f"模式: {status.robot_mode.value}")
     
     # 速度比例
-    print(f"速度: {status.speed_scaling}%")
+    print(f"速度比例: {status.speed_scaling}%")
     
     # 数字输入输出
     print(f"DI: {bin(status.digital_inputs)}")
@@ -2322,11 +2318,11 @@ with DobotRobot("192.168.1.100") as robot:
     robot.plugins.SixForceHome()
     
     # 设置力控参数
-    stiffness = [1, 1, 1, 0, 0, 0]   # XYZ方向刚度
-    force = [0, 0, -5, 0, 0, 0]       # Z方向施加5N力
+    direction = [1, 1, 1, 0, 0, 0]   # 启用 X、Y、Z 轴的力控
+    force = [0, 0, -5, 0, 0, 0]       # 沿 Z 轴负方向设置 5 N 的目标力
     
     # 进入力控模式
-    robot.plugins.FCForceMode(stiffness, force)
+    robot.plugins.FCForceMode(direction, force)
     
     # 保持力控状态5秒
     time.sleep(5)

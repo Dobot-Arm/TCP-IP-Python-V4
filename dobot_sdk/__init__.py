@@ -2,8 +2,9 @@
 # Licensed under the MIT License
 
 """
-Dobot SDK V4 - 越疆机器人Python SDK
+Dobot SDK V4 - 越疆机器人Python SDK / Dobot Robot Python SDK
 
+Supported models: CRA, E6, CRAF, NovaLite and other V4 series robots
 支持型号: CRA, E6, CRAF, NovaLite等V4系列机器人
 """
 

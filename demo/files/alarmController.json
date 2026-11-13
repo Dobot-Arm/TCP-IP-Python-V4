@@ -3,9 +3,9 @@
     "id": 16,
     "level": 5,
     "en": {
-      "description": "The planned point is closed to the shoulder singularity point",
+      "description": "The planned position is close to the shoulder singularity.",
       "cause": "",
-      "solution": "Reselect the movement points or The joint interpolation command is used near the singularity point"
+      "solution": "Reselect the motion points or use a joint interpolation command near the singularity."
     },
     "zh_CN": {
       "description": "规划位置接近肩奇异点",
@@ -121,7 +121,7 @@
     "id": 18,
     "level": 5,
     "en": {
-      "description": "Inverse kinematics error with result out of working area",
+      "description": "The inverse kinematics result exceeds the limits.",
       "cause": "",
       "solution": "Reselect the target movement points"
     },
@@ -182,7 +182,7 @@
     "en": {
       "description": "The starting point and the end point are the same when the JUMP command, ARC command or Circle command is running",
       "cause": "",
-      "solution": "Reselect the target movement points to make it meet the requirements of corresponding instructions"
+      "solution": "Reselect motion points that meet the requirements of the corresponding command."
     },
     "zh_CN": {
       "description": "JUMP或ARC或Circles指令点位重复",
@@ -239,9 +239,9 @@
     "id": 26,
     "level": 5,
     "en": {
-      "description": "The planned point is closed to the wrist singularity point",
+      "description": "The planned position is close to the wrist singularity.",
       "cause": "",
-      "solution": "Reselect the movement points or The joint interpolation command is used near the singularity point"
+      "solution": "Reselect the motion points or use a joint interpolation command near the singularity."
     },
     "zh_CN": {
       "description": "规划位置接近腕奇异点",
@@ -298,9 +298,9 @@
     "id": 27,
     "level": 5,
     "en": {
-      "description": "The planned point is closed to the elbow singularity point",
-      "cause": "Reselect the movement points or The joint interpolation command is used near the singularity point",
-      "solution": ""
+      "description": "The planned position is close to the elbow singularity.",
+      "cause": "",
+      "solution": "Reselect the motion points or use a joint interpolation command near the singularity."
     },
     "zh_CN": {
       "description": "规划位置接近肘奇异点",
@@ -416,14 +416,14 @@
     "id": 30,
     "level": 5,
     "en": {
-      "description": "The full parameter inverse solution fails to be solved ",
+      "description": "Full-parameter inverse kinematics calculation failed.",
       "cause": "",
-      "solution": "Restart controller,If the fault persists, contact technical support engineers"
+      "solution": "Restart the controller. If the fault persists, contact technical support. If the robot is near a joint singularity, move away from it."
     },
     "zh_CN": {
       "description": "全参逆解求解失败",
       "cause": "",
-      "solution": "重新启动，若仍无法解决请联系技术支持工程师或接近关节奇异点附近，离开即可"
+      "solution": "重新启动。若故障仍存在，请联系技术支持工程师。若机器人接近关节奇异点，请离开奇异点附近。"
     },
     "zh_hant": {
       "description": "",
@@ -475,7 +475,7 @@
     "id": 48,
     "level": 5,
     "en": {
-      "description": "Joint1 is overspeed",
+      "description": "Joint 1 overspeed",
       "cause": "",
       "solution": "Reduce the joint velocity or Cartesian velocity setting, or reselect the moving point position away from the singular point"
     },
@@ -831,7 +831,7 @@
     "en": {
       "description": "Joint1 position lag error",
       "cause": "",
-      "solution": "Restart controller,If the fault persists, contact technical support engineers"
+      "solution": "Restart the controller. If the fault persists, contact technical support."
     },
     "zh_CN": {
       "description": "关节1位置超差",
@@ -890,7 +890,7 @@
     "en": {
       "description": "Joint2 position lag error",
       "cause": "",
-      "solution": "Restart controller,If the fault persists, contact technical support engineers"
+      "solution": "Restart the controller. If the fault persists, contact technical support."
     },
     "zh_CN": {
       "description": "关节2位置超差",
@@ -949,7 +949,7 @@
     "en": {
       "description": "Joint3 position lag error",
       "cause": "",
-      "solution": "Restart controller,If the fault persists, contact technical support engineers"
+      "solution": "Restart the controller. If the fault persists, contact technical support."
     },
     "zh_CN": {
       "description": "关节3位置超差",
@@ -1008,7 +1008,7 @@
     "en": {
       "description": "Joint4 position lag error",
       "cause": "",
-      "solution": "Restart controller,If the fault persists, contact technical support engineers"
+      "solution": "Restart the controller. If the fault persists, contact technical support."
     },
     "zh_CN": {
       "description": "关节4位置超差",
@@ -1067,7 +1067,7 @@
     "en": {
       "description": "Joint5 position lag error",
       "cause": "",
-      "solution": "Restart controller,If the fault persists, contact technical support engineers"
+      "solution": "Restart the controller. If the fault persists, contact technical support."
     },
     "zh_CN": {
       "description": "关节5位置超差",
@@ -1126,7 +1126,7 @@
     "en": {
       "description": "Joint6 position lag error",
       "cause": "",
-      "solution": "Restart controller,If the fault persists, contact technical support engineers"
+      "solution": "Restart the controller. If the fault persists, contact technical support."
     },
     "zh_CN": {
       "description": "关节6位置超差",
@@ -1185,7 +1185,7 @@
     "en": {
       "description": "Positive limit alarm of Joint1",
       "cause": "",
-      "solution": "Confirm the current joint Angle and soft limit setting, and move out of the limit in reverse motion or modify the soft limit setting"
+      "solution": "Check the current joint angle and software limit settings. Jog in the opposite direction to move away from the limit, or adjust the software limit settings."
     },
     "zh_CN": {
       "description": "关节1正向限位",
@@ -1244,7 +1244,7 @@
     "en": {
       "description": "Negative limit alarm of Joint1",
       "cause": "",
-      "solution": "Confirm the current joint Angle and soft limit setting, and move out of the limit in reverse motion or modify the soft limit setting"
+      "solution": "Check the current joint angle and software limit settings. Jog in the opposite direction to move away from the limit, or adjust the software limit settings."
     },
     "zh_CN": {
       "description": "关节1负向限位",
@@ -1303,7 +1303,7 @@
     "en": {
       "description": "Positive limit alarm of Joint2",
       "cause": "",
-      "solution": "Confirm the current joint Angle and soft limit setting, and move out of the limit in reverse motion or modify the soft limit setting"
+      "solution": "Check the current joint angle and software limit settings. Jog in the opposite direction to move away from the limit, or adjust the software limit settings."
     },
     "zh_CN": {
       "description": "关节2正向限位",
@@ -1362,7 +1362,7 @@
     "en": {
       "description": "Negative limit alarm of Joint2",
       "cause": "",
-      "solution": "Confirm the current joint Angle and soft limit setting, and move out of the limit in reverse motion or modify the soft limit setting"
+      "solution": "Check the current joint angle and software limit settings. Jog in the opposite direction to move away from the limit, or adjust the software limit settings."
     },
     "zh_CN": {
       "description": "关节2负向限位",
@@ -1421,7 +1421,7 @@
     "en": {
       "description": "Positive limit alarm of Joint3",
       "cause": "",
-      "solution": "Confirm the current joint Angle and soft limit setting, and move out of the limit in reverse motion or modify the soft limit setting"
+      "solution": "Check the current joint angle and software limit settings. Jog in the opposite direction to move away from the limit, or adjust the software limit settings."
     },
     "zh_CN": {
       "description": "关节3正向限位",
@@ -1480,7 +1480,7 @@
     "en": {
       "description": "Negative limit alarm of Joint3",
       "cause": "",
-      "solution": "Confirm the current joint Angle and soft limit setting, and move out of the limit in reverse motion or modify the soft limit setting"
+      "solution": "Check the current joint angle and software limit settings. Jog in the opposite direction to move away from the limit, or adjust the software limit settings."
     },
     "zh_CN": {
       "description": "关节3负向限位",
@@ -1539,7 +1539,7 @@
     "en": {
       "description": "Positive limit alarm of Joint4",
       "cause": "",
-      "solution": "Confirm the current joint Angle and soft limit setting, and move out of the limit in reverse motion or modify the soft limit setting"
+      "solution": "Check the current joint angle and software limit settings. Jog in the opposite direction to move away from the limit, or adjust the software limit settings."
     },
     "zh_CN": {
       "description": "关节4正向限位",
@@ -1598,7 +1598,7 @@
     "en": {
       "description": "Negative limit alarm of Joint4",
       "cause": "",
-      "solution": "Confirm the current joint Angle and soft limit setting, and move out of the limit in reverse motion or modify the soft limit setting"
+      "solution": "Check the current joint angle and software limit settings. Jog in the opposite direction to move away from the limit, or adjust the software limit settings."
     },
     "zh_CN": {
       "description": "关节4负向限位",
@@ -1657,7 +1657,7 @@
     "en": {
       "description": "Positive limit alarm of Joint5",
       "cause": "",
-      "solution": "Confirm the current joint Angle and soft limit setting, and move out of the limit in reverse motion or modify the soft limit setting"
+      "solution": "Check the current joint angle and software limit settings. Jog in the opposite direction to move away from the limit, or adjust the software limit settings."
     },
     "zh_CN": {
       "description": "关节5正向限位",
@@ -1716,7 +1716,7 @@
     "en": {
       "description": "Negative limit alarm of Joint5",
       "cause": "",
-      "solution": "Confirm the current joint Angle and soft limit setting, and move out of the limit in reverse motion or modify the soft limit setting"
+      "solution": "Check the current joint angle and software limit settings. Jog in the opposite direction to move away from the limit, or adjust the software limit settings."
     },
     "zh_CN": {
       "description": "关节5负向限位",
@@ -1775,7 +1775,7 @@
     "en": {
       "description": "Positive limit alarm of Joint6",
       "cause": "",
-      "solution": "Confirm the current joint Angle and soft limit setting, and move out of the limit in reverse motion or modify the soft limit setting"
+      "solution": "Check the current joint angle and software limit settings. Jog in the opposite direction to move away from the limit, or adjust the software limit settings."
     },
     "zh_CN": {
       "description": "关节6正向限位",
@@ -1834,7 +1834,7 @@
     "en": {
       "description": "Negative limit alarm of Joint6",
       "cause": "",
-      "solution": "Confirm the current joint Angle and soft limit setting, and move out of the limit in reverse motion or modify the soft limit setting"
+      "solution": "Check the current joint angle and software limit settings. Jog in the opposite direction to move away from the limit, or adjust the software limit settings."
     },
     "zh_CN": {
       "description": "关节6负向限位",
@@ -2127,7 +2127,7 @@
     "id": 116,
     "level": 1,
     "en": {
-      "description": "The emergency stop button is captured",
+      "description": "The hardware emergency stop button has been pressed.",
       "cause": "",
       "solution": "After releasing the emergency stop button, normal operation can be resumed according to the program"
     },
@@ -2188,7 +2188,7 @@
     "en": {
       "description": "The software emergency stop signal is triggered",
       "cause": "",
-      "solution": "After the reset software emergency stop signal, normal operation can be resumed according to the program"
+      "solution": "After resetting the software emergency stop signal, normal operation can be resumed according to the procedure."
     },
     "zh_CN": {
       "description": "软件急停信号被触发",
@@ -2306,12 +2306,12 @@
     "en": {
       "description": "The robot cannot remain stationary",
       "cause": "",
-      "solution": "Check that the load is set correctly"
+      "solution": "Check whether the payload and mounting angle are set correctly."
     },
     "zh_CN": {
       "description": "机器人无法保持静止",
       "cause": "",
-      "solution": "检查负载是否设置正确或错误安装角度设置"
+      "solution": "检查负载和安装角度设置是否正确。"
     },
     "zh_hant": {
       "description": "",
@@ -2363,7 +2363,7 @@
     "id": 146,
     "level": 5,
     "en": {
-      "description": "The target point is out range of workspace when inching robot",
+      "description": "Motion planning failed during jogging or inching.",
       "cause": "",
       "solution": "Restart the robot. If the fault persists, contact technical support engineers"
     },
@@ -2422,7 +2422,7 @@
     "id": 147,
     "level": 5,
     "en": {
-      "description": "Trajectory of repetition or a given point of a small line segment is less than 4",
+      "description": "Fewer than four points were specified for trajectory replay or short line segment motion.",
       "cause": "",
       "solution": "Check the trajectory file to ensure that the number of internal points is sufficient"
     },
@@ -2542,7 +2542,7 @@
     "en": {
       "description": "The current command does not support pausing. The robot has been stopped",
       "cause": "",
-      "solution": "Restart the robot"
+      "solution": "Restart the program."
     },
     "zh_CN": {
       "description": "当前指令不支持暂停，机器人已停止",
@@ -2835,7 +2835,7 @@
     "id": 1283,
     "level": 5,
     "en": {
-      "description": "Failed to load the moving parameters of the robot teaching coordinate params",
+      "description": "Failed to load the coordinate-system jogging parameters for robot teaching.",
       "cause": "",
       "solution": "Check and update the teach/coordinate.json file"
     },
@@ -2894,7 +2894,7 @@
     "id": 1284,
     "level": 5,
     "en": {
-      "description": "Failed to load the moving parameters of the robot teaching joint params",
+      "description": "Failed to load the joint jogging parameters for robot teaching.",
       "cause": "",
       "solution": "Check and update the teach/joint.json file"
     },
@@ -2953,7 +2953,7 @@
     "id": 1285,
     "level": 5,
     "en": {
-      "description": "Failed to load the moving parameters of the robot teaching inch params",
+      "description": "Failed to load the inching parameters for robot teaching.",
       "cause": "",
       "solution": "Check and update the teach/inch.json file"
     },
@@ -3012,7 +3012,7 @@
     "id": 1286,
     "level": 5,
     "en": {
-      "description": "Failed to load robot playback joint parameters",
+      "description": "Failed to load the joint-space motion planning parameters.",
       "cause": "",
       "solution": "Check and update the playback/joint.json file"
     },
@@ -3071,7 +3071,7 @@
     "id": 1287,
     "level": 5,
     "en": {
-      "description": "Failed to load robot playback coordinate parameters",
+      "description": "Failed to load the Cartesian-space motion planning parameters.",
       "cause": "",
       "solution": "Check and update the playback/coordinate.json file"
     },
@@ -3196,7 +3196,7 @@
     "zh_CN": {
       "description": "加载机器人全局速率参数失败",
       "cause": "",
-      "solution": "检查并更新settings/common,json文件"
+      "solution": "检查并更新settings/common.json文件"
     },
     "zh_hant": {
       "description": "",
@@ -3248,7 +3248,7 @@
     "id": 1290,
     "level": 5,
     "en": {
-      "description": "Failed to load the robot motion coordinate system index parameter",
+      "description": "Failed to load the jogging coordinate system index.",
       "cause": "",
       "solution": "Check and update the datasvr/config.json file"
     },
@@ -3720,7 +3720,7 @@
     "id": 1298,
     "level": 5,
     "en": {
-      "description": "Failed to load the robot shaft number parameter",
+      "description": "Failed to load the parameter for the number of robot axes.",
       "cause": "",
       "solution": "Check and update the properties/axis.json file"
     },
@@ -3779,7 +3779,7 @@
     "id": 1299,
     "level": 5,
     "en": {
-      "description": "Failed to load the robot bussiness type parameter",
+      "description": "Failed to load the robot product type parameter.",
       "cause": "",
       "solution": "Check and update the properties/bussinessType.json file"
     },
@@ -4605,7 +4605,7 @@
     "id": 1313,
     "level": 5,
     "en": {
-      "description": "Failed to load the robot recurrence parameter",
+      "description": "Failed to load the trajectory replay parameters.",
       "cause": "",
       "solution": "Check and update the function/reTraceParams.json file"
     },
@@ -4664,7 +4664,7 @@
     "id": 1314,
     "level": 5,
     "en": {
-      "description": "Failed to load the robot packing attitude parameters",
+      "description": "Failed to load the robot's packing pose parameters.",
       "cause": "",
       "solution": "Check and update the function/packPoint.json file"
     },
@@ -4723,7 +4723,7 @@
     "id": 1315,
     "level": 5,
     "en": {
-      "description": "Failed to load the robot\u0027s custom attitude parameters",
+      "description": "Failed to load the robot's custom pose parameters.",
       "cause": "",
       "solution": "Check and update the function/customPoint.json file"
     },
@@ -4900,12 +4900,12 @@
     "id": 1318,
     "level": 5,
     "en": {
-      "description": "Failed to load robot common signal configuration parameter failed",
+      "description": "Failed to load the robot's general-purpose signal configuration parameters.",
       "cause": "",
       "solution": "Check and update the function/commonSignal.json file"
     },
     "zh_CN": {
-      "description": "加载器机器人通用信号配置参数失败",
+      "description": "加载机器人通用信号配置参数失败",
       "cause": "",
       "solution": "检查并更新function/commonSignal.json文件"
     },
@@ -6080,7 +6080,7 @@
     "id": 1339,
     "level": 5,
     "en": {
-      "description": "Failed to load the safe skin obstacle avoidParams parameters of the robot",
+      "description": "Failed to load the robot's safety skin obstacle avoidance parameters.",
       "cause": "",
       "solution": "Check and update the elecSkin/avoidParams.json file"
     },
@@ -6198,7 +6198,7 @@
     "id": 1341,
     "level": 5,
     "en": {
-      "description": "Failed to load vibration detection parameters",
+      "description": "Failed to load the accelerometer measurement parameters.",
       "cause": "",
       "solution": "Check and update the properties/vibrationDetection.json file"
     },
@@ -6257,7 +6257,7 @@
     "id": 1342,
     "level": 5,
     "en": {
-      "description": "Failed to load vibration detection parameters",
+      "description": "Failed to load the hexahedral work zone configuration parameters.",
       "cause": "",
       "solution": "Check and update the function/workZone.json file"
     },
@@ -6611,7 +6611,7 @@
     "id": 1360,
     "level": 5,
     "en": {
-      "description": "Failed to diabble the robot",
+      "description": "Failed to disable the robot.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -6670,7 +6670,7 @@
     "id": 1361,
     "level": 5,
     "en": {
-      "description": "Failed to open the robot brake",
+      "description": "Failed to release the robot brake.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -6729,7 +6729,7 @@
     "id": 1362,
     "level": 5,
     "en": {
-      "description": "Failed to close the robot brake",
+      "description": "Failed to engage the robot brake.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -7201,7 +7201,7 @@
     "id": 1370,
     "level": 5,
     "en": {
-      "description": "Failed to installation attitude calibration ",
+      "description": "Failed to calibrate the mounting orientation.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -7260,7 +7260,7 @@
     "id": 1371,
     "level": 5,
     "en": {
-      "description": "Failed to coordinate system calibration",
+      "description": "Failed to calibrate the coordinate system.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -8263,7 +8263,7 @@
     "id": 1389,
     "level": 5,
     "en": {
-      "description": "Failed to update virtuall wall parameters",
+      "description": "Failed to update the virtual wall parameters.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -8322,7 +8322,7 @@
     "id": 1390,
     "level": 5,
     "en": {
-      "description": "Failed to joint motion",
+      "description": "Failed to execute joint motion.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -8381,7 +8381,7 @@
     "id": 1391,
     "level": 5,
     "en": {
-      "description": "Failed to linear motion",
+      "description": "Failed to execute linear motion.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -8440,7 +8440,7 @@
     "id": 1392,
     "level": 5,
     "en": {
-      "description": "Description Execution of the positive solution failed",
+      "description": "Forward kinematics calculation failed.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -8499,7 +8499,7 @@
     "id": 1393,
     "level": 5,
     "en": {
-      "description": "The inverse solution failed to execute",
+      "description": "Inverse kinematics calculation failed.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -8558,7 +8558,7 @@
     "id": 1394,
     "level": 5,
     "en": {
-      "description": "Failed to arc motion ",
+      "description": "Failed to execute arc motion.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -8617,7 +8617,7 @@
     "id": 1395,
     "level": 5,
     "en": {
-      "description": "Failed to full circle motion",
+      "description": "Failed to execute full-circle motion.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -8676,7 +8676,7 @@
     "id": 1396,
     "level": 5,
     "en": {
-      "description": "Failed to move relative joint using tool coordinate system",
+      "description": "Failed to execute a relative joint move in the tool coordinate system.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -8735,7 +8735,7 @@
     "id": 1397,
     "level": 5,
     "en": {
-      "description": "Failed to move relative linear using tool coordinate system",
+      "description": "Failed to execute a relative linear move in the tool coordinate system.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -8794,7 +8794,7 @@
     "id": 1398,
     "level": 5,
     "en": {
-      "description": "Failed to move relative joint using user coordinate system",
+      "description": "Failed to execute a relative joint move in the user coordinate system.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -8853,7 +8853,7 @@
     "id": 1399,
     "level": 5,
     "en": {
-      "description": "Failed to move relative linear using user coordinate system",
+      "description": "Failed to execute a relative linear move in the user coordinate system.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -8912,7 +8912,7 @@
     "id": 1400,
     "level": 5,
     "en": {
-      "description": "Failed to Relative joint motion using joint coordinate system of each axis",
+      "description": "Failed to execute a relative joint move in the coordinate system of each joint axis.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -8971,7 +8971,7 @@
     "id": 1401,
     "level": 5,
     "en": {
-      "description": "Failed to Cartesian point offset using user coordinate system",
+      "description": "Failed to apply a Cartesian point offset in the user coordinate system.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -9030,7 +9030,7 @@
     "id": 1402,
     "level": 5,
     "en": {
-      "description": "Failed to Cartesian point offset using tool coordinate system",
+      "description": "Failed to apply a Cartesian point offset in the tool coordinate system.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -9148,7 +9148,7 @@
     "id": 1404,
     "level": 5,
     "en": {
-      "description": "Failed to detect whether the motion reaches the descartes position",
+      "description": "Failed to determine whether the robot reached the Cartesian target position.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -9268,7 +9268,7 @@
     "en": {
       "description": "Algorithm communication abnormal",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "Restart the robot. If the error persists, it may be a system fault. Contact technical support."
     },
     "zh_CN": {
       "description": "算法通讯异常",
@@ -9327,7 +9327,7 @@
     "en": {
       "description": "The online status of axis 1 is abnormal",
       "cause": "",
-      "solution": "Check whether the hardware is working properly, and restart the controller， or contact technical support engineer"
+      "solution": "Check whether the hardware is functioning properly and restart the controller, or contact technical support."
     },
     "zh_CN": {
       "description": "轴1在线状态异常",
@@ -9386,7 +9386,7 @@
     "en": {
       "description": "The online status of axis 2 is abnormal",
       "cause": "",
-      "solution": "Check whether the hardware is working properly, and restart the controller， or contact technical support engineer"
+      "solution": "Check whether the hardware is functioning properly and restart the controller, or contact technical support."
     },
     "zh_CN": {
       "description": "轴2在线状态异常",
@@ -9445,7 +9445,7 @@
     "en": {
       "description": "The online status of axis 3 is abnormal",
       "cause": "",
-      "solution": "Check whether the hardware is working properly, and restart the controller， or contact technical support engineer"
+      "solution": "Check whether the hardware is functioning properly and restart the controller, or contact technical support."
     },
     "zh_CN": {
       "description": "轴3在线状态异常",
@@ -9504,7 +9504,7 @@
     "en": {
       "description": "The online status of axis 4 is abnormal",
       "cause": "",
-      "solution": "Check whether the hardware is working properly, and restart the controller， or contact technical support engineer"
+      "solution": "Check whether the hardware is functioning properly and restart the controller, or contact technical support."
     },
     "zh_CN": {
       "description": "轴4在线状态异常",
@@ -9563,7 +9563,7 @@
     "en": {
       "description": "The online status of axis 5 is abnormal",
       "cause": "",
-      "solution": "Check whether the hardware is working properly, and restart the controller， or contact technical support engineer"
+      "solution": "Check whether the hardware is functioning properly and restart the controller, or contact technical support."
     },
     "zh_CN": {
       "description": "轴5在线状态异常",
@@ -9622,7 +9622,7 @@
     "en": {
       "description": "The online status of axis 6 is abnormal.",
       "cause": "",
-      "solution": "Check whether the hardware is working properly, and restart the controller， or contact technical support engineer"
+      "solution": "Check whether the hardware is functioning properly and restart the controller, or contact technical support."
     },
     "zh_CN": {
       "description": "轴6在线状态异常",
@@ -9681,7 +9681,7 @@
     "en": {
       "description": "The online status of security I/O  is abnormal",
       "cause": "",
-      "solution": "Check whether the hardware is working properly, and restart the controller， or contact technical support engineer"
+      "solution": "Check whether the hardware is functioning properly and restart the controller, or contact technical support."
     },
     "zh_CN": {
       "description": "安全IO在线异常",
@@ -9740,7 +9740,7 @@
     "en": {
       "description": "The online status of universal I/O  is abnormal",
       "cause": "",
-      "solution": "Check whether the hardware is working properly, and restart the controller， or contact technical support engineer"
+      "solution": "Check whether the hardware is functioning properly and restart the controller, or contact technical support."
     },
     "zh_CN": {
       "description": "通用IO在线异常",
@@ -9799,7 +9799,7 @@
     "en": {
       "description": "The online status of energy feeder plate  is abnormal",
       "cause": "",
-      "solution": "Check whether the hardware is working properly, and restart the controller， or contact technical support engineer"
+      "solution": "Check whether the hardware is functioning properly and restart the controller, or contact technical support."
     },
     "zh_CN": {
       "description": "馈能板在线异常",
@@ -9858,7 +9858,7 @@
     "en": {
       "description": "The online status of end I/O  is abnormal",
       "cause": "",
-      "solution": "Check whether the hardware is working properly, and restart the controller， or contact technical support engineer"
+      "solution": "Check whether the hardware is functioning properly and restart the controller, or contact technical support."
     },
     "zh_CN": {
       "description": "末端IO在线异常",
@@ -10210,7 +10210,7 @@
     "id": 1423,
     "level": 5,
     "en": {
-      "description": "The script running status is abnormal",
+      "description": "Failed to enable or disable the safety skin.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -10269,7 +10269,7 @@
     "id": 1424,
     "level": 5,
     "en": {
-      "description": "The script running status is abnormal",
+      "description": "Failed to set safety skin sensitivity.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -10328,7 +10328,7 @@
     "id": 1425,
     "level": 5,
     "en": {
-      "description": "The script running status is abnormal",
+      "description": "Failed to reset the safety skin.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -10387,7 +10387,7 @@
     "id": 1426,
     "level": 5,
     "en": {
-      "description": "The script running status is abnormal",
+      "description": "Safety skin hardware reset failed.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -10564,7 +10564,7 @@
     "id": 1429,
     "level": 5,
     "en": {
-      "description": "Wait for the run to stop timeout",
+      "description": "Timed out waiting for execution to stop.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -10746,8 +10746,8 @@
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
     "zh_CN": {
-      "description": "",
-      "cause": "计算工具坐标系失败",
+      "description": "计算工具坐标系失败",
+      "cause": "",
       "solution": "重新尝试，如仍然出现该错误，请联系技术支持工程师"
     },
     "zh_hant": {
@@ -10800,13 +10800,13 @@
     "id": 1433,
     "level": 5,
     "en": {
-      "description": "Safety skin obstacle avoidance function failed to open/close",
+      "description": "Failed to enable or disable safety skin obstacle avoidance.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
     "zh_CN": {
-      "description": "",
-      "cause": "安全皮肤避障功能开启/关闭失败",
+      "description": "安全皮肤避障功能开启/关闭失败",
+      "cause": "",
       "solution": "重新尝试，如仍然出现该错误，请联系技术支持工程师"
     },
     "zh_hant": {
@@ -10859,13 +10859,13 @@
     "id": 1434,
     "level": 5,
     "en": {
-      "description": "Safety skin obstacle avoidance parameters failed to be set",
+      "description": "Failed to set the safety skin obstacle avoidance parameters.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
     "zh_CN": {
-      "description": "",
-      "cause": "安全皮肤避障参数设置失败",
+      "description": "安全皮肤避障参数设置失败",
+      "cause": "",
       "solution": "重新尝试，如仍然出现该错误，请联系技术支持工程师"
     },
     "zh_hant": {
@@ -10977,9 +10977,9 @@
     "id": 1436,
     "level": 5,
     "en": {
-      "description": "IPv4 mask format error",
+      "description": "Invalid IPv4 subnet mask format.",
       "cause": "",
-      "solution": "Fill in the correct IPv4 mask address"
+      "solution": "Enter a valid IPv4 subnet mask."
     },
     "zh_CN": {
       "description": "IPv4子网掩码格式错误",
@@ -11154,7 +11154,7 @@
     "id": 1439,
     "level": 5,
     "en": {
-      "description": "The trajectory reproduction movement to the first point does not support pause, the robot has stopped",
+      "description": "Pausing is not supported while the robot is moving to the first point of trajectory replay. The robot has stopped.",
       "cause": "collision or safeskin collision ",
       "solution": "handle the exception and rerun"
     },
@@ -11274,7 +11274,7 @@
     "en": {
       "description": "Zero calibration failure",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "Restart the robot. If the error persists, it may be a system fault. Contact technical support."
     },
     "zh_CN": {
       "description": "零点标定失败",
@@ -11333,7 +11333,7 @@
     "en": {
       "description": "Failed to set jitter suppression parameters",
       "cause": "The jitter suppression ratio parameter is not an int",
-      "solution": "Check the properties/suppressionConfig.json file format parameters are correct"
+      "solution": "Check whether the parameters in properties/suppressionConfig.json are in the correct format."
     },
     "zh_CN": {
       "description": "设置抖动抑制参数失败",
@@ -11449,7 +11449,7 @@
     "id": 1444,
     "level": 5,
     "en": {
-      "description": "Description Failed to update security zone parameters",
+      "description": "Failed to update the safety zone parameters.",
       "cause": "",
       "solution": "Try again. If the error persists, contact technical support engineers"
     },
@@ -12452,7 +12452,7 @@
     "id": 1540,
     "level": 1,
     "en": {
-      "description": "Data of the feedback board is not updated",
+      "description": "Five minutes after power-on, the online data has not been updated for one minute.",
       "cause": "",
       "solution": "Restart the robot. If the error persists, the hardware may be damaged. Contact technical support engineers"
     },
@@ -12926,7 +12926,7 @@
     "en": {
       "description": "The power current limiting chip detects an abnormal alarm",
       "cause": "",
-      "solution": "Restart the robot. If the error persists, the hardware may be damaged. Contact technical support engineers"
+      "solution": "Check whether the hardware is functioning properly and restart the robot, or contact technical support."
     },
     "zh_CN": {
       "description": "电源限流芯片检测异常报警",
@@ -13103,7 +13103,7 @@
     "en": {
       "description": "Internal first line voltage regulator abnormal alarm",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "内部第一路稳压值异常报警",
@@ -13162,7 +13162,7 @@
     "en": {
       "description": "Internal second voltage regulator abnormal alarm",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "内部第二路稳压值异常报警",
@@ -13219,9 +13219,9 @@
     "id": 1799,
     "level": 0,
     "en": {
-      "description": "The output voltage is abnormal before slow start on the body",
+      "description": "Abnormal output voltage before soft start at robot power-on.",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "本体上电缓启动前输出电压异常报警",
@@ -13280,7 +13280,7 @@
     "en": {
       "description": "Regenerative current detection over limit alarm",
       "cause": "",
-      "solution": "The feed current is too large, contact technical support engineers"
+      "solution": "The feed current is too high. Contact technical support."
     },
     "zh_CN": {
       "description": "馈能电流检测超限报警",
@@ -13337,7 +13337,7 @@
     "id": 1801,
     "level": 1,
     "en": {
-      "description": "Cement resistance overpower protection alarm",
+      "description": "Cement resistor power limit exceeded.",
       "cause": "",
       "solution": "Check whether the hardware is normal and restart it, or contact technical support engineers"
     },
@@ -13455,12 +13455,12 @@
     "id": 1803,
     "level": 1,
     "en": {
-      "description": "An energy feed alarm occurs when the ontology power-on cache is started",
+      "description": "Regenerative energy alarm during soft start at robot power-on.",
       "cause": "",
       "solution": "Check whether the hardware is normal and restart it, or contact technical support engineers"
     },
     "zh_CN": {
-      "description": "本体上电缓存启动时发生馈能报警",
+      "description": "本体上电缓启动时发生馈能报警",
       "cause": "",
       "solution": "检查硬件是否正常并重新启动，或联系技术支持工程师"
     },
@@ -13514,7 +13514,7 @@
     "id": 1804,
     "level": 1,
     "en": {
-      "description": "The output voltage control MOS tube is abnormal",
+      "description": "48 V output control MOSFET status fault.",
       "cause": "",
       "solution": "Check whether the hardware is normal and restart it, or contact technical support engineers"
     },
@@ -13573,7 +13573,7 @@
     "id": 1805,
     "level": 1,
     "en": {
-      "description": "The body is powered on and slow start fails",
+      "description": "Soft start failed at robot power-on.",
       "cause": "",
       "solution": "Check whether the hardware is normal and restart it, or contact technical support engineers"
     },
@@ -13634,7 +13634,7 @@
     "en": {
       "description": "Input voltage monitoring overvoltage alarm",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "输入电压监测过压报警",
@@ -13693,7 +13693,7 @@
     "en": {
       "description": "Input voltage monitoring undervoltage alarm",
       "cause": "",
-      "solution": "The feed current is too large, contact technical support engineers"
+      "solution": "The feed current is too high. Contact technical support."
     },
     "zh_CN": {
       "description": "输入电压监测欠压报警",
@@ -14045,7 +14045,7 @@
     "id": 1815,
     "level": 0,
     "en": {
-      "description": "48V output control MOS tube temperature is too high alarm",
+      "description": "48 V output control MOSFET overtemperature alarm.",
       "cause": "",
       "solution": "Check whether the hardware is normal and restart it, or contact technical support engineers"
     },
@@ -14163,7 +14163,7 @@
     "id": 1817,
     "level": 1,
     "en": {
-      "description": "Cement resistance overpower protection alarm",
+      "description": "Cement resistor power limit exceeded.",
       "cause": "",
       "solution": "Check whether the hardware is normal and restart it, or contact technical support engineers"
     },
@@ -14340,7 +14340,7 @@
     "id": 1820,
     "level": 1,
     "en": {
-      "description": "48V output control MOS tube status detection abnormal alarm",
+      "description": "48 V output control MOSFET status fault.",
       "cause": "",
       "solution": "Check whether the hardware is normal and restart it, or contact technical support engineers"
     },
@@ -14576,9 +14576,9 @@
     "id": 1826,
     "level": 1,
     "en": {
-      "description": "The maximum input voltage is set to an abnormal alarm",
+      "description": "Invalid maximum input voltage setting.",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "输入电压最大值设置异常报警",
@@ -14637,7 +14637,7 @@
     "en": {
       "description": "Input voltage minimum setting abnormal alarm",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "输入电压最小值设置异常报警",
@@ -14883,7 +14883,7 @@
     "zh_hant": {
       "description": "關節1內圈位置超限",
       "cause": "",
-      "solution": "重新啟動。如果故障仍然存在，请聯繫技術支援工程師。"
+      "solution": "重新啟動。如果故障仍然存在，請聯繫技術支援工程師。"
     },
     "kr": {
       "description": "조인트 1 위치 초과",
@@ -14942,7 +14942,7 @@
     "zh_hant": {
       "description": "關節2內圈位置超限",
       "cause": "",
-      "solution": "重新啟動。如果故障仍然存在，请聯繫技術支援工程師。"
+      "solution": "重新啟動。如果故障仍然存在，請聯繫技術支援工程師。"
     },
     "kr": {
       "description": "조인트 2 위치 초과",
@@ -15001,7 +15001,7 @@
     "zh_hant": {
       "description": "關節3內圈位置超限",
       "cause": "",
-      "solution": "重新啟動。如果故障仍然存在，请聯繫技術支援工程師。"
+      "solution": "重新啟動。如果故障仍然存在，請聯繫技術支援工程師。"
     },
     "kr": {
       "description": "조인트 3 위치 초과",
@@ -15060,7 +15060,7 @@
     "zh_hant": {
       "description": "關節4內圈位置超限",
       "cause": "",
-      "solution": "重新啟動。如果故障仍然存在，请聯繫技術支援工程師。"
+      "solution": "重新啟動。如果故障仍然存在，請聯繫技術支援工程師。"
     },
     "kr": {
       "description": "조인트 4 위치 초과",
@@ -15119,7 +15119,7 @@
     "zh_hant": {
       "description": "關節5內圈位置超限",
       "cause": "",
-      "solution": "重新啟動。如果故障仍然存在，请聯繫技術支援工程師。"
+      "solution": "重新啟動。如果故障仍然存在，請聯繫技術支援工程師。"
     },
     "kr": {
       "description": "조인트 5 위치 초과",
@@ -15178,7 +15178,7 @@
     "zh_hant": {
       "description": "關節6內圈位置超限",
       "cause": "",
-      "solution": "重新啟動。如果故障仍然存在，请聯繫技術支援工程師。"
+      "solution": "重新啟動。如果故障仍然存在，請聯繫技術支援工程師。"
     },
     "kr": {
       "description": "조인트 6 위치 초과",
@@ -15581,7 +15581,7 @@
     "en": {
       "description": "Joint 1 torque exceeds the limit",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "关节1转矩超限",
@@ -15640,7 +15640,7 @@
     "en": {
       "description": "Joint 2 torque exceeds the limit",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "关节2转矩超限",
@@ -15699,7 +15699,7 @@
     "en": {
       "description": "Joint 3 torque exceeds the limit",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "关节3转矩超限",
@@ -15758,7 +15758,7 @@
     "en": {
       "description": "Joint 4 torque exceeds the limit",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "关节4转矩超限",
@@ -15817,7 +15817,7 @@
     "en": {
       "description": "Joint 5 torque exceeds the limit",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "关节5转矩超限",
@@ -15876,7 +15876,7 @@
     "en": {
       "description": "Joint 6 torque exceeds the limit",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "关节6转矩超限",
@@ -15935,7 +15935,7 @@
     "en": {
       "description": "The TCP position exceeded the limit",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "TCP位置超限",
@@ -16051,9 +16051,9 @@
     "id": 2071,
     "level": 1,
     "en": {
-      "description": "Safety controller A and B version mismatch",
+      "description": "Version mismatch between boards A and B of the safety controller.",
       "cause": "",
-      "solution": "If the safety controller A and B versions are different, please update the firmware to ensure compatibility between the two versions. Contact technical support if you need further assistance."
+      "solution": "If boards A and B of the safety controller have different versions, update the firmware to ensure compatibility. Contact technical support if you need further assistance."
     },
     "zh_CN": {
       "description": "安全控制器A板和B板版本不一致",
@@ -16110,9 +16110,9 @@
     "id": 2072,
     "level": 1,
     "en": {
-      "description": "TCP force limit exceeds the limit",
+      "description": "The TCP force exceeds the limit.",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "TCP力限制超限",
@@ -16230,7 +16230,7 @@
     "en": {
       "description": "The speed exceeds the threshold after the virtual wall is triggered",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "安全墙虚墙触发后速率超限",
@@ -16287,9 +16287,9 @@
     "id": 2075,
     "level": 1,
     "en": {
-      "description": "Contactor status detection is abnormal. Procedure",
+      "description": "Contactor status detection fault.",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "接触器状态检测异常",
@@ -16348,7 +16348,7 @@
     "en": {
       "description": "The energy feeder detects anomalies online",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "馈能板在线检测异常",
@@ -16405,9 +16405,9 @@
     "id": 2077,
     "level": 0,
     "en": {
-      "description": "Joint 2 torque exceeds the limit",
+      "description": "The front panel switch has been pressed.",
       "cause": "",
-      "solution": "After loosening the panel switch, normal operation can be resumed according to the program"
+      "solution": "After releasing the front panel switch, normal operation can be resumed according to the procedure."
     },
     "zh_CN": {
       "description": "前面板开关被按下",
@@ -16466,7 +16466,7 @@
     "en": {
       "description": "AC detection error",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "AC检测错误",
@@ -16525,7 +16525,7 @@
     "en": {
       "description": "Robot joint 1 transmission system position or speed error",
       "cause": "",
-      "solution": "System error, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "机器人关节1传动系统位置或速度超差",
@@ -16584,7 +16584,7 @@
     "en": {
       "description": "Robot joint 2 transmission system position or speed error",
       "cause": "",
-      "solution": "System error, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "机器人关节2传动系统位置或速度超差",
@@ -16643,7 +16643,7 @@
     "en": {
       "description": "Robot joint 3 transmission system position or speed error",
       "cause": "",
-      "solution": "System error, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "机器人关节3传动系统位置或速度超差",
@@ -16702,7 +16702,7 @@
     "en": {
       "description": "Robot joint 4 transmission system position or speed error",
       "cause": "",
-      "solution": "System error, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "机器人关节4传动系统位置或速度超差",
@@ -16761,7 +16761,7 @@
     "en": {
       "description": "Robot joint 5 transmission system position or speed error",
       "cause": "",
-      "solution": "System error, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "机器人关节5传动系统位置或速度超差",
@@ -16820,7 +16820,7 @@
     "en": {
       "description": "Robot joint 6 transmission system position or speed error",
       "cause": "",
-      "solution": "System error, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "机器人关节6传动系统位置或速度超差",
@@ -16879,7 +16879,7 @@
     "en": {
       "description": "Security limit parameter verification error alarm",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "安全限值参数校验错误",
@@ -16936,9 +16936,9 @@
     "id": 2088,
     "level": 1,
     "en": {
-      "description": "The security limit parameter matches an incorrect alarm",
+      "description": "Safety limit parameter mismatch.",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "安全限值参数匹配错误",
@@ -16997,7 +16997,7 @@
     "en": {
       "description": "I/O input port detection exception alarm",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "IO输入口检测异常",
@@ -17056,7 +17056,7 @@
     "en": {
       "description": "Abnormal I/O output detection alarm",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "IO输出口检测异常",
@@ -17115,7 +17115,7 @@
     "en": {
       "description": "3.3V Voltage Detection Exception Alarm",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "3.3V电压检测异常",
@@ -17174,7 +17174,7 @@
     "en": {
       "description": "The 5V voltage detection is abnormal",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "5V电压检测异常",
@@ -17233,7 +17233,7 @@
     "en": {
       "description": "24V voltage detection exception alarm",
       "cause": "",
-      "solution": "the system is faulty, contact technical support engineers"
+      "solution": "A system fault has occurred. Contact technical support."
     },
     "zh_CN": {
       "description": "24V电压检测异常",
@@ -18293,7 +18293,7 @@
     "id": 2114,
     "level": 1,
     "en": {
-      "description": "24V Generates alarms",
+      "description": "24 V output alarm.",
       "cause": "",
       "solution": "Check whether the hardware is normal and restart, or contact technical support engineers"
     },
@@ -18352,7 +18352,7 @@
     "id": 2128,
     "level": 1,
     "en": {
-      "description": "Power supply voltage detection An undervoltage alarm is generated",
+      "description": "Power supply undervoltage alarm.",
       "cause": "",
       "solution": "Check whether the hardware is normal and restart, or contact technical support engineers"
     },
@@ -18706,7 +18706,7 @@
     "id": 2135,
     "level": 1,
     "en": {
-      "description": "24V Output overcurrent alarm",
+      "description": "Invalid maximum power supply input voltage setting.",
       "cause": "",
       "solution": "A system error occurs. Contact technical support engineers"
     },
@@ -19060,7 +19060,7 @@
     "id": 2144,
     "level": 1,
     "en": {
-      "description": "End drop alarm",
+      "description": "Robot tool communication lost.",
       "cause": "",
       "solution": "Check whether the hardware is normal and restart, or contact technical support engineers"
     },
@@ -19827,9 +19827,9 @@
     "id": 4100,
     "level": 5,
     "en": {
-      "description": "The current trajectory recurrence does not support pausing.",
+      "description": "The current trajectory replay does not support pausing.",
       "cause": "",
-      "solution": "Rerun the trajectory to reproduce"
+      "solution": "Restart trajectory replay."
     },
     "zh_CN": {
       "description": "当前轨迹复现不支持暂停",
@@ -19886,9 +19886,9 @@
     "id": 4112,
     "level": 5,
     "en": {
-      "description": "",
+      "description": "The robot body's serial number does not match the serial number paired with the controller.",
       "cause": "",
-      "solution": ""
+      "solution": "Check the pairing between the robot body and the controller and contact technical support."
     },
     "zh_CN": {
       "description": "机器人本体SN和控制器匹配的SN不一致",
@@ -19945,9 +19945,9 @@
     "id": 4128,
     "level": 5,
     "en": {
-      "description": "The CODESYS engineering version of the controller does not match the board version",
+      "description": "The controller's CODESYS project version does not match the board version.",
       "cause": "",
-      "solution": "Matching results file/dobot/userdata/SlaveLog, matching relation between file/dobot/userdata/codesys/codesys json, check the controller codesys project and the board, the matching relation between contact technical support. "
+      "solution": "Use /dobot/userdata/SlaveLog (matching results) and /dobot/userdata/codesys/codesys.json (matching configuration) to check whether the controller's CODESYS project matches the board. Contact technical support."
     },
     "zh_CN": {
       "description": "控制器CODESYS工程版本与板卡版本不匹配",
@@ -20063,9 +20063,9 @@
     "id": 4193,
     "level": 5,
     "en": {
-      "description": "",
+      "description": "Failed to load the ecosystem plugin interface at user script startup.",
       "cause": "",
-      "solution": ""
+      "solution": "Check the user and ecosystem logs for details, or contact technical support for further assistance."
     },
     "zh_CN": {
       "description": "用户脚本启动时，加载生态插件接口报错",

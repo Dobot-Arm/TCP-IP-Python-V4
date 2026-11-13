@@ -1,13 +1,14 @@
 """
-伺服控制测试
+Servo control test
+# 伺服控制测试
 
-演示ServoP动态跟随功能，生成圆周运动轨迹
+Demonstrates ServoP trajectory following along a circular path. / 演示使用 ServoP 跟随圆形轨迹。
 """
 
 import sys
 import os
 
-# 添加父目录到路径，以便导入dobot_sdk
+# Add parent directory to path for importing dobot_sdk / 添加父目录到路径，以便导入dobot_sdk
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import math
@@ -17,15 +18,21 @@ from dobot_sdk import CoordinateType
 
 
 def parse_dobot_response(response_str: str) -> tuple:
-    """解析Dobot返回的字符串格式数据，提取各部分内容
+    """Parse the string-format data returned by Dobot and extract each part
+    # 解析Dobot返回的字符串格式数据，提取各部分内容
 
-    格式示例: 'part1,{1,2,3},part3'
+    Format example: 'part1,{1,2,3},part3'
+    # 格式示例: 'part1,{1,2,3},part3'
 
     Args:
-        response_str: 待解析的字符串
+    # 参数:
+        response_str: String to be parsed
+        # response_str: 待解析的字符串
 
     Returns:
-        tuple: (前缀部分, 数字列表, 后缀部分)，解析失败返回None
+    # 返回:
+        tuple: (prefix part, number list, suffix part), returns None on parse failure
+        # tuple: (前缀部分, 数字列表, 后缀部分)，解析失败返回None
     """
     first_comma_idx = response_str.find(',')
     if first_comma_idx == -1:
@@ -59,14 +66,20 @@ def parse_dobot_response(response_str: str) -> tuple:
 
 
 def generate_circular_trajectory(radius: float, num_points: int) -> list:
-    """生成圆周运动轨迹点
+    """Generate circular motion trajectory points
+    # 生成圆周运动轨迹点
 
     Args:
-        radius: 圆周半径(mm)
-        num_points: 轨迹点数
+    # 参数:
+        radius: Circle radius (mm)
+        # radius: 圆周半径(mm)
+        num_points: Number of trajectory points
+        # num_points: 轨迹点数
 
     Returns:
-        list: 轨迹点列表，每个点为[x, y, z, rx, ry, rz]
+    # 返回:
+        list: A list of trajectory points, each in the form [x, y, z, rx, ry, rz].
+        # list: 轨迹点列表，每个点为[x, y, z, rx, ry, rz]
     """
     trajectory_points = []
     for i in range(num_points):
@@ -87,12 +100,17 @@ def generate_circle_smooth(radius=50, total_points=300):
     return points
 
 def execute_trajectory_at_frequency(robot, trajectory_points, frequency_hz: float):
-    """以指定频率执行轨迹点序列
+    """Execute the trajectory point sequence at a specified frequency.
+    # 以指定频率执行轨迹点序列
 
     Args:
-        robot: DobotRobot实例
-        trajectory_points: 轨迹点列表
-        frequency_hz: 执行频率(Hz)
+    # 参数:
+        robot: DobotRobot instance
+        # robot: DobotRobot实例
+        trajectory_points: List of trajectory points
+        # trajectory_points: 轨迹点列表
+        frequency_hz: Execution frequency (Hz)
+        # frequency_hz: 执行频率(Hz)
     """
     start_time = time.time()
     interval = 1.0 / frequency_hz
@@ -101,7 +119,7 @@ def execute_trajectory_at_frequency(robot, trajectory_points, frequency_hz: floa
         expected_time = start_time + (i + 1) * interval
         cycle_start = time.time()
 
-        # 使用新SDK的ServoP接口
+        # Use the new SDK ServoP interface / 使用新SDK的ServoP接口
         robot.motion.ServoP(target_point)
 
         cycle_duration = time.time() - cycle_start
@@ -111,94 +129,99 @@ def execute_trajectory_at_frequency(robot, trajectory_points, frequency_hz: floa
         if delay_needed > 0:
             time.sleep(delay_needed)
         else:
-            print(f"周期 {i + 1} 超时 {-delay_needed:.3f} 秒")
+            print(f"Cycle {i + 1} timed out by {-delay_needed:.3f} seconds")  # 周期超时 / Cycle timed out
 
 def wait_for_robot_ready(robot, target_state=5.0, polling_interval=0.1):
-    """等待机器人进入就绪状态
+    """Wait for the robot to enter the ready state
+    # 等待机器人进入就绪状态
 
     Args:
-        robot: DobotRobot实例
-        target_state: 目标状态值
-        polling_interval: 轮询间隔(秒)
+    # 参数:
+        robot: DobotRobot instance
+        # robot: DobotRobot实例
+        target_state: Target state value
+        # target_state: 目标状态值
+        polling_interval: Polling interval (seconds)
+        # polling_interval: 轮询间隔(秒)
     """
     while True:
         status_response = robot.robot_control.RobotMode()
         parsed = parse_dobot_response(status_response)
 
         if parsed is None:
-            print("机器人状态解析失败")
+            print("Robot status parse failed")  # 机器人状态解析失败 / Robot status parse failed
             time.sleep(polling_interval)
             continue
 
         _, state_data, _ = parsed
 
         if state_data and state_data[0] == target_state:
-            print(f"机器人已就绪，状态: {state_data}")
+            print(f"Robot is ready, state: {state_data}")  # 机器人已就绪 / Robot is ready
             break
 
         time.sleep(polling_interval)
 
 
 def main():
-    # 修改为实际机器人IP
+    # Set this value to the robot's actual IP address. / 修改为实际机器人IP
     ROBOT_IP = "192.168.5.1"
-    
+
     try:
         with DobotRobot(ROBOT_IP) as robot:
-            print("=" * 50)
-            print("伺服控制测试 - 圆周轨迹跟随")
-            print("=" * 50)
-            
-            # 初始化
+            print("=" * 50)  # 分隔线 / Separator
+            print("Servo Control Test - Circular Trajectory Following")  # 伺服控制测试 - 圆周轨迹跟随 / Servo Control Test - Circular Trajectory Following
+            print("=" * 50)  # 分隔线 / Separator
+
+            # Initialization / 初始化
             robot.robot_control.RequestControl()
             robot.robot_control.ClearError()
             robot.robot_control.EnableRobot(load=1.0)
-            
-            # 激活用户坐标系0
+
+            # Activate user coordinate system 0 / 激活用户坐标系0
             robot.robot_control.User(0)
-            
-            # 获取当前位置
+
+            # Get current position / 获取当前位置
             pose_response = robot.robot_control.GetPose()
             parsed_pose = parse_dobot_response(pose_response)
 
             if parsed_pose is None:
-                print("错误: 位置信息解析失败")
+                print("Error: failed to parse position information")  # 位置信息解析失败 / Failed to parse position information
                 return
 
             _, current_position, _ = parsed_pose
-            print(f"当前位置: {current_position}")
+            print(f"Current position: {current_position}")  # 当前位置 / Current position
 
-            # 设置用户坐标系1（以当前位置为原点）
+            # Set user coordinate system 1 (using current position as origin) / 设置用户坐标系1（以当前位置为原点）
             set_user_result = robot.robot_control.SetUser(1, current_position)
-            print(f"设置用户坐标系结果: {set_user_result}")
+            print(f"Set user coordinate system result: {set_user_result}")  # 设置用户坐标系结果 / Set user coordinate system result
 
-            # 切换到用户坐标系1
+            # Switch to user coordinate system 1 / 切换到用户坐标系1
             robot.robot_control.User(1)
 
-            # 移动到轨迹起始点（用户坐标系中的相对位置）
+            # Move to trajectory start point (relative position in user coordinate system) / 移动到轨迹起始点（用户坐标系中的相对位置）
             start_point = [50, 0, 0, 0, 0, 0]
-            print(f"\n移动到轨迹起始点: {start_point}")
+            print(f"\nMoving to trajectory start point: {start_point}")  # 移动到轨迹起始点 / Moving to trajectory start point
             robot.motion.MovL(start_point, CoordinateType.CARTESIAN)
             time.sleep(3)
 
-            # 等待机器人就绪
+            # Wait for robot to be ready / 等待机器人就绪
             wait_for_robot_ready(robot)
 
-            # 生成圆周轨迹
+            # Generate circular trajectory / 生成圆周轨迹
             # trajectory_points = generate_circular_trajectory(radius=50, num_points=300)
             trajectory_points = generate_circle_smooth(radius=50, total_points=300)
-            print(f"\n生成 {len(trajectory_points)} 个轨迹点")
+            print(f"\nGenerated {len(trajectory_points)} trajectory points")  # 生成轨迹点 / Generated trajectory points
 
-            # 执行轨迹控制
-            print("开始执行轨迹控制...")
+            # Execute trajectory control / 执行轨迹控制
+            print("Starting trajectory control...")  # 开始执行轨迹控制 / Starting trajectory control
             execute_trajectory_at_frequency(robot, trajectory_points, frequency_hz=33.0)
 
-            print("\n轨迹执行完成")
+            print("\nTrajectory execution completed")  # 轨迹执行完成 / Trajectory execution completed
 
     except KeyboardInterrupt:
-        print("\n用户中断")
+        print("\nUser interrupted")  # 用户中断 / User interrupted
     except Exception as e:
-        print(f"\n错误: {e}")
+        print(f"\nError: {e}")  # 错误 / Error
         import traceback
         traceback.print_exc()
 

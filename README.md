@@ -5,10 +5,10 @@
 <h1>Dobot TCP/IP Python SDK V4</h1>
 
 **Dobot Robot Python SDK V4**  
-High-Performance Robot Control Framework Based on TCP/IP Protocol  
+High-Performance Robot Control Framework Based on TCP/IP  
 Supports CRA, E6, CRAF, NovaLite and Other V4 Series Robots
 
-[English](README.md) · [简体中文](README.zh.md) · [📖 Full API Documentation](assets/SDK_API文档_完整版.md)
+[English](README.md) · [简体中文](README.zh-CN.md) · [📖 Full API Documentation](assets/en/SDK_API_Complete.md)
 
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-blue?style=flat-square)](https://github.com/dobot-cn/TCP-IP-Python-V4-main)
 [![Python](https://img.shields.io/badge/Python-3.8%2B-green?style=flat-square)](https://www.python.org/)
@@ -83,7 +83,7 @@ pip show dobot_sdk
 | **Robot IP** | 192.168.1.100 (default) |
 | **Dashboard Port** | 29999 |
 | **Feedback Port** | 30004/30005/30006 |
-| **PC IP** | Must be in 192.168.X.X subnet |
+| **PC IP** | Must be on the same subnet as the robot. |
 
 ---
 
@@ -96,7 +96,7 @@ from dobot_sdk import DobotRobot
 
 ROBOT_IP = "192.168.1.100"
 
-# Using context manager (Recommended)
+# Use a context manager (recommended)
 with DobotRobot(ROBOT_IP) as robot:
     # Initialization
     robot.robot_control.RequestControl()
@@ -141,7 +141,7 @@ from dobot_sdk import DobotRobot
 with DobotRobot("192.168.1.100") as robot:
     robot.robot_control.EnableRobot()
 
-    # Digital output (per arm SDK docs: DO(index, status))
+    # Digital output (see the robot arm's TCP/IP interface guide for DO(index, status))
     robot.io.DO(1, 1)    # Turn on DO1
     robot.io.DO(1, 0)    # Turn off DO1
 
@@ -181,14 +181,18 @@ TCP-IP-Python-V4-main/
 ├── tests/                  # Test Code
 ├── assets/                 # Resource Files
 │   ├── CR3A.png            # Robot Image
-│   ├── SDK_API文档_完整版.md    # Full API Documentation
-│   ├── error_controller_README.md  # HTTP Error Interface Documentation
-│   ├── 手臂二开md文档/          # Arm SDK Development Docs
-│   └── DOBOT TCP_IP二次开发接口文档_V4.6.6_20260410_cn.pdf  # Official Interface Doc (PDF)
+│   ├── en/                 # English Documentation
+│   │   ├── SDK_API_Complete.md        # Full API Documentation
+│   │   ├── error_controller_README.md # HTTP Error Interface Documentation
+│   │   └── DOBOT TCP_IP Remote Control Interface Guide V4.6.6_en.pdf
+│   └── zh/                 # Chinese Documentation
+│       ├── SDK_API文档_完整版.md       # 完整 API 文档
+│       ├── error_controller_README.md  # HTTP 错误接口说明
+│       └── DOBOT TCP_IP二次开发接口文档_V4.6.6_cn.pdf
 ├── pyproject.toml          # Project Config
 ├── requirements.txt        # Dependencies
 ├── README.md               # English README
-└── README.zh.md            # Chinese README
+└── README.zh-CN.md         # Chinese README
 ```
 
 ---
@@ -287,7 +291,7 @@ For more detailed examples, see:
 | **E6 Series** | E6, E6 Pro, etc. |
 | **CRAF Series** | CRAF5, etc. |
 | **NovaLite Series** | NovaLite, etc. |
-| **Other V4 Series** | Robots supporting TCP/IP protocol |
+| **Other V4 Series** | Robots that support TCP/IP |
 
 ---
 
@@ -295,9 +299,11 @@ For more detailed examples, see:
 
 | Document | Description |
 |----------|-------------|
-| [SDK_API文档_完整版.md](assets/SDK_API文档_完整版.md) | Full API Documentation |
-| [DOBOT TCP_IP二次开发接口文档](assets/DOBOT%20TCP_IP二次开发接口文档_V4.6.6_20260410_cn.pdf) | Official Interface Document (PDF) |
-| [error_controller_README.md](assets/error_controller_README.md) | HTTP Error Interface Documentation |
+| [SDK_API_Complete.md](assets/en/SDK_API_Complete.md) | Full API Documentation (English) |
+| [SDK_API文档_完整版.md](assets/zh/SDK_API文档_完整版.md) | 完整 API 文档（中文） |
+| [DOBOT TCP_IP Remote Control Interface Guide](assets/en/DOBOT%20TCP_IP%20Remote%20Control%20Interface%20Guide%20V4.6.6_en.pdf) | Official Interface Document (English PDF) |
+| [DOBOT TCP_IP二次开发接口文档](assets/zh/DOBOT%20TCP_IP%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3_V4.6.6_cn.pdf) | 官方接口文档（中文 PDF） |
+| [error_controller_README.md](assets/en/error_controller_README.md) | HTTP Error Interface Documentation (English) |
 
 ---
 

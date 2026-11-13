@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Dobot
 # Licensed under the MIT License
 
-"""核心通信模块"""
+"""Core communication module / 核心通信模块"""
 
 from .connection import DobotConnection
 from .exceptions import DobotError, ConnectionError, ProtocolError, RobotError

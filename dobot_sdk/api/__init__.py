@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Dobot
 # Licensed under the MIT License
 
-"""API接口模块"""
+"""API interface module / API接口模块"""
 
 from .robot import DobotRobot
 from .motion import CoordinateType, Motion

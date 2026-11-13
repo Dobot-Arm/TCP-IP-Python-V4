@@ -1,62 +1,62 @@
-# 示例代码说明
+# Example Code Guide
 
-本目录包含DOBOT SDK的示例代码，按功能分类：
+This directory contains example code for the DOBOT SDK, categorized by functionality:
 
-## 示例列表
+## Example List
 
-| 序号 | 文件 | 功能描述 |
-|:---:|------|----------|
-| 00 | `00_logging_demo.py` | 日志系统演示 |
-| 01 | `01_basic_connection.py` | 基础连接和使能 |
-| 02 | `02_motion_control.py` | 运动控制（关节/直线/圆弧/整圆） |
-| 03 | `03_error_monitor.py` | 错误码监控和状态查询 |
-| 04 | `04_io_control.py` | IO控制（数字/模拟/末端IO） |
-| 05 | `05_coordinate_system.py` | 坐标系设置（用户/工具坐标系） |
-| 06 | `06_force_and_conveyor.py` | 力控和传送带 |
-| 07 | `07_status_monitor.py` | 状态监控 |
-| 08 | `08_multi_thread_control.py` | 多线程控制 |
+| No. | File | Function Description |
+|:---:|------|----------------------|
+| 00 | `00_logging_demo.py` | Logging system demo |
+| 01 | `01_basic_connection.py` | Basic connection and enabling |
+| 02 | `02_motion_control.py` | Motion control (joint/linear/arc/circle) |
+| 03 | `03_error_monitor.py` | Error code monitoring and status query |
+| 04 | `04_io_control.py` | IO control (digital/analog/end-effector IO) |
+| 05 | `05_coordinate_system.py` | Coordinate system setup (user/tool coordinate systems) |
+| 06 | `06_force_and_conveyor.py` | Force control and conveyor tracking |
+| 07 | `07_status_monitor.py` | Status monitoring |
+| 08 | `08_multi_thread_control.py` | Multi-thread control |
 
-## 运行示例
+## Running Examples
 
 ```bash
-# 运行基础连接示例
+# Run basic connection example
 python examples/01_basic_connection.py
 
-# 运行运动控制示例
+# Run motion control example
 python examples/02_motion_control.py
 
-# 运行错误监控示例
+# Run error monitoring example
 python examples/03_error_monitor.py
 
-# 运行IO控制示例
+# Run IO control example
 python examples/04_io_control.py
 
-# 运行坐标系设置示例
+# Run coordinate system setup example
 python examples/05_coordinate_system.py
 
-# 运行力控和传送带示例
+# Run force control and conveyor tracking example
 python examples/06_force_and_conveyor.py
 
-# 运行状态监控示例
+# Run status monitoring example
 python examples/07_status_monitor.py
 
-# 运行多线程控制示例
+# Run multi-thread control example
 python examples/08_multi_thread_control.py
 ```
 
-## 使用注意事项
+## Usage Notes
 
-1. **修改IP地址**：每个示例文件开头都有 `ROBOT_IP` 变量，请根据实际机器人IP修改
-2. **安全第一**：运行运动示例前，请确保机器人周围有足够安全空间
-3. **TCP模式**：确保机器人已切换到TCP/IP控制模式
-4. **依赖安装**：确保已安装必要依赖
+1. **Modify IP address**: Each example file has a `ROBOT_IP` variable at the beginning. Please modify it according to the actual robot IP.
+2. **Safety first**: Before running motion examples, ensure there is sufficient safe space around the robot.
+3. **TCP mode**: Ensure the robot has been switched to TCP/IP control mode.
+4. **Dependency installation**: Ensure necessary dependencies are installed.
    ```bash
    pip install numpy requests
    ```
 
-## 示例结构说明
+## Example Structure Description
 
-所有示例遵循统一的结构模式：
+All examples follow a unified structural pattern:
 
 ```python
 from dobot_sdk import DobotRobot
@@ -66,31 +66,31 @@ def main():
     
     try:
         with DobotRobot(ROBOT_IP) as robot:
-            # 1. 请求控制模式
+            # 1. Request control mode
             robot.robot_control.RequestControl()
             
-            # 2. 清除报警
+            # 2. Clear alarms
             robot.robot_control.ClearError()
             
-            # 3. 使能机器人
+            # 3. Enable robot
             robot.robot_control.EnableRobot(load=1.0)
             
-            # 4. 执行操作...
+            # 4. Perform operations...
             # ...
             
-            # 5. 下使能
+            # 5. Disable robot
             robot.robot_control.DisableRobot()
             
     except Exception as e:
-        print(f"错误: {e}")
+        print(f"Error: {e}")
 ```
 
-## 模块说明
+## Module Description
 
-| 模块 | 说明 |
-|------|------|
-| `robot.robot_control` | 基础控制（使能、模式、坐标系、状态查询） |
-| `robot.motion` | 运动控制（MovJ/MovL/Arc/Circle等） |
-| `robot.io` | IO控制（数字/模拟输入输出） |
-| `robot.communication` | 通信控制（寄存器操作） |
-| `robot.plugins` | 插件模块（力控、传送带） |
+| Module | Description |
+|--------|-------------|
+| `robot.robot_control` | Basic control (enable, mode, coordinate system, status query) |
+| `robot.motion` | Motion control (MovJ/MovL/Arc/Circle, etc.) |
+| `robot.io` | IO control (digital/analog input/output) |
+| `robot.communication` | Communication control (register operations) |
+| `robot.plugins` | Plugin module (force control, conveyor tracking) |

@@ -2,7 +2,7 @@
 # Licensed under the MIT License
 
 """
-报警信息数据模型
+Alarm information data model / 报警信息数据模型
 """
 
 from dataclasses import dataclass, field
@@ -13,8 +13,9 @@ from typing import List
 @dataclass
 class ErrorInfo:
     """
-    单条报警信息
+    Single alarm information / 单条报警信息
     
+    Parsed from data returned by the GetError interface
     从GetError接口返回的数据解析得到
     """
     id: int
@@ -27,7 +28,7 @@ class ErrorInfo:
     
     @property
     def timestamp_str(self) -> str:
-        """获取完整时间戳字符串"""
+        """Get full timestamp string / 获取完整时间戳字符串"""
         return f"{self.date} {self.time}"
     
     def __str__(self) -> str:
@@ -43,8 +44,9 @@ class ErrorInfo:
 @dataclass
 class ErrorReport:
     """
-    报警报告
+    Alarm report / 报警报告
     
+    Contains all current alarm information
     包含所有当前报警信息
     """
     errors: List[ErrorInfo]
@@ -52,32 +54,32 @@ class ErrorReport:
     
     @property
     def has_errors(self) -> bool:
-        """是否有报警"""
+        """Whether there are alarms / 是否有报警"""
         return len(self.errors) > 0
     
     @property
     def error_count(self) -> int:
-        """报警数量"""
+        """Number of alarms / 报警数量"""
         return len(self.errors)
     
     def get_critical_errors(self) -> List[ErrorInfo]:
-        """获取严重级别的报警（level >= 5）"""
+        """Get critical-level alarms (level >= 5) / 获取严重级别的报警（level >= 5）"""
         return [e for e in self.errors if e.level >= 5]
     
     def __str__(self) -> str:
         if not self.has_errors:
-            return "✅ 机器人状态正常，无报警信息"
+            return "Robot status normal, no alarm information"  # 机器人状态正常，无报警信息 / The robot status is normal, and there is no alarm information.
         
-        result = f"⚠️  发现 {self.error_count} 个报警\n"
+        result = f"Found {self.error_count} alarm(s)\n"  # 发现X个报警 / Found X alarms
         result += "=" * 50 + "\n"
         
         for i, error in enumerate(self.errors, 1):
-            result += f"报警 {i}:\n"
+            result += f"Alarm {i}:\n"  # 报警 / Alarm
             result += f"  ID: {error.id}\n"
-            result += f"  级别: {error.level}\n"
-            result += f"  描述: {error.description}\n"
-            result += f"  解决方案: {error.solution}\n"
-            result += f"  时间: {error.timestamp_str}\n"
+            result += f"  Level: {error.level}\n"  # 级别 / Level
+            result += f"  Description: {error.description}\n"  # 描述 / Description
+            result += f"  Solution: {error.solution}\n"  # 解决方案 / Solution
+            result += f"  Time: {error.timestamp_str}\n"  # 时间 / Time
             result += "-" * 30 + "\n"
         
         return result

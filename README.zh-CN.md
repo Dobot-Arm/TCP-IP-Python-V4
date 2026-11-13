@@ -8,7 +8,7 @@
 基于 TCP/IP 协议的高性能机器人控制框架  
 支持 CRA、E6、CRAF、NovaLite 等V4系列机器人
 
-[English](README.md) · [简体中文](README.zh.md) · [📖 完整API文档](assets/SDK_API文档_完整版.md)
+[English](README.md) · [简体中文](README.zh-CN.md) · [📖 完整API文档](assets/zh/SDK_API文档_完整版.md)
 
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-blue?style=flat-square)](https://github.com/dobot-cn/TCP-IP-Python-V4-main)
 [![Python](https://img.shields.io/badge/Python-3.8%2B-green?style=flat-square)](https://www.python.org/)
@@ -83,7 +83,7 @@ pip show dobot_sdk
 | **机器人 IP** | 192.168.1.100（默认） |
 | **Dashboard 端口** | 29999 |
 | **Feedback 端口** | 30004/30005/30006 |
-| **本机 IP** | 需设置为 192.168.X.X 网段 |
+| **本机 IP** | 本机 IP 地址须与机器人 IP 地址处于同一网段 |
 
 ---
 
@@ -181,14 +181,18 @@ TCP-IP-Python-V4-main/
 ├── tests/                  # 测试代码
 ├── assets/                 # 资源文件
 │   ├── CR3A.png            # 机器人图片
-│   ├── SDK_API文档_完整版.md    # 完整 API 文档
-│   ├── error_controller_README.md  # HTTP 错误接口说明
-│   ├── 手臂二开md文档/          # 手臂二次开发文档
-│   └── DOBOT TCP_IP二次开发接口文档_V4.6.6_20260410_cn.pdf  # 官方接口文档 (PDF)
+│   ├── en/                 # 英文文档
+│   │   ├── SDK_API_Complete.md        # Full API Documentation
+│   │   ├── error_controller_README.md # HTTP Error Interface Documentation
+│   │   └── DOBOT TCP_IP Remote Control Interface Guide V4.6.6_en.pdf
+│   └── zh/                 # 中文文档
+│       ├── SDK_API文档_完整版.md       # 完整 API 文档
+│       ├── error_controller_README.md  # HTTP 错误接口说明
+│       └── DOBOT TCP_IP二次开发接口文档_V4.6.6_cn.pdf
 ├── pyproject.toml          # 项目配置
 ├── requirements.txt        # 依赖列表
 ├── README.md               # 英文 README
-└── README.zh.md            # 中文 README
+└── README.zh-CN.md         # 中文 README
 ```
 
 ---
@@ -295,9 +299,11 @@ if robot.IsConnected:
 
 | 文档 | 说明 |
 |------|------|
-| [SDK_API文档_完整版.md](assets/SDK_API文档_完整版.md) | 完整 API 文档 |
-| [DOBOT TCP_IP二次开发接口文档](assets/DOBOT%20TCP_IP二次开发接口文档_V4.6.6_20260410_cn.pdf) | 官方接口文档 (PDF) |
-| [error_controller_README.md](assets/error_controller_README.md) | HTTP 错误接口说明 |
+| [SDK_API文档_完整版.md](assets/zh/SDK_API文档_完整版.md) | 完整 API 文档（中文） |
+| [SDK_API_Complete.md](assets/en/SDK_API_Complete.md) | Full API Documentation (English) |
+| [DOBOT TCP_IP二次开发接口文档](assets/zh/DOBOT%20TCP_IP%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3_V4.6.6_cn.pdf) | 官方接口文档（中文 PDF） |
+| [DOBOT TCP_IP Remote Control Interface Guide](assets/en/DOBOT%20TCP_IP%20Remote%20Control%20Interface%20Guide%20V4.6.6_en.pdf) | Official Interface Document (English PDF) |
+| [error_controller_README.md](assets/zh/error_controller_README.md) | HTTP 错误接口说明（中文） |
 
 ---
 

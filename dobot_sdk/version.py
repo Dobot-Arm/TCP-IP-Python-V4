@@ -1,7 +1,7 @@
 # Copyright (c) 2026 Dobot
 # Licensed under the MIT License
 
-"""SDK版本信息"""
+"""SDK version information / SDK版本信息"""
 
 __version__ = "2.0.0"
 __author__ = "Dobot Developer"

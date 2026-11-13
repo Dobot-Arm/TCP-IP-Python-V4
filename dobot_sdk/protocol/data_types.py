@@ -2,20 +2,21 @@
 # Licensed under the MIT License
 
 """
-数据结构定义
+Data structure definitions / 数据结构定义
 
+Defines the structure of Feedback data packets
 定义Feedback数据包的结构
 """
 
 import numpy as np
 
-# Feedback数据包大小
+# Feedback packet size / Feedback数据包大小
 FEEDBACK_PACKET_SIZE = 1440
 
-# 测试值常量（用于验证数据包有效性）
+# Test value constant (used to verify packet validity) / 测试值常量（用于验证数据包有效性）
 TEST_VALUE_MAGIC = 0x123456789abcdef
 
-# 定义Feedback数据结构
+# Define the Feedback data structure / 定义Feedback数据结构
 MyType = np.dtype([
     ('len', np.uint16),
     ('reserve', np.byte, (6,)),
