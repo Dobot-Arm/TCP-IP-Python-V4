@@ -1,8 +1,14 @@
+<div align="right">
+
+[English](README.md) | **简体中文**
+
+</div>
+
 # TCP-IP-Python-V4 项目说明文档
 
 ## 项目概述
 
-本项目是越疆机器人TCP-IP-CR-Python-V4二次开发API程序，用于通过TCP/IP协议控制越疆机器人。项目提供了完整的机器人控制接口，包括运动控制、状态监控、报警处理等功能。
+本项目是越疆机器人TCP-IP-Python-V4二次开发API程序，用于通过TCP/IP协议控制越疆机器人。项目提供了完整的机器人控制接口，包括运动控制、状态监控、报警处理等功能。
 
 ## 环境要求
 
@@ -15,6 +21,7 @@
 ```bash
 # 基础数值计算库
 pip install numpy
+pip install requests
 
 # JSON数据处理（Python内置，无需安装）
 # import json
@@ -37,7 +44,7 @@ pip install tkinter  # 通常Python自带
 
 ### 网络配置要求
 
-- 本机IP地址需设置为192.168.X.X网段
+- 将本机 IP 设置为 192.168.5.x 网段内的一个地址。
 - 机器人需切换至TCP/IP模式
 - 确保29999和30004端口未被占用
 
@@ -91,7 +98,7 @@ pip install tkinter  # 通常Python自带
 
 ### 5. 文档文件
 
-#### GetError_README.md
+#### [GetError_README.zh-CN.md](GetError_README.zh-CN.md)
 
 **功能**: GetError接口中文说明文档
 
@@ -99,11 +106,11 @@ pip install tkinter  # 通常Python自带
 - 包含接口参数、返回值、示例代码等
 - 提供故障排除和注意事项
 
-#### GetError_README_EN.md
+#### [GetError_README.en.md](GetError_README.en.md)
 
 **功能**: GetError接口英文说明文档
 
-- GetError_README.md的英文版本
+- GetError_README.zh-CN.md的英文版本
 - 便于国际用户理解和使用
 
 ## 项目目录结构
@@ -114,9 +121,10 @@ TCP-IP-Python-V4/
 ├── ui.py                      # 图形界面程序
 ├── PythonExample.py           # Python示例
 ├── get_error_example.py       # GetError使用示例
-├── GetError_README.md         # GetError中文文档
-├── GetError_README_EN.md      # GetError英文文档
-├── README.md                  # 项目说明文档
+├── GetError_README.zh-CN.md   # GetError中文文档
+├── GetError_README.en.md      # GetError英文文档
+├── README.md                  # 项目说明文档（英文）
+├── README.zh-CN.md            # 项目说明文档（中文）
 └── files/                     # 其他支持文件
 
 ## 快速开始
@@ -129,11 +137,12 @@ git clone https://github.com/Dobot-Arm/TCP-IP-CR-Python-V4.git
 
 # 安装依赖
 pip install numpy
+pip install requests
 ```
 
 ### 2. 网络配置
 
-- 设置本机IP为192.168.X.X网段
+- 将本机 IP 设置为 192.168.5.x 网段内的一个地址。
 - 确保机器人处于TCP/IP模式
 
 ### 3. 运行程序
@@ -191,5 +200,5 @@ pip install numpy
 ---
 
 **版本**: V4
-**更新日期**: 2025-9-5
+**更新日期**: 2026-11-10
 **维护**: dobot_futingxing

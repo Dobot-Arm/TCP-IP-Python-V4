@@ -1,3 +1,9 @@
+<div align="right">
+
+[English](GetError_README.en.md) | **简体中文**
+
+</div>
+
 # GetError接口使用说明
 
 ## 概述

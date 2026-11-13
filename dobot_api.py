@@ -13,9 +13,10 @@ alarmServoFile = "files/alarmServo.json"
 
 #brief dobot_v4_api:CRA\E6\CRAF\NovaLite
 #author futingxing
-#date 2025-12-15
+#date 2026-11-9
 
 # Port Feedback
+#端口反馈数据
 MyType = np.dtype([('len', np.uint16,),
                    ('reserve', np.byte, (6, )),
                    ('DigitalInputs', np.uint64,),
@@ -104,11 +105,11 @@ MyType = np.dtype([('len', np.uint16,),
 # 读取控制器和伺服告警文件
 # Read controller and servo alarm files
 def alarmAlarmJsonFile():
-    currrntDirectory = os.path.dirname(__file__)
-    jsonContrellorPath = os.path.join(currrntDirectory, alarmControllerFile)
-    jsonServoPath = os.path.join(currrntDirectory, alarmServoFile)
+    currentDirectory = os.path.dirname(__file__)
+    jsonControllorPath = os.path.join(currentDirectory, alarmControllerFile)
+    jsonServoPath = os.path.join(currentDirectory, alarmServoFile)
 
-    with open(jsonContrellorPath, encoding='utf-8') as f:
+    with open(jsonControllorPath, encoding='utf-8') as f:
         dataController = json.load(f)
     with open(jsonServoPath, encoding='utf-8') as f:
         dataServo = json.load(f)
@@ -158,6 +159,7 @@ class DobotApi:
 
     def wait_reply(self):
         """
+        读取返回值
         Read the return value
         """
         data = ""
@@ -177,6 +179,7 @@ class DobotApi:
 
     def close(self):
         """
+        关闭端口
         Close the port
         """
         if (self.socket_dobot != 0):
@@ -188,7 +191,8 @@ class DobotApi:
 
     def sendRecvMsg(self, string):
         """
-        send-recv Sync
+        在持有通信锁的情况下发送指令，并等待控制器响应。
+        Send a command and wait for the controller response while holding the communication lock.
         """
         with self.__globalLock:
             self.send_data(string)
@@ -238,8 +242,7 @@ class DobotApiDashboard(DobotApi):
         """
             可选参数
             参数名 类型 说明
-            load double
-            设置负载重量，取值范围不能超过各个型号机器⼈的负载范围。单位：kg
+            load double 设置负载重量，取值范围不能超过各个型号机器⼈的负载范围。单位：kg
             centerX double X⽅向偏⼼距离。取值范围：-999~ 999，单位：mm
             centerY double Y⽅向偏⼼距离。取值范围：-999~ 999，单位：mm
             centerZ double Z⽅向偏⼼距离。取值范围：-999~ 999，单位：mm
@@ -251,9 +254,7 @@ class DobotApiDashboard(DobotApi):
             1：携带⼀个参数，该参数表⽰负载重量。
             4：携带四个参数，分别表⽰负载重量和偏⼼参数。
             5：携带五个参数，分别表⽰负载重量、偏⼼参数和是否检查负载。
-                """
-        """
-            Optional parameter
+            Optional parameters
             Parameter name     Type     Description
             load     double     Load weight. The value range should not exceed the load range of corresponding robot models. Unit: kg.
             centerX     double     X-direction eccentric distance. Range: -999 – 999, unit: mm.
@@ -279,33 +280,38 @@ class DobotApiDashboard(DobotApi):
 
     def DisableRobot(self):
         """
-        Disabled the robot
-        下使能机械臂
+        下使能机器人。
+        Disable the robot.
         """
         string = "DisableRobot()"
         return self.sendRecvMsg(string)
 
     def ClearError(self):
         """
+        清除机器⼈报警。清除报警后，⽤⼾可以根据RobotMode来判断机器⼈是否还处于报警状态。
+        部分报警需要解决报警原因或者重启控制柜后才能清除。
         Clear controller alarm information
         Clear the alarms of the robot. After clearing the alarm, you can judge whether the robot is still in the alarm status according to RobotMode.
         Some alarms cannot be cleared unless you resolve the alarm cause or restart the controller.
-        清除机器⼈报警。清除报警后，⽤⼾可以根据RobotMode来判断机器⼈是否还处于报警状态。部
-        分报警需要解决报警原因或者重启控制柜后才能清除。
         """
         string = "ClearError()"
         return self.sendRecvMsg(string)
 
     def PowerOn(self):
         """
-        Powering on the robot
-        Note: It takes about 10 seconds for the robot to be enabled after it is powered on.
+        给机器人上电。
+        上电后等待约 10 秒，待初始化完成后再使能。
+
+        Power on the robot.
+        Wait about 10 seconds for initialization to complete before enabling the robot.
         """
         string = "PowerOn()"
         return self.sendRecvMsg(string)
 
     def RunScript(self, project_name):
         """
+        运⾏脚本文件。
+        project_name Script 脚本文件
         Run the script file
         project_name ：Script file name
         """
@@ -315,7 +321,7 @@ class DobotApiDashboard(DobotApi):
     def Stop(self):
         """
        停⽌已下发的运动指令队列或者RunScript指令运⾏的⼯程。
-       Stop the delivered motion command queue or the RunScript command from running.
+       Stop queued motion commands or the project started by RunScript.
         """
         string = "Stop()"
         return self.sendRecvMsg(string)
@@ -323,7 +329,7 @@ class DobotApiDashboard(DobotApi):
     def Pause(self):
         """
        暂停已下发的运动指令队列或者RunScript指令运⾏的⼯程。
-       Pause the delivered motion command queue or the RunScript command from running.
+       Pause queued motion commands or the project started by RunScript.
         """
         string = "Pause()"
         return self.sendRecvMsg(string)
@@ -331,7 +337,7 @@ class DobotApiDashboard(DobotApi):
     def Continue(self):
         """
        继续已暂停的运动指令队列或者RunScript指令运⾏的⼯程。
-       Continue the paused motion command queue or the RunScript command from running.
+       Resume paused motion commands or the paused project.
         """
         string = "Continue()"
         return self.sendRecvMsg(string)
@@ -342,7 +348,8 @@ class DobotApiDashboard(DobotApi):
        必选参数
        参数名 类型 说明
         mode int 急停操作模式。1表⽰按下急停，0表⽰松开急停
-       Stop the robot in an emergency. After the emergency stop, the robot arm will be disabled and then alarm. You need to release the emergency stop and clear the alarm to re-enable the robot arm.
+       Stop the robot in an emergency. An emergency stop disables the robot and triggers an alarm.
+       You need to release the emergency stop and clear the alarm to re-enable the robot arm.
        Required parameter
        Parameter name     Type     Description
         mode     int     E-Stop operation mode. 1: press the E-Stop, 0: release the E-Stop.
@@ -353,22 +360,20 @@ class DobotApiDashboard(DobotApi):
     def BrakeControl(self, axisID, value):
         """
         描述
-        控制指定关节的抱闸。机械臂静⽌时关节会⾃动抱闸，如果⽤⼾需进⾏关节拖拽操作，可开启抱
-        闸，即在机械臂下使能状态，⼿动扶住关节后，下发开启抱闸的指令。
+        控制指定关节的抱闸。机械臂静⽌时关节会⾃动抱闸，如果⽤⼾需进⾏关节拖拽操作，可松开抱闸，即在机械臂下使能状态，⼿动扶住关节后，下发松开抱闸的指令。
         仅能在机器⼈下使能时控制关节抱闸，否则ErrorID会返回-1。
         必选参数
         参数名  类型  说明
         axisID int 关节轴序号，1表⽰J1轴，2表⽰J2轴，以此类推
-        value int 设置抱闸状态。0表⽰抱闸锁死（关节不可移动），1表⽰松开抱闸（关节
-        可移动）
+        value int 设置抱闸状态。0表⽰抱闸锁死（关节不可移动），1表⽰松开抱闸（关节可移动）
         Description
-        Control the brake of specified joint. The joints automatically brake when the robot is stationary. If you need to drag the joints, you can switch on the brake,
-        i.e. hold the joint manually in the disabled status and deliver the command to switch on the brake.
+        Control the brake of the specified joint. The joints automatically brake when the robot is stationary. If you need to drag the joints, you can release the joint brake,
+        i.e. hold the joint manually in the disabled status and deliver the command to release the joint brake.
         Joint brake can be controlled only when the robot arm is disabled, otherwise, Error ID will return -1.
         Required parameter:
         Parameter name     Type     Description
         axisID     int     joint ID, 1: J1, 2: J2, and so on
-        Value     int     Set the status of brake. 0: switch off brake (joints cannot be dragged). 1: switch on brake (joints can be dragged).
+        value     int     Set the status of brake. 0: engage the joint brake (joints cannot be dragged). 1: release the joint brake (joints can be dragged).
         """
         string = "BrakeControl({:d},{:d})".format(axisID, value)
         return self.sendRecvMsg(string)
@@ -405,7 +410,7 @@ class DobotApiDashboard(DobotApi):
         """
         设置全局⽤⼾坐标系。⽤⼾下发运动指令时可选择⽤⼾坐标系，如未指定，则会使⽤全局⽤⼾坐标系。
         未设置时默认的全局⽤⼾坐标系为⽤⼾坐标系0。
-        Set the global tool coordinate system. You can select a tool coordinate system while delivering motion commands. If you do not specify the tool coordinate system, the global tool coordinate system will be used.
+        Set the global user coordinate system. You can select a user coordinate system while delivering motion commands. If you do not specify the user coordinate system, the global user coordinate system will be used.
         If it is not set, the default global user coordinate system is User coordinate system 0.
         """
         string = "User({:d})".format(index)
@@ -413,37 +418,56 @@ class DobotApiDashboard(DobotApi):
 
     def SetUser(self, index, table):
         """
-        修改指定的⽤⼾坐标系。
-        必选参数：
-        参数名 类型 说明
-        index int ⽤⼾坐标系索引，取值范围：[0,9]，坐标系0初始值为基坐标系。
-        table string  修改后的⽤⼾坐标系，格式为{x, y, z, rx, ry, rz}，建议使⽤CalcUser指令获
-        取。
-        Modify the specified user coordinate system.
-        Required parameter:
-        Parameter name     Type     Description
-        index    int     user coordinate system index, range: [0,9]. The initial value of coordinate system 0 refers to the base coordinate system.
-        table    string     user coordinate system after modification (format: {x, y, z, rx, ry, rz}), which is recommended to obtain through "CalcUser" command.
+        修改指定的用户坐标系。
+
+        参数：
+            index (int)：已标定的用户坐标系索引，范围为 [1, 50]。
+            table (str)：修改后的坐标系，格式为 {x, y, z, rx, ry, rz}，可通过 CalcUser 计算。
+
+        返回：
+            控制器响应字符串，格式为 ErrorID,{},SetUser(index,table);
+
+        Update the specified user coordinate system.
+
+        Args:
+            index (int): Index of a calibrated user coordinate system. Range: [1, 50].
+            table (str): Updated coordinate system in the format {x, y, z, rx, ry, rz}.
+                Use CalcUser to calculate it.
+
+        Returns:
+            The controller response string in the format ErrorID,{},SetUser(index,table);
         """
         string = "SetUser({:d},{:s})".format(index, table)
         return self.sendRecvMsg(string)
 
     def CalcUser(self, index, matrix_direction, table):
         """
-        计算⽤⼾坐标系。
-        必选参数：
-        参数名 类型 说明
-        index int ⽤⼾坐标系索引，取值范围：[0,9]，坐标系0初始值为基坐标系。
-        matrix_direction int  计算的⽅向。1表⽰左乘，即index指定的坐标系沿基坐标系偏转table指定的值；
-            0表⽰右乘，即index指定的坐标系沿⾃⼰偏转table指定的值。
-        table string ⽤⼾坐标系偏移值，格式为{x, y, z, rx, ry, rz}。
-        Calculate the user coordinate system.
-        Required parameter:
-        Parameter name     Type     Description
-        Index    int     user coordinate system index, range: [0,9]. The initial value of coordinate system 0 refers to the base coordinate system.
-        matrix_direction    int    Calculation method. 1: left multiplication, indicating that the coordinate system specified by "index" deflects the value specified by "table" along the base coordinate system.
-            0: right multiplication, indicating that the coordinate system specified by "index" deflects the value specified by "table" along itself.
-        table    string     user coordinate system offset (format: {x, y, z, rx, ry, rz}).
+        计算指定用户坐标系应用偏移后的结果。
+
+        参数：
+            index (int)：已标定的用户坐标系索引，范围为 [0, 50]。索引 0 初始为基坐标系。
+            matrix_direction (int)：乘法方向。1 表示左乘，偏移相对于基坐标系。
+                0 表示右乘，偏移相对于所选用户坐标系。
+            table (str)：偏移量，格式为 {x, y, z, rx, ry, rz}。
+
+        返回：
+            控制器响应字符串，格式为 ErrorID,{x,y,z,rx,ry,rz},CalcUser(index,matrix_direction,table);
+            花括号内为计算得到的用户坐标系。
+
+        Calculate the specified user coordinate system after applying an offset.
+
+        Args:
+            index (int): Index of a calibrated user coordinate system. Range: [0, 50].
+                Index 0 initially represents the base coordinate system.
+            matrix_direction (int): Multiplication order. Use 1 to left-multiply and apply
+                the offset in the base coordinate system. Use 0 to right-multiply and
+                apply the offset in the selected user coordinate system.
+            table (str): Offset in the format {x, y, z, rx, ry, rz}.
+
+        Returns:
+            The controller response string in the format
+            ErrorID,{x,y,z,rx,ry,rz},CalcUser(index,matrix_direction,table);
+            The values in braces describe the calculated user coordinate system.
         """
         string = "CalcUser({:d},{:d},{:s})".format(
             index, matrix_direction, table)
@@ -461,55 +485,73 @@ class DobotApiDashboard(DobotApi):
 
     def SetTool(self, index, table):
         """
-        修改指定的⼯具坐标系。
-        必选参数：
-        参数名 类型 说明
-        index int ⼯具坐标系索引，取值范围：[0,9]，坐标系0初始值为法兰坐标系。
-        table string  修改后的⼯具坐标系，格式为{x, y, z, rx, ry, rz}，表⽰该坐标系相对默认⼯
-        具坐标系的偏移量。
-        Modify the specified tool coordinate system.
-        Required parameter:
-        Parameter name     Type     Description
-        Index    int     tool coordinate system index, range: [0,9]. The initial value of coordinate system 0 refers to the flange coordinate system.
-        table    string     tool coordinate system after modification (format: {x, y, z, rx, ry, rz})
+        修改指定的工具坐标系。
+
+        参数：
+            index (int)：已标定的工具坐标系索引，范围为 [1, 50]。
+            table (str)：相对于默认工具坐标系的偏移量，格式为 {x, y, z, rx, ry, rz}。
+
+        返回：
+            控制器响应字符串，格式为 ErrorID,{},SetTool(index,table);
+
+        Update the specified tool coordinate system.
+
+        Args:
+            index (int): Index of a calibrated tool coordinate system. Range: [1, 50].
+            table (str): Offset relative to the default tool coordinate system,
+                in the format {x, y, z, rx, ry, rz}.
+
+        Returns:
+            The controller response string in the format ErrorID,{},SetTool(index,table);
         """
         string = "SetTool({:d},{:s})".format(index, table)
         return self.sendRecvMsg(string)
 
     def CalcTool(self, index, matrix_direction, table):
         """
-        计算⼯具坐标系。
-        必选参数：
-        参数名 类型 说明
-        index int  ⼯具坐标系索引，取值范围：[0,9]，坐标系0初始值为法兰坐标系。
-        matrix_direction int计算的⽅向。
-          1表⽰左乘，即index指定的坐标系沿法兰坐标系偏转table指定的值；
-          0表⽰右乘，即index指定的坐标系沿⾃⼰偏转table指定的值。
-        table string ⼯具坐标系偏移值，格式为{x, y, z, rx, ry, rz}。
-        Calculate the tool coordinate system.
-        Required parameter:
-        Parameter name     Type     Description
-        Index    int     tool coordinate system index, range: [0,9]. The initial value of coordinate system 0 refers to the flange coordinate system.
-        matrix_direction    int    Calculation method.
-          1: left multiplication, indicating that the coordinate system specified by "index" deflects the value specified by "table" along the flange coordinate system.
-          0: right multiplication, indicating that the coordinate system specified by "index" deflects the value specified by "table" along itself.
-        table    string     tool coordinate system offset (format: {x, y, z, rx, ry, rz}).
+        计算指定工具坐标系应用偏移后的结果。
+
+        参数：
+            index (int)：已标定的工具坐标系索引，范围为 [0, 50]。索引 0 初始为法兰坐标系。
+            matrix_direction (int)：乘法方向。1 表示左乘，偏移相对于法兰坐标系。
+                0 表示右乘，偏移相对于所选工具坐标系。
+            table (str)：偏移量，格式为 {x, y, z, rx, ry, rz}。
+
+        返回：
+            控制器响应字符串，格式为 ErrorID,{x,y,z,rx,ry,rz},CalcTool(index,matrix_direction,table);
+            花括号内为计算得到的工具坐标系。
+
+        Calculate the specified tool coordinate system after applying an offset.
+
+        Args:
+            index (int): Index of a calibrated tool coordinate system. Range: [0, 50].
+                Index 0 initially represents the flange coordinate system.
+            matrix_direction (int): Multiplication order. Use 1 to left-multiply and apply
+                the offset in the flange coordinate system. Use 0 to right-multiply and
+                apply the offset in the selected tool coordinate system.
+            table (str): Offset in the format {x, y, z, rx, ry, rz}.
+
+        Returns:
+            The controller response string in the format
+            ErrorID,{x,y,z,rx,ry,rz},CalcTool(index,matrix_direction,table);
+            The values in braces describe the calculated tool coordinate system.
         """
         string = "CalcTool({:d},{:d},{:s})".format(
             index, matrix_direction, table)
         return self.sendRecvMsg(string)
 
     def SetPayload(self, load=0.0, X=0.0, Y=0.0, Z=0.0, name='F'):
-        '''设置机械臂末端负载，⽀持两种设置⽅式。
+        '''
+        设置机械臂末端负载，⽀持两种设置⽅式。
         ⽅式⼀：直接设置负载参数
         必选参数1
         参数名 类型 说明
         load double  设置负载重量，取值范围不能超过各个型号机器⼈的负载范围。单位：kg
         可选参数1
         参数名 类型 说明
-        x double 末端负载X轴偏⼼坐标。取值范围：范围：-500~500。单位：mm
-        y double 末端负载Y轴偏⼼坐标。取值范围：范围：-500~500。单位：mm
-        z double 末端负载Z轴偏⼼坐标。取值范围：范围：-500~500。单位：mm
+        X double 末端负载质心的 X 轴坐标。取值范围：[-500, 500]，单位：mm。
+        Y double 末端负载质心的 Y 轴坐标。取值范围：[-500, 500]，单位：mm。
+        Z double 末端负载质心的 Z 轴坐标。取值范围：[-500, 500]，单位：mm。
         需同时设置或不设置这三个参数。偏⼼坐标为负载（含治具）的质⼼在默认⼯具坐标系下的坐标，
         参考下图。
 
@@ -524,9 +566,9 @@ class DobotApiDashboard(DobotApi):
         load     double     Load weight. The value range should not exceed the load range of corresponding robot models. Unit: kg.
         Optional parameter 1
         Parameter name     Type     Description
-        x     double     X-axis eccentric coordinates of the load. Range: -500 – 500. Unit: mm.
-        y     double     Y-axis eccentric coordinates of the load. Range: -500 – 500. Unit: mm.
-        z     double     Z-axis eccentric coordinates of the load. Range: -500 – 500. Unit: mm.
+        X     double     X coordinate of the payload center of mass. Range: [-500, 500]. Unit: mm.
+        Y     double     Y coordinate of the payload center of mass. Range: [-500, 500]. Unit: mm.
+        Z     double     Z coordinate of the payload center of mass. Range: [-500, 500]. Unit: mm.
         The three parameters need to be set or not set at the same time. The eccentric coordinate is the coordinate of the center of mass of the load (including the fixture) under the default tool coordinate system.
         Refer to the figure below.
 
@@ -591,7 +633,7 @@ class DobotApiDashboard(DobotApi):
         设置平滑过渡⽐例，即机械臂连续运动经过多个点时，经过中间点是以直⻆⽅式过渡还是以曲线⽅式过渡。
         未设置时默认值为0。
         平滑过渡⽐例。取值范围：[0, 100]
-        Set the continuous path (CP) ratio, that is, when the robot arm moves continuously via multiple points, whether it transitions at a right angle or in a curved way when passing through the through point.
+        Set the continuous path (CP) ratio, that is, when the robot arm moves continuously via multiple points, whether it transitions at a right angle or in a curved way when passing through the point.
         Defaults to 0 if not set.
         Continuous path ratio. Range: [0, 100].
         """
@@ -638,7 +680,7 @@ class DobotApiDashboard(DobotApi):
         参数名  类型 说明
         mode int  碰撞后处理⽅式，0表⽰检测到碰撞后进⼊停⽌状态，1表⽰检测到碰撞后
         进⼊暂停状态
-        Set the backoff distance after the robot detects collision.
+        Set the robot's response to a detected collision.
         If it is not set, the value set by the software before entering TCP/IP control mode will be adopted.
         Required parameter:
         Parameter name     Type     Description
@@ -658,7 +700,7 @@ class DobotApiDashboard(DobotApi):
     def StopDrag(self):
         """
         退出拖拽
-        The robot arm enters the drag mode. The robot cannot enter the drag mode through this command in error status.
+        Exit joint drag mode or force-controlled drag mode. The robot cannot enter the drag mode through this command in error status.
         """
         string = "StopDrag()"
         return self.sendRecvMsg(string)
@@ -723,8 +765,8 @@ class DobotApiDashboard(DobotApi):
         Switch on/off the specified safety wall.
         Required parameter:
         Parameter name     Type     Description
-        index     int     safety wall index, which needs to be added in the software first. Range: [1.8].
-        value      int     SafeSkin switch, 0: off, 1: on.
+        index     int     safety wall index, which needs to be added in the software first. Range: [1,8].
+        value      int     safety wall enable flag, 0: off, 1: on.
         """
         string = "SetSafeWallEnable({:d},{:d})".format(index, value)
         return self.sendRecvMsg(string)
@@ -739,7 +781,7 @@ class DobotApiDashboard(DobotApi):
         Switch on/off the specified interference area.
         Required parameter:
         Parameter name     Type     Description
-        index     int     interference area index, which needs to be added in the software first. Range: [1.6].
+        index     int     interference area index, which needs to be added in the software first. Range: [1,6].
         value      int     interference area switch, 0: off, 1: on.
         """
         string = "SetWorkZoneEnable({:d},{:d})".format(index, value)
@@ -798,7 +840,7 @@ class DobotApiDashboard(DobotApi):
        User string 不指定时使⽤全局⽤⼾坐标系。
        Tool string  格式为"tool=index"，index为已标定的⼯具坐标系索引。不指定时使⽤全局⼯具坐标系。
        Description
-       Positive solution. Calculate the coordinates of the end of the robot in the specified Cartesian coordinate system, based on the given angle of each joint.
+       forward kinematics. Calculate the coordinates of the end of the robot in the specified Cartesian coordinate system, based on the given angle of each joint.
        Required parameter:
        Parameter name     Type     Description
        J1     double     J1-axis position, unit: °
@@ -849,8 +891,8 @@ class DobotApiDashboard(DobotApi):
             "useJointNear=1"表⽰根据JointNear就近选解。
         jointNear string 格式为"jointNear={j1,j2,j3,j4,j5,j6}"，⽤于就近选解的关节坐标。
         Description
-        Inverse solution. Calculate the joint angles of the robot, based on the given coordinates in the specified Cartesian coordinate system.
-        As Cartesian coordinates only define the spatial coordinates and tilt angle of the TCP, the robot arm can reach the same posture through different gestures, which means that one posture variable can correspond to multiple joint variables.
+        Inverse kinematics. Calculate the joint angles of the robot, based on the given coordinates in the specified Cartesian coordinate system.
+        As Cartesian coordinates only define the spatial coordinates and tilt angle of the TCP, the robot arm can reach the same posture through different joint configurations, which means that one posture variable can correspond to multiple joint variables.
         To get a unique solution, the system requires a specified joint coordinate, and the solution closest to this joint coordinate is selected as the inverse solution。
         Required parameter:
         Parameter name     Type     Description
@@ -899,7 +941,7 @@ class DobotApiDashboard(DobotApi):
         可选参数
         参数名 类型 说明
         User string 格式为"user=index"，index为已标定的⽤⼾坐标系索引。
-        Tool string 格式为"tool=index"，index为已标定的⽤⼾坐标系索引。
+        Tool string 格式为"tool=index"，index为已标定的工具坐标系索引。
         必须同时传或同时不传，不传时默认为全局⽤⼾和⼯具坐标系。
         Get the Cartesian coordinates of the current posture under the specific coordinate system.
         Optional parameter:
@@ -918,7 +960,7 @@ class DobotApiDashboard(DobotApi):
             params.append('tool={:d}'.format(tool))
             state = not state
         if not state:
-            return 'need to be set or not set at the same time. They are global user coordinate system and global tool coordinate system if not set' # 必须同时传或同时不传坐标系，不传时默认为全局⽤⼾和⼯具坐标系
+            return 'need to be set or not set at the same time. They are global user coordinate system and global tool coordinate system if not set' # 必须同时传或同时不传坐标系，不传时默认为全局用户和工具坐标系 / Coordinate systems must be passed together or not at all; defaults to global user and tool coordinate systems
 
         for i, param in enumerate(params):
             if i == len(params)-1:
@@ -931,8 +973,8 @@ class DobotApiDashboard(DobotApi):
 
     def GetErrorID(self):
         """
-        获取机械臂当前位姿的关节坐标。
-        Get the joint coordinates of current posture.
+        获取机械臂当前报警错误码。
+        Get the active alarm IDs.
         """
         string = "GetErrorID()"
         return self.sendRecvMsg(string)
@@ -955,7 +997,7 @@ class DobotApiDashboard(DobotApi):
         Required parameter:
         Parameter name     Type     Description
         index     int     DO index
-        status     int     DO index, 1: ON, 0: OFF
+        status     int     DO index, 1Digital output state: ON, 0: OFF
         Optional parameter:
         Parameter name     Type     Description
         time     int     continuous output time, range: [25,60000]. Unit: ms.
@@ -1106,16 +1148,24 @@ class DobotApiDashboard(DobotApi):
 
     def GetToolDO(self, index):
         """
-        设置末端数字输出端⼝状态（⽴即指令）
-        必选参数
-        参数名 类型 说明
-        index int 末端DO端⼦的编号
-        status int 末端DO端⼦的状态，1：ON；0：OFF
-        Set the status of tool digital output port (immediate command)
-        Required parameter:
-        Parameter name     Type     Description
-        index     int     index of the tool DO
-        status     int     status of the tool DO, 1: ON, 0: OFF
+        读取指定末端数字输出（DO）的状态。此指令立即执行。
+
+        参数：
+            index (int)：末端 DO 端子编号。范围为 [1, MAX]，MAX 取决于末端工具支持的端子数量。
+
+        返回：
+            控制器响应字符串，格式为 ErrorID,{value},GetToolDO(index);
+            value 为输出状态，0 表示关闭（OFF），1 表示开启（ON）。
+
+        Read the state of the specified tool digital output (DO). This is an immediate command.
+
+        Args:
+            index (int): Tool DO terminal number. Range: [1, MAX], where MAX depends
+                on the number of terminals supported by the end effector.
+
+        Returns:
+            The controller response string in the format ErrorID,{value},GetToolDO(index);
+            value is the output state: 0 = OFF, 1 = ON.
         """
         string = "GetToolDO({:d})".format(index)
         return self.sendRecvMsg(string)
@@ -1362,7 +1412,7 @@ class DobotApiDashboard(DobotApi):
         必选参数
         参数名 类型 说明
         mode int 复⽤端⼦的模式，1：485模式，2：模拟输⼊模式
-        type int  当mode为1时，该该参数⽆效。当mode为2时，可设置模拟输⼊的模式。
+        type int  当mode为1时，该参数⽆效。当mode为2时，可设置模拟输⼊的模式。
                   个位表⽰AI1的模式，⼗位表⽰AI2的模式，⼗位为0时可仅输⼊个位。
         模式：
         0：0~10V电压输⼊模式
@@ -1496,7 +1546,7 @@ class DobotApiDashboard(DobotApi):
         必选参数
         参数名 类型 说明
         index int 创建主站时返回的主站索引
-        Disconnect with Modbus slave and release the master.
+       Disconnect from the Modbus slave and release the master connection.
         Required parameter:
         Parameter name     Type     Description
         index     int     master index
@@ -1550,7 +1600,7 @@ class DobotApiDashboard(DobotApi):
         valType string
         Data type:
         U16: 16-bit unsigned integer (two bytes, occupy one register)
-        U32: 32-bit unsigned integer (four bytes, occupy two register).
+        U32: 32-bit unsigned integer (four bytes, occupy two registers).
         F32: 32-bit single-precision floating-point number (four bytes, occupy two registers)
         F64: 64-bit double-precision floating-point number (eight bytes, occupy four registers)
         U16 by default.
@@ -1604,7 +1654,7 @@ class DobotApiDashboard(DobotApi):
         index     int     master index
         addr     int     starting address of the coil register
         count     int     number of values to be written to the coil register. Range: [1, 16].
-        valTab     string     values to be written to the register (number of values equals to count)
+        valTab     string     values to be written to the register (The number of values must equal count.)
         Return
         ErrorID,{},SetCoils(index,addr,count,valTab);
         Example
@@ -1632,18 +1682,18 @@ class DobotApiDashboard(DobotApi):
         F32：32位单精度浮点数（4个字节，占⽤2个寄存器）
         F64：64位双精度浮点数（8个字节，占⽤4个寄存器）
         默认为U16
-        Write the specified value according to the specified data type to the specified address of holding register.
+        Read values from the specified holding register address using the selected data type.
         Required parameter:
         Parameter name     Type     Description
         index     int     master index
         addr     int     starting address of the holding register
-        count     int     number of values to be written to the holding register. Range: [1, 4].
+        count     int     number of values to be read to the holding register. Range: [1, 4].
         Optional parameter:
         Parameter name     Type     Description
         valType string
         Data type:
         U16: 16-bit unsigned integer (two bytes, occupy one register)
-        U32: 32-bit unsigned integer (four bytes, occupy two register)
+        U32: 32-bit unsigned integer (four bytes, occupy two registers)
         F32: 32-bit single-precision floating-point number (four bytes, occupy two registers)
         F64: 64-bit double-precision floating-point number (eight bytes, occupy four registers)
         U16 by default.
@@ -1681,13 +1731,13 @@ class DobotApiDashboard(DobotApi):
         index     int     master index
         addr     int     starting address of the holding register
         count     int     number of values to be written to the holding register. Range: [1, 4].
-        valTab     string     values to be written to the register (number of values equals to count).
+        valTab     string     values to be written to the register (The number of values must equal count.)
         Optional parameter:
         Parameter name     Type     Description
         valType string
         Data type:
         U16: 16-bit unsigned integer (two bytes, occupy one register)
-        U32: 32-bit unsigned integer (four bytes, occupy two register)
+        U32: 32-bit unsigned integer (four bytes, occupy two registers)
         F32: 32-bit single-precision floating-point number (four bytes, occupy two registers)
         F64: 64-bit double-precision floating-point number (eight bytes, occupy four registers)
         U16 by default.
@@ -1906,8 +1956,7 @@ class DobotApiDashboard(DobotApi):
         tool int ⼯具坐标系
         a    int 执⾏该条指令时的机械臂运动加速度⽐例。取值范围：(0,100]
         v    int 执⾏该条指令时的机械臂运动速度⽐例，与speed互斥。取值范围：(0,100]
-        speed int 执⾏该条指令时的机械臂运动⽬标速度，与v互斥，若同时存在以speed为
-        准。取值范围：[1, 最⼤运动速度]，单位：mm/s
+        speed int 执⾏该条指令时的机械臂运动⽬标速度，与v互斥，若同时存在以speed为准。取值范围：[1, 最⼤运动速度]，单位：mm/s
         cp  int 平滑过渡⽐例，与r互斥。取值范围：[0,100]
         r   int 平滑过渡半径，与cp互斥，若同时存在以r为准。单位：mm
         Description
@@ -1922,7 +1971,7 @@ class DobotApiDashboard(DobotApi):
         tool     int     tool coordinate system
         a     int     acceleration rate of the robot arm when executing this command. Range: (0,100].
         v     int     velocity rate of the robot arm when executing this command, incompatible with “speed”. Range: (0,100].
-        speed     int     target speed of the robot arm when executing this command, incompatible with “v”. If both "speed" and "v” exist, speed takes precedence. Range: [0, maximum motion speed], unit: mm/s.
+        speed     int     target speed of the robot arm when executing this command, incompatible with “v”. If both "speed" and "v” exist, speed takes precedence. Range: [1, maximum motion speed], unit: mm/s.
         cp     int     continuous path rate, incompatible with “r”. Range: [0,100].
         r     int     continuous path radius, incompatible with “cp”. If both "r" and "cp” exist, r takes precedence. Unit: mm.
         """
@@ -1972,11 +2021,16 @@ class DobotApiDashboard(DobotApi):
         J6 double 点J6 轴位置，单位：度 是
         t float 该点位的运行时间，默认0.1,单位：s 否 [0.004,3600.0]
         aheadtime float 作用类似于PID的D项，默认50，标量，无单位 否 [20.0,100.0]
-        gain float 目标位置的比例放大器，作用类似于PID的P项，默认500，标量，无单位 否 [200.0,1000.0]
-        Joint string Target point joint variables
-        t float Optional parameter.Running time of the point, unit: s, value range: [0.02,3600.0], default value:0.1
-        aheadtime float Optional parameter.Advanced time, similar to the D in PID control. Scalar, no unit, valuerange: [20.0,100.0], default value: 50.
-        gain float Optional parameter.Proportional gain of the target position, similar to the P in PID control.Scalar, no unit, value range: [200.0,1000.0], default value: 500.
+        gain float 目标位置的比例增益，作用类似于PID的P项，默认500，标量，无单位 否 [200.0,1000.0]
+        J1 double Required parameter. J1 axis position of the point, unit: degree
+        J2 double Required parameter. J2 axis position of the point, unit: degree
+        J3 double Required parameter. J3 axis position of the point, unit: degree
+        J4 double Required parameter. J4 axis position of the point, unit: degree
+        J5 double Required parameter. J5 axis position of the point, unit: degree
+        J6 double Required parameter. J6 axis position of the point, unit: degree
+        t float Optional parameter. Running time of the point, unit: s, value range: [0.004,3600.0], default value:0.1
+        aheadtime float Optional parameter. Advanced time, similar to the D in PID control. Scalar, no unit, value range: [20.0,100.0], default value: 50.
+        gain float Optional parameter. Proportional gain of the target position, similar to the P in PID control. Scalar, no unit, value range: [200.0,1000.0], default value: 500.
         """
         string = ""
         string = "ServoJ({:f},{:f},{:f},{:f},{:f},{:f}".format(J1, J2, J3, J4, J5, J6)
@@ -2003,10 +2057,15 @@ class DobotApiDashboard(DobotApi):
         t float 该点位的运行时间，默认0.1,单位：s 否 [0.004,3600.0]
         aheadtime float 作用类似于PID的D项，默认50，标量，无单位 否 [20.0,100.0]
         gain float 目标位置的比例放大器，作用类似于PID的P项，默认500，标量，无单位 否 [200.0,1000.0]
-        Pose string  Target point posture variables. The reference coordinate system is the global user and tool coordinate system, see the User and Tool command descriptions in Settings command (the default values are both 0
-        t float Optional parameter.Running time of the point, unit: s, value range: [0.02,3600.0], default value:0.1
-        aheadtime float Optional parameter.Advanced time, similar to the D in PID control. Scalar, no unit, valuerange: [20.0,100.0], default value: 50.
-        gain float Optional parameter.Proportional gain of the target position, similar to the P in PID control.Scalar, no unit, value range: [200.0,1000.0], default value: 500.
+        X double Required parameter. X axis position, unit: mm
+        Y double Required parameter. Y axis position, unit: mm
+        Z double Required parameter. Z axis position, unit: mm
+        Rx double Required parameter. Rx axis position, unit: degree
+        Ry double Required parameter. Ry axis position, unit: degree
+        Rz double Required parameter. Rz axis position, unit: degree
+        t float Optional parameter. Running time of the point, unit: s, value range: [0.004,3600.0], default value: 0.1
+        aheadtime float Optional parameter. Advanced time, similar to the D in PID control. Scalar, no unit, value range: [20.0,100.0], default value: 50.
+        gain float Optional parameter. Proportional gain of the target position, similar to the P in PID control. Scalar, no unit, value range: [200.0,1000.0], default value: 500.
         """
         string = ""
         string = "ServoP({:f},{:f},{:f},{:f},{:f},{:f}".format(X, Y, Z, RX, RY, RZ)
@@ -2047,8 +2106,7 @@ class DobotApiDashboard(DobotApi):
         tool int ⼯具坐标系
         a int 执⾏该条指令时的机械臂运动加速度⽐例。取值范围：(0,100]
         v int 执⾏该条指令时的机械臂运动速度⽐例，与speed互斥。取值范围：(0,100]
-        speed int 执⾏该条指令时的机械臂运动⽬标速度，与v互斥，若同时存在以speed为
-        准。取值范围：[1, 最⼤运动速度]，单位：mm/s
+        speed int 执⾏该条指令时的机械臂运动⽬标速度，与v互斥，若同时存在以speed为准。取值范围：[1, 最⼤运动速度]，单位：mm/s
         cp int 平滑过渡⽐例，与r互斥。取值范围：[0,100]
         r int 平滑过渡半径，与cp互斥，若同时存在以r为准。单位：mm
         Description
@@ -2073,7 +2131,7 @@ class DobotApiDashboard(DobotApi):
         tool     int     tool coordinate system
         a     int     acceleration rate of the robot arm when executing this command. Range: (0,100].
         v     int     velocity rate of the robot arm when executing this command, incompatible with “speed”. Range: (0,100].
-        speed     int     target speed of the robot arm when executing this command, incompatible with “v”. If both "speed" and "v” exist, speed takes precedence. Range: [0, maximum motion speed], unit: mm/s.
+        speed     int     target speed of the robot arm when executing this command, incompatible with “v”. If both "speed" and "v” exist, speed takes precedence. Range: [1, maximum motion speed], unit: mm/s.
         cp     int     continuous path rate, incompatible with “r”. Range: [0,100].
         r     int     continuous path radius, incompatible with “cp”. If both "r" and "cp” exist, r takes precedence. Unit: mm.
         """
@@ -2206,8 +2264,7 @@ class DobotApiDashboard(DobotApi):
         tool int ⼯具坐标系
         a int  执⾏该条指令时的机械臂运动加速度⽐例。取值范围：(0,100]
         v int 执⾏该条指令时的机械臂运动速度⽐例，与speed互斥。取值范围：(0,100]
-        speed int执⾏该条指令时的机械臂运动⽬标速度，与v互斥，若同时存在以speed为
-        准。取值范围：[1, 最⼤运动速度]，单位：mm/s
+        speed int执⾏该条指令时的机械臂运动⽬标速度，与v互斥，若同时存在以speed为准。取值范围：[1, 最⼤运动速度]，单位：mm/s
         cp int 平滑过渡⽐例，与r互斥。取值范围：[0,100]
         r int 平滑过渡半径，与cp互斥，若同时存在以r为准。单位：mm
         Description
@@ -2224,7 +2281,7 @@ class DobotApiDashboard(DobotApi):
         tool     int     tool coordinate system
         a     int     acceleration rate of the robot arm when executing this command. Range: (0,100].
         v     int     velocity rate of the robot arm when executing this command, incompatible with “speed”. Range: (0,100].
-        speed     int     target speed of the robot arm when executing this command, incompatible with “v”. If both "speed" and "v” exist, speed takes precedence. Range: [0, maximum motion speed], unit: mm/s.
+        speed     int     target speed of the robot arm when executing this command, incompatible with “v”. If both "speed" and "v” exist, speed takes precedence. Range: [1, maximum motion speed], unit: mm/s.
         cp     int     continuous path rate, incompatible with “r”. Range: [0,100].
         r     int     continuous path radius, incompatible with “cp”. If both "r" and "cp” exist, r takes precedence. Unit: mm.
         """
@@ -2271,7 +2328,7 @@ class DobotApiDashboard(DobotApi):
         必选参数
         参数名 类型 说明
         P1 string 整圆中间点，⽀持关节变量或位姿变量
-        P2 string 整圆结束点点，⽀持关节变量或位姿变量
+        P2 string 用于定义整圆的第二个输入点，支持关节变量或位姿变量。
         coordinateMode int  目标点的坐标值模式    0为pose方式  1为joint
         count int 进⾏整圆运动的圈数，取值范围：[1,999]。
         可选参数
@@ -2285,12 +2342,12 @@ class DobotApiDashboard(DobotApi):
         cp int 平滑过渡⽐例，与r互斥。取值范围：[0,100]
         r int 平滑过渡半径，与cp互斥，若同时存在以r为准。单位：mm
         Description
-        Move from the current position in a circle interpolated mode, and return to the current position after moving specified circles.
+        Perform the specified number of full revolutions by circular interpolation and return to the starting position.
         As the circle needs to be determined through the current position, P1 and P2, the current position should not be in a straight line determined by P1 and P2, and the circle determined by the three points cannot exceed the motion range of the robot arm.
         Required parameter:
         Parameter name     Type     Description
         P1     string     Through point (joint variables or posture variables)
-        P2     string     End point (joint variables or posture variables)
+        P2     string     Second input point defining the circle (joint angles or Cartesian pose).
         coordinateMode     int      Coordinate mode of the target point, 0: pose, 1: joint
         count     int     Number of circles, range: [1,999].
         Optional parameter:
@@ -2299,7 +2356,7 @@ class DobotApiDashboard(DobotApi):
         tool     int     tool coordinate system
         a     int     acceleration rate of the robot arm when executing this command. Range: (0,100].
         v     int     velocity rate of the robot arm when executing this command, incompatible with “speed”. Range: (0,100].
-        speed     int     target speed of the robot arm when executing this command, incompatible with “v”. If both "speed" and "v” exist, speed takes precedence. Range: [0, maximum motion speed], unit: mm/s.
+        speed     int     target speed of the robot arm when executing this command, incompatible with “v”. If both "speed" and "v” exist, speed takes precedence. Range: [1, maximum motion speed], unit: mm/s.
         cp     int     continuous path rate, incompatible with “r”. Range: [0,100].
         r     int     continuous path radius, incompatible with “cp”. If both "r" and "cp” exist, r takes precedence. Unit: mm.
         """
@@ -2339,16 +2396,43 @@ class DobotApiDashboard(DobotApi):
 
     def MoveJog(self, axis_id='', coordtype=-1, user=-1, tool=-1):
         """
-        Joint motion
-        axis_id: Joint motion axis, optional string value:
-            J1+ J2+ J3+ J4+ J5+ J6+
-            J1- J2- J3- J4- J5- J6- 
-            X+ Y+ Z+ Rx+ Ry+ Rz+ 
-            X- Y- Z- Rx- Ry- Rz-
-        *dynParams: Parameter Settings（coord_type, user_index, tool_index）
-                    coord_type: 1: User coordinate 2: tool coordinate (default value is 1)
-                    user_index: user index is 0 ~ 9 (default value is 0)
-                    tool_index: tool index is 0 ~ 9 (default value is 0)
+        启动或停止机器人点动。此指令立即执行，支持在工程暂停时调用。
+
+        参数：
+            axis_id (str)：点动轴及方向，区分大小写。
+                关节轴为 J1 至 J6，笛卡尔轴为 X、Y、Z、Rx、Ry、Rz。
+                在轴名后加 + 或 - 指定方向，例如 J2- 或 X+。
+                机器人沿指定轴持续点动。调用 MoveJog() 或传入空字符串可停止点动。
+            coordtype (int, 可选)：0 表示关节点动，1 表示用户坐标系，2 表示工具坐标系。
+                指定关节轴时，控制器按关节点动处理并忽略此参数。
+                指定笛卡尔轴时，使用 1 或 2。传入 0 时控制器返回错误码 -6。
+                省略时，控制器沿用上次成功调用时的设置。
+            user (int, 可选)：已标定的用户坐标系索引，范围为 [0, 50]。
+            tool (int, 可选)：已标定的工具坐标系索引，范围为 [0, 50]。
+            Python 封装将 coordtype、user 和 tool 的默认值 -1 视为省略该参数。
+
+        返回：
+            控制器响应字符串，格式为 ErrorID,{},MoveJog(...);
+
+        Start or stop jogging the robot. This immediate command can be called while a project is paused.
+
+        Args:
+            axis_id (str): Case-sensitive jog axis and direction.
+                Joint axes are J1 through J6. Cartesian axes are X, Y, Z, Rx, Ry, and Rz.
+                Append + or - to select the direction, for example J2- or X+.
+                The robot jogs continuously along the selected axis. Call MoveJog()
+                or pass an empty string to stop jogging.
+            coordtype (int, optional): 0 = joint jogging, 1 = user coordinate system,
+                2 = tool coordinate system.
+                For a joint axis, the controller uses joint jogging and ignores this argument.
+                For a Cartesian axis, use 1 or 2. The controller returns error code -6 for 0.
+                When omitted, the controller uses the setting from the last successful call.
+            user (int, optional): Index of a calibrated user coordinate system. Range: [0, 50].
+            tool (int, optional): Index of a calibrated tool coordinate system. Range: [0, 50].
+            The Python wrapper treats the default value -1 for coordtype, user, and tool as omitted.
+
+        Returns:
+            The controller response string in the format ErrorID,{},MoveJog(...);
         """
         string = "MoveJog({:s}".format(axis_id)
         params = []
@@ -2511,6 +2595,23 @@ class DobotApiDashboard(DobotApi):
         
         返回:
             ErrorID,{ResultID},RelMovLTool(...);
+        Perform a relative linear move in the tool coordinate system.
+
+Args:
+    offset_x through offset_rz (float): X, Y, and Z offsets in mm,
+        and Rx, Ry, and Rz offsets in degrees.
+    user (int, optional): User coordinate system index. Range: [0, 50].
+    tool (int, optional): Tool coordinate system index. Range: [0, 50].
+    a (int, optional): Acceleration ratio. Range: [1, 100].
+    v (int, optional): Speed ratio. Range: [1, 100]. Mutually exclusive with speed.
+    speed (int, optional): Target speed in mm/s. Mutually exclusive with v.
+        If both are specified, speed takes precedence.
+    cp (int, optional): Path blending ratio. Range: [0, 100]. Mutually exclusive with r.
+    r (int, optional): Blending radius in mm. Mutually exclusive with cp.
+        If both are specified, r takes precedence.
+
+Returns:
+    ErrorID,{ResultID},RelMovLTool(...);
         """
         string = "RelMovLTool({:f},{:f},{:f},{:f},{:f},{:f}".format(
             offset_x, offset_y, offset_z, offset_rx, offset_ry, offset_rz)
@@ -2552,6 +2653,19 @@ class DobotApiDashboard(DobotApi):
         
         返回:
             ErrorID,{ResultID},RelMovJUser(...);
+        Perform a relative joint move with offsets expressed in the user coordinate system.
+
+Args:
+    offset_x through offset_rz (float): X, Y, and Z offsets in mm,
+        and Rx, Ry, and Rz offsets in degrees.
+    user (int, optional): User coordinate system index. Range: [0, 50].
+    tool (int, optional): Tool coordinate system index. Range: [0, 50].
+    a (int, optional): Acceleration ratio. Range: [1, 100].
+    v (int, optional): Speed ratio. Range: [1, 100].
+    cp (int, optional): Path blending ratio. Range: [0, 100].
+
+Returns:
+    ErrorID,{ResultID},RelMovJUser(...);
         """
         string = "RelMovJUser({:f},{:f},{:f},{:f},{:f},{:f}".format(
             offset_x, offset_y, offset_z, offset_rx, offset_ry, offset_rz)
@@ -2587,6 +2701,23 @@ class DobotApiDashboard(DobotApi):
         
         返回:
             ErrorID,{ResultID},RelMovLUser(...);
+            Perform a relative linear move in the user coordinate system.
+
+Args:
+    offset_x through offset_rz (float): X, Y, and Z offsets in mm,
+        and Rx, Ry, and Rz offsets in degrees.
+    user (int, optional): User coordinate system index. Range: [0, 50].
+    tool (int, optional): Tool coordinate system index. Range: [0, 50].
+    a (int, optional): Acceleration ratio. Range: [1, 100].
+    v (int, optional): Speed ratio. Range: [1, 100]. Mutually exclusive with speed.
+    speed (int, optional): Target speed in mm/s. Mutually exclusive with v.
+        If both are specified, speed takes precedence.
+    cp (int, optional): Path blending ratio. Range: [0, 100]. Mutually exclusive with r.
+    r (int, optional): Blending radius in mm. Mutually exclusive with cp.
+        If both are specified, r takes precedence.
+
+Returns:
+    ErrorID,{ResultID},RelMovLUser(...);
         """
         string = "RelMovLUser({:f},{:f},{:f},{:f},{:f},{:f}".format(
             offset_x, offset_y, offset_z, offset_rx, offset_ry, offset_rz)
@@ -2626,6 +2757,16 @@ class DobotApiDashboard(DobotApi):
         
         返回:
             ErrorID,{ResultID},RelJointMovJ(...);
+        Perform a relative move in joint space using joint motion.
+
+Args:
+    offset_x through offset_rz (float): Offsets for joints J1 through J6, in degrees.
+    a (int, optional): Acceleration ratio. Range: [1, 100].
+    v (int, optional): Speed ratio. Range: [1, 100].
+    cp (int, optional): Path blending ratio. Range: [0, 100].
+
+Returns:
+    ErrorID,{ResultID},RelJointMovJ(...);
         """
         string = "RelJointMovJ({:f},{:f},{:f},{:f},{:f},{:f}".format(
             offset_x, offset_y, offset_z, offset_rx, offset_ry, offset_rz)
@@ -2649,12 +2790,13 @@ class DobotApiDashboard(DobotApi):
         string = "GetCurrentCommandID()"
         return self.sendRecvMsg(string)
 
-    ###################################460新增#############################
+    ###################################460新增 / 460 New#############################
     
-    ##轨迹恢复指令
+    ##轨迹恢复指令 / Trajectory Recovery Commands
     def SetResumeOffset(self, distance):
         """
        该指令仅用于焊接工艺。设置轨迹恢复的目标点位相对暂停时的点位沿焊缝回退的距离
+       This command is only used for welding processes. Set the distance that the target point of trajectory recovery retreats along the weld seam relative to the paused point.
         """
         string = "SetResumeOffset({:f})".format(distance)
         return self.sendRecvMsg(string)
@@ -2662,6 +2804,7 @@ class DobotApiDashboard(DobotApi):
     def PathRecovery(self):
         """
         开始轨迹恢复：工程暂停后，控制机器人回到暂停时的位姿。
+        Start trajectory recovery: after the project is paused, control the robot to return to the pose when paused.
         """
         string = "PathRecovery()"
         return self.sendRecvMsg(string)
@@ -2669,6 +2812,7 @@ class DobotApiDashboard(DobotApi):
     def PathRecoveryStop(self):
         """
         轨迹恢复的过程中停止机器人。
+        Stop the robot during trajectory recovery.
         """
         string = "PathRecoveryStop()"
         return self.sendRecvMsg(string)
@@ -2676,17 +2820,20 @@ class DobotApiDashboard(DobotApi):
     def PathRecoveryStatus(self):
         """
         查询轨迹恢复的状态。
+        Query the status of trajectory recovery.
         """
         string = "PathRecoveryStatus()"
         return self.sendRecvMsg(string)
     
-    ##日志导出指令
+    ##日志导出指令 / Log Export Commands
     def LogExportUSB(self, range):
         """
        将机器人日志导出至插在机器人控制柜USB接口的U盘根目录。
+       Export robot logs to the root directory of the USB drive plugged into the USB port of the robot controller.
        导出范围。
-        0   导出logs/all 和logs/user文件夹的内容。
-        1   导出logs文件夹所有内容。
+       Export range.
+        0   导出logs/all 和logs/user文件夹的内容。/ Export the contents of logs/all and logs/user folders.
+        1   导出logs文件夹所有内容。/ Export all contents of the logs folder.
         """
         string = "LogExportUSB({:d})".format(range)
         return self.sendRecvMsg(string)
@@ -2694,22 +2841,26 @@ class DobotApiDashboard(DobotApi):
     def GetExportStatus(self):
         """
         获取日志导出的状态。
+        Get the status of log export.
         其中status表示日志导出状态。
-        0：未开始导出
-        1：导出中
-        2：导出完成
-        3：导出失败，找不到U盘
-        4：导出失败，U盘空间不足
-        5：导出失败，导出过程中U盘被拔出
+        The response contains the export status.
+        0：未开始导出 / 0: Export not started
+        1：导出中 / 1: Exporting
+        2：导出完成 / 2: Export completed
+        3：导出失败，找不到U盘 / 3: Export failed, USB drive not found
+        4：导出失败，U盘空间不足 / 4: Export failed, insufficient USB drive space
+        5：导出失败，导出过程中U盘被拔出 / 5: Export failed, USB drive removed during export
         导出完成和导出失败的状态会保持到下次用户使用导出功能
+        The status of export completed and export failed will be maintained until the user uses the export function next time.
         """
         string = "GetExportStatus()"
         return self.sendRecvMsg(string)
 
-    ##力控指令
+    ##力控指令 / Force Control Commands
     def EnableFTSensor(self, status):
         """
        开启/关闭力传感器。
+       Enable/disable the force sensor.
         """
         string = "EnableFTSensor({:d})".format(status)
         return self.sendRecvMsg(string)
@@ -2717,6 +2868,7 @@ class DobotApiDashboard(DobotApi):
     def SixForceHome(self):
         """
         将力传感器当前数值置0，即以传感器当前受力状态作为零点。
+        Set the current value of the force sensor to 0, that is, take the current force state of the sensor as the zero point.
         """
         string = "SixForceHome()"
         return self.sendRecvMsg(string)
@@ -2724,8 +2876,11 @@ class DobotApiDashboard(DobotApi):
     def GetForce(self, tool = -1):
         """
         获取力传感器当前数值。
+        Get the current value of the force sensor.
         tool int 用于指定获取数值时参考的工具坐标系，取值范围：[0,50]。
+        tool int Used to specify the tool coordinate system for obtaining values, range: [0,50].
         不指定时使用全局工具坐标系
+        If not specified, the global tool coordinate system is used.
         """
         if tool == -1:
             string = "GetForce()"
@@ -2736,13 +2891,20 @@ class DobotApiDashboard(DobotApi):
     def ForceDriveMode(self, x, y, z, rx, ry, rz, user=-1):
         """
         指定可拖拽的方向并进入力控拖拽模式。
+        Specify the draggable direction and enter force control drag mode.
         {x,y,z,rx,ry,rz} string
         用于指定可拖拽的方向。
+        Used to specify the draggable direction.
         0代表该方向不能拖拽，1代表该方向可以拖拽。
+        0 means the direction cannot be dragged, 1 means the direction can be dragged.
         例：
+        Example:
         {1,1,1,1,1,1}表示机械臂可在各轴方向上自由拖动
+        {1,1,1,1,1,1} means the robot arm can be dragged freely in all axis directions.
         {1,1,1,0,0,0}表示机械臂仅可在XYZ轴方向上拖动
+        {1,1,1,0,0,0} means the robot arm can only be dragged in the XYZ axis directions.
         {0,0,0,1,1,1}表示机械臂仅可在RxRyRz轴方向上旋转
+        {0,0,0,1,1,1} means the robot arm can only rotate in the RxRyRz axis directions.
         """
         string = ""
         string = "ForceDriveMode("+"{"+"{:d},{:d},{:d},{:d},{:d},{:d}".format(x,y,z,rx,ry,rz)+"}"
@@ -2754,7 +2916,9 @@ class DobotApiDashboard(DobotApi):
     def ForceDriveSpeed(self, speed):
         """
         设置力控拖拽速度比例。
+        Set the force control drag speed ratio.
         speed int 力控拖拽速度比例，取值范围：[1,100]。
+        speed int Force control drag speed ratio, range: [1,100].
         """
         string = "ForceDriveSpeed({:d})".format(speed)
         return self.sendRecvMsg(string)
@@ -2762,23 +2926,35 @@ class DobotApiDashboard(DobotApi):
     def FCForceMode(self, x, y, z, rx, ry, rz, fx,fy,fz,frx,fry,frz, reference=-1, user=-1,tool=-1):
         """
         以用户指定的配置参数开启力控。
+        Enable force control with user-specified configuration parameters.
         {x,y,z,rx,ry,rz} 
             开启/关闭笛卡尔空间某个方向的力控调节。
+            Enable/disable force control adjustment in a Cartesian direction.
             0表示关闭该方向的力控。
+            0 means force control in that direction is disabled.
             1表示开启该方向的力控。
+            1 means force control in that direction is enabled.
         {fx,fy,fz,frx,fry,frz} 
             目标力：是工具末端与作用对象之间接触力的目标值，是一种模拟力，可以由用户自行设定；目标力方向分别对应笛卡尔空间的{x,y,z,rx,ry,rz}方向。
-            位移方向的目标力范围[-200,200]，单位N；姿态方向的目标力范围[-12,12]，单位N/m。
+            Target force: target value of contact force between tool end and acting object, a simulated force settable by user; directions correspond to {x,y,z,rx,ry,rz} of Cartesian space.
+            位移方向的目标力范围[-200,200]，单位N；姿态方向的目标力范围[-12,12]，单位N·m。
+            Target force range for displacement [-200,200] N; for posture [-12,12] N·m.
             目标力为0时处于柔顺模式，柔顺模式与力控拖动类似。
+            When target force is 0, in compliant mode, similar to force control dragging.
         如果某个方向未开启力控调节，则该方向的目标力也不会生效。
+        If force control is not enabled in a direction, the target force there will not take effect.
         reference 
             格式为“reference=value”。value表示参考坐标系，默认参考工具坐标系。
             reference=0表示参考工具坐标系，即沿工具坐标系进行力控调节。
+            reference=0 means reference tool coordinate system, force control along tool coordinate system.
             reference=1表示参考用户坐标系，即沿用户坐标系进行力控调节。
+            reference=1 means reference user coordinate system, force control along user coordinate system.
         user  
             格式为"user=index"，index为已标定的用户坐标系索引。取值范围：[0,50]。
+            Format is "user=index", index is calibrated user coordinate system index. Range: [0,50].
         tool  
             格式为"tool=index"，index为已标定的工具坐标系索引。取值范围：[0,50]。
+            Format is "tool=index", index is calibrated tool coordinate system index. Range: [0,50].
         """
         string = "FCForceMode("+"{"+"{:d},{:d},{:d},{:d},{:d},{:d}".format(x,y,z,rx,ry,rz)+"},"+"{"+"{:g},{:g},{:g},{:g},{:g},{:g}".format(fx,fy,fz,frx,fry,frz)+"}"
         params = []
@@ -2795,15 +2971,21 @@ class DobotApiDashboard(DobotApi):
 
     def FCSetDeviation(self, x, y, z, rx, ry, rz, controltype=-1):
         """
-        设置力控模式下的位移和姿态偏差，若力控过程中恒力偏移了较大的距离，机器人进会行相应处理。
+        设置力控模式下的位移和姿态偏差，若力控过程中恒力偏移了较大的距离，机器人会进行相应处理。
+        Set the displacement and posture deviation in force control mode. If the constant force deviates by a large distance during force control, the robot will handle it accordingly.
         x、y、z
         代表力控模式下的位移偏差，单位为mm。取值范围：(0,1000]，默认值100mm。
+        Represents the displacement deviation in force control mode, unit mm. Range: (0,1000], default 100mm.
         rx、ry、rz
         代表力控模式下的姿态偏差，单位为度。取值范围：(0,360]，默认值36度。
+        Represents the posture deviation in force control mode, unit degree. Range: (0,360], default 36 degrees.
         controltype
         表示力控过程中超过规定阈值时，机械臂的处理方式。
+        Indicates the handling method of the robot arm when the specified threshold is exceeded during force control.
         0：超过阈值时，机械臂报警（默认值）。
+        0: When the threshold is exceeded, the robot arm alarms (default).
         1：超过阈值时，机械臂停止搜寻而在原有轨迹上继续运动。
+        1: When the threshold is exceeded, the robot arm stops searching and continues moving on the original trajectory.
         """
         string = "FCSetDeviation("+"{"+"{:g},{:g},{:g},{:g},{:g},{:g}".format(x,y,z,rx,ry,rz)+"}"
         if controltype != -1:
@@ -2814,8 +2996,11 @@ class DobotApiDashboard(DobotApi):
     def FCSetForceLimit(self, x, y, z, rx, ry, rz):
         """
         设置各方向的最大力限制（该设置对所有方向均生效，包含未启用力控的方向）。TCP模式退出后，参数恢复默认值。
+        Set the maximum force limit in each direction (this setting applies to all directions, including directions where force control is not enabled).  The parameters revert to their default values when TCP/IP control mode ends.
         x,y,z：取值范围(0,500]，默认值500。
+        x,y,z: Range (0,500], default 500.
         rx,ry,rz：取值范围(0,50]，默认值50。
+        rx,ry,rz: Range (0,50], default 50.
         """
         string = "FCSetForceLimit({:g},{:g},{:g},{:g},{:g},{:g})".format(x,y,z,rx,ry,rz)
         return self.sendRecvMsg(string)
@@ -2823,7 +3008,9 @@ class DobotApiDashboard(DobotApi):
     def FCSetMass(self, x, y, z, rx, ry, rz):
         """
         设置力控模式下各方向的惯性系数。TCP模式退出后，参数恢复默认值。
+        Set the inertia coefficient in each direction under force control mode. After exiting TCP mode, the parameters restore to default values.
         x,y,z,rx,ry,rz：取值范围(0,10000]，默认值20。
+        x,y,z,rx,ry,rz: Range (0,10000], default 20.
         """
         string = "FCSetMass({:g},{:g},{:g},{:g},{:g},{:g})".format(x,y,z,rx,ry,rz)
         return self.sendRecvMsg(string)
@@ -2831,7 +3018,9 @@ class DobotApiDashboard(DobotApi):
     def FCSetStiffness(self, x, y, z, rx, ry, rz):
         """
         设置力控模式下各方向的弹性系数。TCP模式退出后，参数恢复默认值。
+        Set the stiffness coefficient in each direction under force control mode. After exiting TCP mode, the parameters restore to default values.
         x,y,z,rx,ry,rz：取值范围[0,10000]，默认值30。
+        x,y,z,rx,ry,rz: Range [0,10000], default 30.
         """
         string = "FCSetStiffness({:g},{:g},{:g},{:g},{:g},{:g})".format(x,y,z,rx,ry,rz)
         return self.sendRecvMsg(string)
@@ -2839,7 +3028,9 @@ class DobotApiDashboard(DobotApi):
     def FCSetDamping(self, x, y, z, rx, ry, rz):
         """
         设置力控模式下各方向的阻尼系数。TCP模式退出后，参数恢复默认值。
+        Set the damping coefficient in each direction under force control mode. After exiting TCP mode, the parameters restore to default values.
         x,y,z,rx,ry,rz：取值范围[0,1000]，默认值50。
+        x,y,z,rx,ry,rz: Range [0,1000], default 50.
         """
         string = "FCSetDamping({:g},{:g},{:g},{:g},{:g},{:g})".format(x,y,z,rx,ry,rz)
         return self.sendRecvMsg(string)
@@ -2847,6 +3038,7 @@ class DobotApiDashboard(DobotApi):
     def FCOff(self):
         """
         退出力控模式，与FCForceMode配合使用，两者之间的运动指令都会进行力的柔顺控制。
+        Exit force control mode. Used together with FCForceMode, motion commands between them will perform force compliance control.
         """
         string = "FCOff()"
         return self.sendRecvMsg(string)
@@ -2854,10 +3046,15 @@ class DobotApiDashboard(DobotApi):
     def FCSetForceSpeedLimit(self, x, y, z, rx, ry, rz):
         """
         设置各方向的力控调节速度。力控速度上限较小时，力控调节速度较慢，适合低速平缓的接触面。
+        Set the force control adjustment speed in each direction. When the upper limit is small, adjustment is slow, suitable for low-speed smooth contact surfaces.
         力控速度上限较大时，力控调节速度快，适合高速力控应用。需要根据具体的应用场景进行调整。
+        When the upper limit is large, adjustment is fast, suitable for high-speed force control applications. Adjust according to specific application scenarios.
         TCP模式退出后，参数恢复默认值。
+        After exiting TCP mode, parameters restore to default values.
         x,y,z：位移方向的力控调节速度，默认值20mm/s。CRA机型取值范围：(0,安全限制TCP速度值]，其他机型：(0,300]。
+        x,y,z: Force control adjustment speed in displacement direction, default 20mm/s. CRA models: (0, safety limit TCP speed], others: (0,300].
         rx,ry,rz：姿态方向的力控调节速度，默认值20°/s。CRA机型取值范围：(0,(4安全限制TCP速度值x0.001/3.14x180)]，其他机型：(0,90]。
+        rx,ry,rz: Force control adjustment speed in posture direction, default 20°/s. CRA models: (0,(4*safety limit TCP speed*0.001/3.14*180)], others: (0,90].
         """
         string = "FCSetForceSpeedLimit({:g},{:g},{:g},{:g},{:g},{:g})".format(x,y,z,rx,ry,rz)
         return self.sendRecvMsg(string)
@@ -2865,8 +3062,11 @@ class DobotApiDashboard(DobotApi):
     def FCSetForce(self, x, y, z, rx, ry, rz):
         """
         实时调整各方向的恒力设置。
+        Adjust the constant force setting in each direction in real time.
         x,y,z：取值范围[-200,200]，单位N。
-        rx,ry,rz：取值范围[-12,12]，单位N/m。
+        x,y,z: Range [-200,200], unit N.
+        rx,ry,rz：取值范围[-12,12]，单位N·m。
+        rx,ry,rz: Range [-12,12], unit N·m.
         """
         string = "FCSetForce({:g},{:g},{:g},{:g},{:g},{:g})".format(x,y,z,rx,ry,rz)
         return self.sendRecvMsg(string)
@@ -2874,42 +3074,46 @@ class DobotApiDashboard(DobotApi):
     def RequestControl(self):
         """
         RequestControl - 请求将设备控制模式切换为TCP模式
+        RequestControl - Request to switch device control mode to TCP mode
         
         只有在TCP模式下才可执行其他TCP指令。
+        Only in TCP mode can other TCP commands be executed.
         
-        返回:
+        返回: / Returns:
             ErrorID,{},RequestControl();
         
-        注意:
+        注意: / Notes:
             仅当机器人处于未上电或下使能（且非暂停或松抱闸状态）时才可切换TCP模式。
+            TCP mode can only be switched when the robot is powered off or disabled (and not in pause or brake-released state).
             
-            允许切换TCP模式的场景:
-            - 未上电: 允许
-            - 下使能（非暂停状态、非抱闸松开状态）: 允许
-            - 使能空闲: 不允许
-            - 拖拽模式: 不允许
-            - 单次运动中: 不允许
-            - 运行中: 不允许
-            - 暂停: 不允许
-            - 错误（上使能情况下）: 不允许
-            - 松抱闸: 不允许
-            - 开启手自动模式: 不允许
+            允许切换TCP模式的场景: / Scenarios allowing TCP mode switch:
+            - 未上电: 允许 / Powered off: Allowed
+            - 下使能（非暂停状态、非抱闸松开状态）: 允许 / Disabled (not paused, not brake-released): Allowed
+            - 使能空闲: 不允许 / Enabled idle: Not allowed
+            - 拖拽模式: 不允许 / Drag mode: Not allowed
+            - 单次运动中: 不允许 / Single move: Not allowed
+            - 运行中: 不允许 / Running: Not allowed
+            - 暂停: 不允许 / Paused: Not allowed
+            - 错误（上使能情况下）: 不允许 / Error (enabled): Not allowed
+            - 松抱闸: 不允许 / Brake released: Not allowed
+            - 开启手自动模式: 不允许 / Manual/auto mode on: Not allowed
         """
         string = "RequestControl()"
         return self.sendRecvMsg(string)
     
-    ## 新增运动指令
+    ## 新增运动指令 / New Motion Commands
 
     def RelPointTool(self, coordinateMode,a1, b1, c1, d1, e1, f1, x, y, z, rx, ry, rz):
         """
         RelPointTool - 沿工具坐标系笛卡尔点偏移
+        RelPointTool - Cartesian point offset along tool coordinate system
         
-        参数:
-            coordinateMode: int - 坐标模式，0=pose位姿, 1=joint关节
-            a1~f1: float - 起始点位(x,y,z,rx,ry,rz)或(j1,j2,j3,j4,j5,j6)
-            x,y,z,rx,ry,rz: float - 偏移量
+        参数: / Parameters:
+            coordinateMode: int - 坐标模式，0=pose位姿, 1=joint关节 / coordinate mode, 0=pose, 1=joint
+            a1~f1: float - 起始点位(x,y,z,rx,ry,rz)或(j1,j2,j3,j4,j5,j6) / start point
+            x,y,z,rx,ry,rz: float - 偏移量 / offset
         
-        返回:
+        返回: / Returns:
             ErrorID,{X,Y,Z,Rx,Ry,Rz},RelPointTool(...);
         """
         string = ""
@@ -2926,13 +3130,14 @@ class DobotApiDashboard(DobotApi):
     def RelPointUser(self,coordinateMode,a1, b1, c1, d1, e1, f1, x, y, z, rx, ry, rz):
         """
         RelPointUser - 沿用户坐标系笛卡尔点偏移
+        RelPointUser - Cartesian point offset along user coordinate system
         
-        参数:
-            coordinateMode: int - 坐标模式，0=pose位姿, 1=joint关节
-            a1~f1: float - 起始点位(x,y,z,rx,ry,rz)或(j1,j2,j3,j4,j5,j6)
-            x,y,z,rx,ry,rz: float - 偏移量
+        参数: / Parameters:
+            coordinateMode: int - 坐标模式，0=pose位姿, 1=joint关节 / coordinate mode, 0=pose, 1=joint
+            a1~f1: float - 起始点位(x,y,z,rx,ry,rz)或(j1,j2,j3,j4,j5,j6) / start point
+            x,y,z,rx,ry,rz: float - 偏移量 / offset
         
-        返回:
+        返回: / Returns:
             ErrorID,{X,Y,Z,Rx,Ry,Rz},RelPointUser(...);
         """
         string = ""
@@ -2950,12 +3155,13 @@ class DobotApiDashboard(DobotApi):
     def RelJoint(self, j1, j2, j3, j4, j5, j6, offset1, offset2, offset3, offset4, offset5, offset6):
         """
         RelJoint - 关节点位偏移
+        RelJoint - Joint point offset
         
-        参数:
-            j1~j6: float - 原始关节位置，单位：度
-            offset1~offset6: float - 关节偏移量，单位：度
+        参数: / Parameters:
+            j1~j6: float - 原始关节位置，单位：度 / original joint positions, unit: degree
+            offset1~offset6: float - 关节偏移量，单位：度 / joint offsets, unit: degree
         
-        返回:
+        返回: / Returns:
             ErrorID,{J1,J2,J3,J4,J5,J6},RelJoint(...);
         """
         string = "RelJoint({:f},{:f},{:f},{:f},{:f},{:f},{{{:f},{:f},{:f},{:f},{:f},{:f}}})".format(
@@ -2964,21 +3170,31 @@ class DobotApiDashboard(DobotApi):
     
     def GetError(self, language="zh_cn"):
         """
-        获取机器人报警信息
-        参数:
-        language: 语言设置，支持的值:
-                 "zh_cn" - 简体中文
-                 "zh_hant" - 繁体中文  
-                 "en" - 英语
-                 "ja" - 日语
-                 "de" - 德语
-                 "vi" - 越南语
-                 "es" - 西班牙语
-                 "fr" - 法语
-                 "ko" - 韩语
-                 "ru" - 俄语
-        返回:
-        dict: 包含报警信息的字典，格式如下:
+        通过 HTTP 获取机器人报警信息。
+        Retrieve robot alarm information over HTTP.
+        参数: / Parameters:
+        language (str): 报警语言，默认为 "zh_cn"。 / Alarm language. Defaults to "zh_cn".
+                 "zh_cn" - 简体中文 / Simplified Chinese
+                 "zh_hant" - 繁体中文 / Traditional Chinese  
+                 "en" - 英语 / English
+                 "ja" - 日语 / Japanese
+                 "de" - 德语 / German
+                 "vi" - 越南语 / Vietnamese
+                 "es" - 西班牙语 / Spanish
+                 "fr" - 法语 / French
+                 "ko" - 韩语 / Korean
+                 "ru" - 俄语 / Russian
+        返回: / Returns:
+        请求成功时返回解析后的 JSON，报警响应通常为包含 errMsg 列表的字典。
+        报警查询返回非 HTTP 200 状态、请求异常或 JSON 解析失败时，返回 {"errMsg": []}。
+        查询成功且无报警时也可能返回空列表。调用方不能仅凭空列表判断查询是否成功。
+
+        On success, return the decoded JSON. An alarm response typically contains an errMsg list.
+        Returns {"errMsg": []} if the alarm endpoint returns a non-200 HTTP status, the request fails,
+        or JSON decoding fails. A successful query with no alarms can also return an empty list.
+        An empty list alone does not indicate whether the query succeeded.
+
+        报警响应格式 / Alarm response format:
         {
             "errMsg": [
                 {
@@ -2994,38 +3210,39 @@ class DobotApiDashboard(DobotApi):
         }
         """
         try:
-            # 首先设置语言
+            # 首先设置语言 / First set the language
             language_url = f"http://{self.ip}:22000/interface/language"
             language_data = {"type": language}
             
-            # 发送POST请求设置语言
+            # 发送POST请求设置语言 / Send POST request to set language
             response = requests.post(language_url, json=language_data, timeout=5)
             if response.status_code != 200:
-                print(f"设置语言失败: HTTP {response.status_code}")
+                print(f"Failed to set language: HTTP {response.status_code}")  # 设置语言失败 / Failed to set language
             
-            # 获取报警信息
+            # 获取报警信息 / Get alarm information
             alarm_url = f"http://{self.ip}:22000/protocol/getAlarm"
             response = requests.get(alarm_url, timeout=5)
             
             if response.status_code == 200:
                 return response.json()
             else:
-                print(f"获取报警信息失败: HTTP {response.status_code}")
+                print(f"Failed to get alarm information: HTTP {response.status_code}")  # 获取报警信息失败 / Failed to get alarm information
                 return {"errMsg": []}
                 
         except requests.exceptions.RequestException as e:
-            print(f"HTTP请求异常: {e}")
+            print(f"HTTP request exception: {e}")  # HTTP请求异常 / HTTP request exception
             return {"errMsg": []}
         except json.JSONDecodeError as e:
-            print(f"JSON解析异常: {e}")
+            print(f"JSON parsing exception: {e}")  # JSON解析异常 / JSON parsing exception
             return {"errMsg": []}
         except Exception as e:
-            print(f"获取报警信息时发生未知错误: {e}")
+            print(f"Unknown error while getting alarm information: {e}")  # 获取报警信息时发生未知错误 / Unknown error while getting alarm information
             return {"errMsg": []}
 
     def ArcIO(self, a1, b1, c1, d1, e1, f1, a2, b2, c2, d2, e2, f2, coordinateMode, *io_params, user=-1, tool=-1, a=-1, v=-1, speed=-1, cp=-1, r=-1, mode=-1):
         """
         圆弧运动过程中并行设置数字输出端口的状态，可设置多组。
+        Set the status of digital output ports in parallel during arc motion, multiple groups can be set.
         """
         string = ""
         if coordinateMode == 0:
@@ -3121,20 +3338,22 @@ class DobotApiDashboard(DobotApi):
     def CnvInit(self, index):
         """
         CnvInit - 开启传送带 立即指令
+        CnvInit - Start conveyor belt, immediate command
         
         开启传送带并下发传送带配置信息。删除所有队列信息，开始检测并存储新的队列信息。
+        Start the conveyor belt and send configuration information. Delete all queue information, start detecting and storing new queue information.
         
-        原型:
+        原型: / Prototype:
             CnvInit(index)
         
-        参数:
-            index: int - 传送带编号1/2/3，机器人最多支持三条传送带。设置为其他数值会报错。
+        参数: / Parameters:
+            index: int - 传送带编号1/2/3，机器人最多支持三条传送带。设置为其他数值会报错。 / Conveyor belt number 1/2/3, robot supports up to three conveyor belts. Other values will cause an error.
         
-        返回:
+        返回: / Returns:
             ErrorID,{},CnvInit(index);
         
-        示例:
-            CnvInit(1)  # 开启1号传送带并下发传送带配置信息
+        示例: / Example:
+            CnvInit(1)  # 开启1号传送带并下发传送带配置信息 / Start conveyor belt 1 and send configuration
         """
         string = "CnvInit({:d})".format(index)
         return self.sendRecvMsg(string)
@@ -3142,24 +3361,27 @@ class DobotApiDashboard(DobotApi):
     def CnvMovL(self, j1, j2, j3, j4, j5, j6, user=-1, tool=-1, a=-1, v=-1, cp=-1, r=-1):
         """
         CnvMovL - 执行传动带跟随，采取直线轨迹插补 队列指令
+        CnvMovL - Execute conveyor belt following with linear trajectory interpolation, queue command
         
         基于工件坐标系，机器人直线运动到目标点位执行传送带跟踪。
+        Based on the workpiece coordinate system, the robot moves linearly to the target point to perform conveyor belt tracking.
         
-        原型:
+        原型: / Prototype:
             CnvMovL(P,user, tool, a, v, cp|r)
         
-        参数:
-            j1~j6: float - 目标点，支持关节变量(j1,j2,j3,j4,j5,j6)或位姿变量(x,y,z,rx,ry,rz)
-            user: int, 可选 - 用户坐标系索引，取值范围：[0,50]
-            tool: int, 可选 - 工具坐标系索引，取值范围：[0,50]
-            a: int, 可选 - 机器人运动加速度比例，取值范围：[1,100]
-            v: int, 可选 - 机器人运动速度比例，取值范围：[1,100]
-            cp: int, 可选 - 平滑过渡比例，与r互斥，取值范围：[0,100]
-            r: int, 可选 - 平滑过渡半径，单位mm，与cp互斥，若同时存在以r为准
+        参数: / Parameters:
+            j1~j6: float - 目标点，支持关节变量(j1,j2,j3,j4,j5,j6)或位姿变量(x,y,z,rx,ry,rz) / Target point, supports joint or pose variables
+            user: int, 可选 - 用户坐标系索引，取值范围：[0,50] / optional - user coordinate system index, range: [0,50]
+            tool: int, 可选 - 工具坐标系索引，取值范围：[0,50] / optional - tool coordinate system index, range: [0,50]
+            a: int, 可选 - 机器人运动加速度比例，取值范围：[1,100] / optional - robot motion acceleration ratio, range: [1,100]
+            v: int, 可选 - 机器人运动速度比例，取值范围：[1,100] / optional - robot motion speed ratio, range: [1,100]
+            cp: int, 可选 - 平滑过渡比例，与r互斥，取值范围：[0,100] / optional - CP ratio, mutually exclusive with r, range: [0,100]
+            r: int, 可选 - 平滑过渡半径，单位mm，与cp互斥，若同时存在以r为准 / optional - blending radius in mm, mutually exclusive with cp, r takes precedence
         
-        返回:
+        返回: / Returns:
             ErrorID,{flag},CnvMovL(P,user, tool, a, v, cp|r);
             flag: 0-执行成功, 1-跟随失败未检测到工件类型, 2-跟随失败工件未进入拾取边界范围, 3-跟随失败工件超出离开边界
+            flag: 0-success, 1-follow failed workpiece type not detected, 2-follow failed workpiece not in pick boundary, 3-follow failed workpiece beyond leave boundary
         
         示例:
             CnvMovL(x,y,z,rx,ry,rz, user=1, tool=0, a=20, v=50, cp=100)
@@ -3180,37 +3402,39 @@ class DobotApiDashboard(DobotApi):
     def CnvMovC(self, j1a, j2a, j3a, j4a, j5a, j6a, j1b, j2b, j3b, j4b, j5b, j6b, user=-1, tool=-1, a=-1, v=-1, cp=-1, r=-1, mode=1):
         """
         CnvMovC - 执行传动带跟随，采取圆弧轨迹插补 队列指令
+        CnvMovC - Execute conveyor belt following with arc trajectory interpolation, queue command
         
         基于工件坐标系，机器人从当前位置通过圆弧运动方式经由中间点位P1运动至目标点位P2后，
         执行传送带跟踪。
+        Based on the workpiece coordinate system, the robot moves from current position via arc motion through intermediate point P1 to target point P2, then performs conveyor belt tracking.
         
-        原型:
+        原型: / Prototype:
             CnvMovC(P1,P2,user, tool, a, v, cp|r, mode)
         
-        参数:
-            j1a~j6a: float - 圆弧中间点P1，支持关节变量(j1,j2,j3,j4,j5,j6)或位姿变量(x,y,z,rx,ry,rz)
-            j1b~j6b: float - 运动目标点P2，支持关节变量(j1,j2,j3,j4,j5,j6)或位姿变量(x,y,z,rx,ry,rz)
-            user: int, 可选 - 用户坐标系索引，取值范围：[0,50]
-            tool: int, 可选 - 工具坐标系索引，取值范围：[0,50]
-            a: int, 可选 - 机械臂运动加速度比例，取值范围：[1,100]
-            v: int, 可选 - 机械臂运动速度比例，取值范围：[1,100]
-            cp: int, 可选 - 平滑过渡比例，与r互斥，取值范围：[0,100]
-            r: int, 可选 - 平滑过渡半径，单位mm，与cp互斥，若同时存在以r为准
-            mode: int, 可选 - 姿态控制参数，取值范围：[0, 2]
-                  mode=0: 线性模式，从当前姿态插值到P2目标位姿，忽略P1姿态，适用于对机器人姿态无要求的场合
-                  mode=1: 过中间点模式，从当前姿态开始，经过中间点位姿，插值到P2目标位姿，主要用于焊接应用
-                  mode=2: 固定模式，TCP保持相对于圆弧切线的方向不变，忽略P1和P2姿态，主要用于涂胶、打磨等应用
+        参数: / Parameters:
+            j1a~j6a: float - 圆弧中间点P1，支持关节变量或位姿变量 / Arc intermediate point P1, supports joint or pose variables
+            j1b~j6b: float - 运动目标点P2，支持关节变量或位姿变量 / Motion target point P2, supports joint or pose variables
+            user: int, 可选 - 用户坐标系索引，取值范围：[0,50] / optional - user coord system index, range: [0,50]
+            tool: int, 可选 - 工具坐标系索引，取值范围：[0,50] / optional - tool coord system index, range: [0,50]
+            a: int, 可选 - 机械臂运动加速度比例，取值范围：[1,100] / optional - acceleration ratio, range: [1,100]
+            v: int, 可选 - 机械臂运动速度比例，取值范围：[1,100] / optional - speed ratio, range: [1,100]
+            cp: int, 可选 - 平滑过渡比例，与r互斥，取值范围：[0,100] / optional - CP ratio, mutually exclusive with r, range: [0,100]
+            r: int, 可选 - 平滑过渡半径，单位mm，与cp互斥，若同时存在以r为准 / optional - blending radius mm, mutually exclusive with cp, r takes precedence
+            mode: int, 可选 - 姿态控制参数，取值范围：[0, 2] / optional - posture control parameter, range: [0, 2]
+                  mode=0: 线性模式 / Linear mode
+                  mode=1: 过中间点模式 / Via intermediate point mode
+                  mode=2: 固定模式 / Fixed mode
         
-        注意:
-            当设置为mode=1（过中间点模式）时，为了保证圆弧运动速度的均匀性，示教圆弧轨迹时，
-            尽可能保证中间点的位置处于实际圆弧的一半。
-            当设置为mode=1（过中间点模式）时，需要适当调整各点姿态，保证起始点到中间点的姿态变化
-            与中间点到目标点的姿态变化角度接近。否则所构造的姿态曲线可能超出机器人的可达范围，
-            运行时会报错。
+        注意: / Notes:
+            当设置为mode=1时，为保证圆弧运动速度均匀性，示教时尽可能保证中间点处于实际圆弧一半。
+            When mode=1, to ensure uniform arc motion speed, keep the intermediate point at half of the actual arc during teaching.
+            当设置为mode=1时，需适当调整各点姿态，否则姿态曲线可能超出机器人可达范围，运行时报错。
+            When mode=1, adjust posture of each point properly, otherwise posture curve may exceed robot reachable range and cause runtime error.
         
-        返回:
+        返回: / Returns:
             ErrorID,{flag},CnvMovC(P1,P2,user, tool, a, v, cp|r, mode);
             flag: 0-执行成功, 1-跟随失败未检测到工件类型, 2-跟随失败工件未进入拾取边界范围, 3-跟随失败工件超出离开边界
+            flag: 0-success, 1-follow failed type not detected, 2-follow failed not in pick boundary, 3-follow failed beyond leave boundary
         
         示例:
             CnvMovC(j1,j2,j3,j4,j5,j6, j7,j8,j9,j10,j11,j12, user=1, tool=0, a=20, v=50, cp=100)
@@ -3232,39 +3456,38 @@ class DobotApiDashboard(DobotApi):
     def CreateTray(self, trayName, dims, points):
         """
         CreateTray - 创建托盘，支持创建一维、二维和三维的托盘
+        CreateTray - Create tray, supports 1D, 2D, and 3D trays
         
         最多可创建20个托盘，创建同名的托盘时会覆盖已有的托盘，不会增加托盘数量。
+        Up to 20 trays can be created. Creating a tray with the same name overwrites the existing one without increasing the count.
         
-        原型:
-            CreateTray(Trayname, {Count}, {P1,P2}) -- 一维托盘
-            CreateTray(Trayname, {row,col}, {P1,P2,P3,P4}) -- 二维托盘
-            CreateTray(Trayname, {row,col,layer}, {P1,P2,P3,P4,P5,P6,P7,P8}) -- 三维托盘
+        原型: / Prototype:
+            CreateTray(Trayname, {Count}, {P1,P2}) -- 1D tray / 一维托盘
+            CreateTray(Trayname, {row,col}, {P1,P2,P3,P4}) -- 2D tray / 二维托盘
+            CreateTray(Trayname, {row,col,layer}, {P1..P8}) -- 3D tray / 三维托盘
         
-        参数:
-            trayName: string - 托盘名称，最长32字节的字符串，不允许为纯数字或者纯空格
-            dims: list - 根据托盘维度不同，内容不同：
-                        一维托盘: [Count] - Count表示点位数量，取值范围：[2, 50]，输入非整数会自动向下取整
-                        二维托盘: [row, col] - row表示行方向(P1到P2方向)上点位的数量，
-                                        col表示列方向(P1到P4方向)上点位的数量，取值范围：[2, 50]
-                        三维托盘: [row, col, layer] - row表示行方向(P1到P2方向)上点位的数量，
-                                           col表示列方向(P1到P4方向)上点位的数量，
-                                           layer表示层数(P1到P5方向)，取值范围：[2, 50]
-            points: list - 托盘顶点列表，每个点为6元素的tuple或list(x, y, z, rx, ry, rz)：
-                        一维托盘: [P1, P2] - 一维托盘的2个端点
-                        二维托盘: [P1, P2, P3, P4] - 二维托盘的4个顶点
-                        三维托盘: [P1, P2, P3, P4, P5, P6, P7, P8] - 三维托盘的8个顶点
+        参数: / Parameters:
+            trayName: string - 托盘名称，最长32字节，不允许为纯数字或纯空格 / Tray name, max 32 bytes, cannot be pure numbers or spaces
+            dims: list - 根据托盘维度不同内容不同 / Varies by tray dimension:
+                        一维托盘: [Count] - 点位数量，范围[2,50] / point count, range [2,50]
+                        二维托盘: [row, col] - 行/列方向点位数量，范围[2,50] / row/col point count, range [2,50]
+                        三维托盘: [row, col, layer] - 行/列/层点位数量，范围[2,50] / row/col/layer count, range [2,50]
+            points: list - 托盘顶点列表，每点为6元素tuple/list / Tray vertex list, each point is 6-element tuple/list:
+                        一维托盘: [P1, P2] - 2 endpoints / 2个端点
+                        二维托盘: [P1, P2, P3, P4] - 4 vertices / 4个顶点
+                        三维托盘: [P1..P8] - 8 vertices / 8个顶点
         
-        返回:
+        返回: / Returns:
             ErrorID,{},CreateTray( ... );
         
-        示例:
-            # 创建名称为t1的5个点的一维托盘
+        示例: / Example:
+            # 创建名称为t1的5个点的一维托盘 / Create 1D tray named t1 with 5 points
             CreateTray("t1", [5], [(x1,y1,z1,rx1,ry1,rz1), (x2,y2,z2,rx2,ry2,rz2)])
             
-            # 创建名称为t2的4x5的二维托盘
+            # 创建名称为t2的4x5的二维托盘 / Create 2D tray named t2 with 4x5
             CreateTray("t2", [4, 5], [P1, P2, P3, P4])
             
-            # 创建名称为t3的4x5x6的三维托盘
+            # 创建名称为t3的4x5x6的三维托盘 / Create 3D tray named t3 with 4x5x6
             CreateTray("t3", [4, 5, 6], [P1, P2, P3, P4, P5, P6, P7, P8])
         """
         string = "CreateTray(" + trayName + ","
@@ -3284,6 +3507,7 @@ class DobotApiDashboard(DobotApi):
 
     def StartRTOffset(self):
         """
+        发送 StartRTOffset 指令，并返回控制器响应
         StartRTOffset command
         """
         return self.sendRecvMsg("StartRTOffset()")
@@ -3291,38 +3515,47 @@ class DobotApiDashboard(DobotApi):
     def FCCollisionSwitch(self, enable):
         """
         开启/关闭力传感器碰撞检测开关。该指令仅适用于CRAF机型。其他机型调用该指令会报错。
+        Enable/disable force sensor collision detection. This command only applies to CRAF models. Other models will report an error.
         switch：0表示关闭力传感器碰撞检测功能；1表示开启力传感器碰撞检测功能。
+        switch: 0 means disable force sensor collision detection; 1 means enable it.
         """
         return self.sendRecvMsg("FCCollisionSwitch({:d})".format(enable))
 
     def SetFCCollision(self, force, torque):
         """
         设置力传感器碰撞检测的阈值参数，当机器人末端的碰撞力或碰撞力矩超过设定的阈值后，机器人根据设置暂停或停止运动。
+        Set threshold parameters for force sensor collision detection. When collision force or torque at robot end exceeds the threshold, the robot pauses or stops motion according to settings.
         该指令仅适用于CRAF机型。其他机型调用该指令会报错。
-        force：触发碰撞检测的力阈值，单位N。CR5AF取值范围：[5,150]；CR10AF取值范围：[5,300]；CR20AF取值范围：[5,500]。
-        torque：触发碰撞检测的力矩阈值，单位N/m。CR5AF取值范围：[0.5,15]；CR10AF取值范围：[0.5,30]；CR20AF取值范围：[0.5,50]。
+        This command only applies to CRAF models. Other models will report an error.
+        force：触发碰撞检测的力阈值，单位N。CR5AF范围[5,150]；CR10AF范围[5,300]；CR20AF范围[5,500]。
+        force: Force threshold for collision detection in N. CR5AF range [5,150]; CR10AF [5,300]; CR20AF [5,500].
+        torque：触发碰撞检测的力矩阈值，单位N·m。CR5AF范围[0.5,15]；CR10AF范围[0.5,30]；CR20AF范围[0.5,50]。
+        torque: Torque threshold for collision detection in N·m. CR5AF range [0.5,15]; CR10AF [0.5,30]; CR20AF [0.5,50].
         """
         return self.sendRecvMsg("SetFCCollision({:g},{:g})".format(force, torque))
 
     def GetCnvObject(self, objId):
         """
         GetCnvObject - 等待指定工件进入传送带的抓取区域 立即指令
+        GetCnvObject - Wait for specified workpiece to enter conveyor pick area, immediate command
         
         等待指定工件进入传送带的抓取区域（即拾取上边界与拾取下边界组成的区域）。
+        Wait for the specified workpiece to enter the conveyor pick area (the area between pick upper and lower boundaries).
         
-        原型:
+        原型: / Prototype:
             GetCnvObject(objId)
         
-        参数:
-            objId: int - 工件类型，取值范围 [0, 15]
-                   0: 不指定工件类型，获取最先进入队列的工件信息
-                   1~15: 获取最先进入队列的指定工件信息
+        参数: / Parameters:
+            objId: int - 工件类型，取值范围 [0, 15] / Workpiece type, range [0, 15]
+                   0: 不指定工件类型，获取最先进入队列的工件信息 / Do not specify type, get first workpiece in queue
+                   1~15: 获取最先进入队列的指定工件信息 / Get first specified workpiece in queue
         
-        返回:
+        返回: / Returns:
             ErrorID,{flag, objId, objframe},GetCnvObject(objId);
             flag: 0-没有工件, 1-有工件, -1-执行错误重新执行, -2-有错误未处理, -3-非跟踪初始化状态需执行CnvInit或StopSyncCnv
-            objId: 工件类型号，仅当参数objId为0时该返回值有意义
-            objframe: 当前时刻的工件坐标系（参考机器人基坐标系）
+            flag: 0-no workpiece, 1-workpiece exists, -1-execution error retry, -2-unhandled error, -3-not tracking init state, run CnvInit or StopSyncCnv
+            objId: 工件类型号，仅当参数objId为0时该返回值有意义 / Workpiece type, only meaningful when objId is 0
+            objframe: 当前时刻的工件坐标系（参考机器人基坐标系） / Current workpiece coordinate system (relative to robot base)
         
         示例:
             GetCnvObject(0)
@@ -3341,34 +3574,33 @@ class DobotApiDashboard(DobotApi):
     def MovS(self, file=None, coordinateMode=-1, points=None, user=-1, tool=-1, v=-1, speed=-1, a=-1, freq=-1):
         """
         MovS - 拟合指定的轨迹
+        MovS - Fit the specified trajectory
         
         调用该指令前需要用户自行运行机械臂到轨迹的起始点。
+        Before calling this command, the user needs to move the robot arm to the trajectory start point.
         
-        原型:
+        原型: / Prototype:
             MovS(P1,P2,P3,... ,user,tool,a,v|speed,freq)
             MovS(file,user,tool,a,v|speed,freq)
         
-        参数:
-            file: string, 可选 - 待拟合的轨迹文件，格式为"x.csv"，代表一个轨迹文件的名字（含后缀名）
-            coordinateMode: int, 可选 - 坐标模式，0表示位姿点位(pose)，1表示关节点位(joint)
-            points: list, 可选 - 待拟合的点位列表，每个点位为6元素的tuple或list，点位数量范围是[4, 50]
-                    coordinateMode=0时，points元素格式为(x, y, z, rx, ry, rz)
-                    coordinateMode=1时，points元素格式为(j1, j2, j3, j4, j5, j6)
-            user: int, 可选 - 指定轨迹点位对应的用户坐标系索引，取值范围：[0,50]
-                  不指定时使用轨迹文件中记录的用户坐标系索引
-            tool: int, 可选 - 指定轨迹点位对应的工具坐标系索引，取值范围：[0,50]
-                  不指定时使用轨迹文件中记录的工具坐标系索引
-            a: int, 可选 - 机器人运动加速度比例，取值范围：[1,100]
-            v: int, 可选 - 机器人运动速度比例，取值范围：[1,100]，与speed互斥
-            speed: int, 可选 - 机器人运动目标速度，单位：mm/s，取值范围：[1, 最大运动速度]
-                   与v互斥，若同时存在以speed为准
-            freq: float, 可选 - 滤波系数，取值范围：(0,1]，默认1（表示关闭滤波）
-                  值越小，拟合的轨迹曲线越平滑，但相对原轨迹的变形越严重
+        参数: / Parameters:
+            file: string, 可选 - 待拟合的轨迹文件，格式为"x.csv" / optional - trajectory file to fit, format "x.csv"
+            coordinateMode: int, 可选 - 坐标模式，0=位姿(pose)，1=关节(joint) / optional - 0=pose, 1=joint
+            points: list, 可选 - 待拟合点位列表，每点为6元素tuple/list，数量范围[4,50] / optional - point list, each 6-element, count [4,50]
+            user: int, 可选 - 用户坐标系索引，范围[0,50] / optional - user coord system index, range [0,50]
+            tool: int, 可选 - 工具坐标系索引，范围[0,50] / optional - tool coord system index, range [0,50]
+            a: int, 可选 - 加速度比例，范围[1,100] / optional - acceleration ratio, range [1,100]
+            v: int, 可选 - 速度比例，范围[1,100]，与speed互斥 / optional - speed ratio, range [1,100], mutually exclusive with speed
+            speed: int, 可选 - 目标速度，单位mm/s，与v互斥，同时存在以speed为准 / optional - target speed mm/s, mutually exclusive with v, speed takes precedence
+            freq: float, 可选 - 滤波系数，范围(0,1]，默认1 / optional - filter coefficient, range (0,1], default 1
         
-        注意:
+        注意: / Notes:
             该指令必须输入点位列表points或轨迹文件file其中一个参数
+            This command requires either points list or trajectory file parameter.
             CAD输出的轨迹可以设置freq为1，保证精度
+            For CAD output trajectories, set freq to 1 to ensure accuracy.
             如果是3D相机等曲线，建议打开滤波(freq<1)，保证曲线的平滑
+            For 3D camera curves, enable filtering (freq<1) to ensure smoothness.
         
         返回:
             ErrorID,{},MovS(P1,P2,P3,... ,user,tool,a,v|speed,freq);
@@ -3379,6 +3611,7 @@ class DobotApiDashboard(DobotApi):
              string += "file={:s}".format(file)
         elif points is not None and coordinateMode != -1:
              # points should be a list of tuples/lists
+             #points应为列表，其中每个元素为元组或列表。
              pts_str = []
              for pt in points:
                  if coordinateMode == 0:
@@ -3414,7 +3647,8 @@ class DobotApiDashboard(DobotApi):
 
     def OffsetPara(self, x, y, z, rx, ry, rz):
         """
-        OffsetPara command
+        设置坐标系偏移值
+        Set the coordinate system offset.
         """
         string = "OffsetPara({:f},{:f},{:f},{:f},{:f},{:f})".format(x, y, z, rx, ry, rz)
         return self.sendRecvMsg(string)
@@ -3422,14 +3656,19 @@ class DobotApiDashboard(DobotApi):
 
     def GetTrayPoint(self, *args, **kwargs):
         """
+        GetTrayPoint 指令
+        由于缺少该指令精确参数的文档说明，
+        本函数采用动态参数方式实现。
+        示例：GetTrayPoint("t1", 3)
         GetTrayPoint command
         Due to missing documentation on exact parameters, this function uses dynamic arguments.
-        Example: GetTrayPoint(trayName)
+        Example: GetTrayPoint("t1", 3)
         """
         return self.sendRecvMsg(self._build_cmd("GetTrayPoint", *args, **kwargs))
 
     def RunTo(self, a1, b1, c1, d1, e1, f1, moveType, user=-1, tool=-1, a=-1, v=-1):
         """
+        发送 RunTo 指令，使机器人从当前位置运动至指定点位。
         RunTo command
         """
         string = ""
@@ -3466,18 +3705,19 @@ class DobotApiDashboard(DobotApi):
     def SetCnvPointOffset(self, xOffset, yOffset):
         """
         SetCnvPointOffset - 设置传送带用户坐标系下X、Y方向的偏移量 立即指令
+        SetCnvPointOffset - Set X/Y offset in conveyor user coordinate system, immediate command
         
-        原型:
+        原型: / Prototype:
             SetCnvPointOffset(xOffset, yOffset)
         
-        参数:
-            xOffset: double - X轴方向偏移量，单位mm
-            yOffset: double - Y轴方向偏移量，单位mm
+        参数: / Parameters:
+            xOffset: double - X轴方向偏移量，单位mm / X-axis offset in mm
+            yOffset: double - Y轴方向偏移量，单位mm / Y-axis offset in mm
         
-        返回:
+        返回: / Returns:
             ErrorID,{},SetCnvPointOffset(xOffset, yOffset);
         
-        示例:
+        示例: / Example:
             SetCnvPointOffset(10, 10)
         """
         return self.sendRecvMsg("SetCnvPointOffset({:f},{:f})".format(xOffset, yOffset))
@@ -3485,19 +3725,21 @@ class DobotApiDashboard(DobotApi):
     def SetCnvTimeCompensation(self, time):
         """
         SetCnvTimeCompensation - 设置补偿时间 立即指令
+        SetCnvTimeCompensation - Set compensation time, immediate command
         
         设置补偿时间，补偿因视觉触发带来的时间延时导致工件抓取位置偏移。
+        Set compensation time to offset workpiece pick position deviation caused by visual trigger time delay.
         
-        原型:
+        原型: / Prototype:
             SetCnvTimeCompensation(time)
         
-        参数:
-            time: int - 补偿时间，单位ms
+        参数: / Parameters:
+            time: int - 补偿时间，单位ms / compensation time in ms
         
-        返回:
+        返回: / Returns:
             ErrorID,{},SetCnvTimeCompensation(time);
         
-        示例:
+        示例: / Example:
             SetCnvTimeCompensation(100)
         """
         return self.sendRecvMsg("SetCnvTimeCompensation({:d})".format(time))
@@ -3505,35 +3747,45 @@ class DobotApiDashboard(DobotApi):
     def StartSyncCnv(self):
         """
         StartSyncCnv - 开启传送带跟踪功能 立即指令
+        StartSyncCnv - Enable conveyor belt tracking function, immediate command
         
         开启传送带跟踪功能。
+        Enable conveyor belt tracking function.
         
-        返回:
+        返回: / Returns:
             ErrorID,{},StartSyncCnv();
         
-        注意:
+        注意: / Notes:
             需要配合StopSyncCnv()指令一起使用，StartSyncCnv()和StopSyncCnv()之间的程序
+            Must be used together with StopSyncCnv(). Programs between StartSyncCnv() and StopSyncCnv()
             不得调用除CnvMovL和CnvMovC以外的其他运动指令，否则会报错。
+            must not call motion commands other than CnvMovL and CnvMovC, otherwise an error will occur.
         """
         return self.sendRecvMsg("StartSyncCnv()")
 
     def StopSyncCnv(self):
         """
         StopSyncCnv - 停止传送带跟踪功能 立即指令
+        StopSyncCnv - Stop conveyor belt tracking function, immediate command
         
         停止传送带跟踪功能。运行完该指令后才会继续执行该指令后面的其他指令。
+        Stop conveyor belt tracking. Subsequent commands only execute after this command completes.
         
-        返回:
+        返回: / Returns:
             ErrorID,{},StopSyncCnv();
         
-        注意:
+        注意: / Notes:
             需要配合StartSyncCnv()指令一起使用，StartSyncCnv()和StopSyncCnv()之间的程序
+            Must be used together with StartSyncCnv(). Programs between StartSyncCnv() and StopSyncCnv()
             不得调用除CnvMovL和CnvMovC以外的其他运动指令，否则会报错。
+            must not call motion commands other than CnvMovL and CnvMovC, otherwise an error will occur.
         """
         return self.sendRecvMsg("StopSyncCnv()")
 
     def TcpSendAndParse(self, cmd):
         """
+        将cmd作为TcpSendAndParse指令的参数发送，
+        并返回控制器响应。
         TcpSendAndParse command
         """
         return self.sendRecvMsg("TcpSendAndParse(\"{:s}\")".format(cmd))
@@ -3597,29 +3849,29 @@ class DobotApiFeedBack(DobotApi):
         返回机械臂状态
         Return the robot status
         """
-        self.socket_dobot.setblocking(True)  # 设置为阻塞模式
+        self.socket_dobot.setblocking(True)  # Set to blocking mode / 设置为阻塞模式
         data = bytes()
-        current_recv_time = time.perf_counter() #计时，获取当前时间
-        temp = self.socket_dobot.recv(144000) #缓冲区
+        current_recv_time = time.perf_counter() # Timer, get current time / 计时，获取当前时间
+        temp = self.socket_dobot.recv(144000) # Buffer / 缓冲区
         if len(temp) > 1440:    
             temp = self.socket_dobot.recv(144000)
         #print("get:",len(temp))
         i=0
         if len(temp) < 1440:
             while i < 5 :
-                #print("重新接收")
+                #print("re-receive")  # 重新接收 / re-receive
                 temp = self.socket_dobot.recv(144000)
                 if len(temp) > 1440:
                     break
                 i+=1
             if i >= 5:
-                raise Exception("接收数据包缺失，请检查网络环境")
+                raise Exception("Received data packet is missing, please check the network environment")  # 接收数据包缺失，请检查网络环境 / Received data packet is missing, please check the network environment
         
-        interval = (current_recv_time - self.last_recv_time) * 1000  # 转换为毫秒
+        interval = (current_recv_time - self.last_recv_time) * 1000  # Convert to milliseconds / 转换为毫秒
         self.last_recv_time = current_recv_time
         #print(f"Time interval since last receive: {interval:.3f} ms")
         
-        data = temp[0:1440] #截取1440字节
+        data = temp[0:1440] # Truncate to 1440 bytes / 截取1440字节
         #print(len(data))
         #print(f"Single element size of MyType: {MyType.itemsize} bytes")
         self.__MyType = None   

@@ -64,7 +64,7 @@
         "en": {
             "description": "Software over-current",
             "cause": "",
-            "solution": "Power off and restart controller, or please contact technical support engineer"
+            "solution": "Power off and restart controller, or please contact a technical support engineer"
         },
         "zh_CN": {
             "description": "软件过流保护",
@@ -123,7 +123,7 @@
         "en": {
             "description": "Module in overload status",
             "cause": "",
-            "solution": "Check whether the hardware is working properly, or contact technical support engineer"
+            "solution": "Check whether the hardware is working properly, or contact a technical support engineer"
         },
         "zh_CN": {
             "description": "模块过载保护",
@@ -180,9 +180,9 @@
         "id": 9088,
         "level": 1,
         "en": {
-            "description": "The current offset of homing point is too high",
+            "description": "The zero-point current offset is too high",
             "cause": "",
-            "solution": "Reset the Zero point current offset"
+            "solution": "Reset the zero-point current offset"
         },
         "zh_CN": {
             "description": "零点电流偏置过大保护",
@@ -241,7 +241,7 @@
         "en": {
             "description": "Driver input phase is lost",
             "cause": "",
-            "solution": "Check whether the hardware is working properly, or contact technical support engineer"
+            "solution": "Check whether the hardware is working properly, or contact a technical support engineer"
         },
         "zh_CN": {
             "description": "驱动器输入缺相保护",
@@ -300,7 +300,7 @@
         "en": {
             "description": "Voltage between PN is too high",
             "cause": "",
-            "solution": "The server detects that the bus voltage is greater than the preset threshold. Check whether the hardware is normal, or contact technical support engineers"
+            "solution": "The servo drive detects that the bus voltage is greater than the preset threshold. Check whether the hardware is normal, or contact technical support engineers"
         },
         "zh_CN": {
             "description": "PN间过电压保护",
@@ -359,7 +359,7 @@
         "en": {
             "description": "Voltage between PN is too low",
             "cause": "",
-            "solution": "The server detects that the bus voltage is less than the preset threshold. Check whether the hardware is normal, or contact technical support engineers"
+            "solution": "The servo drive detects that the bus voltage is less than the preset threshold. Check whether the hardware is normal, or contact technical support engineers"
         },
         "zh_CN": {
             "description": "PN间电压不足保护",
@@ -418,7 +418,7 @@
         "en": {
             "description": "Voltage between PN is too high",
             "cause": "",
-            "solution": "System error, please contact technical support engineer"
+            "solution": "System error. Please contact a technical support engineer"
         },
         "zh_CN": {
             "description": "PN间过电压保护",
@@ -477,7 +477,7 @@
         "en": {
             "description": "Voltage between PN is too low",
             "cause": "",
-            "solution": "System error, please contact technical support engineer"
+            "solution": "System error. Please contact a technical support engineer"
         },
         "zh_CN": {
             "description": "PN间电压不足保护",
@@ -536,7 +536,7 @@
         "en": {
             "description": "Servo and motor power matching failure",
             "cause": "",
-            "solution": "Check whether the hardware is working properly, or contact technical support engineer"
+            "solution": "Check whether the hardware is working properly, or contact a technical support engineer"
         },
         "zh_CN": {
             "description": "伺服和电机功率匹配故障",
@@ -593,9 +593,9 @@
         "id": 13184,
         "level": 1,
         "en": {
-            "description": "Driver output phase is wrong",
+            "description": "The drive output phase sequence is incorrect",
             "cause": "",
-            "solution": "Wire as the correct phase sequence"
+            "solution": "Connect the wires in the correct phase sequence"
         },
         "zh_CN": {
             "description": "驱动器输出相序错误保护",
@@ -654,7 +654,7 @@
         "en": {
             "description": "Driver temperature is too high",
             "cause": "",
-            "solution": "Check whether the hardware is working properly, or contact technical support engineer"
+            "solution": "Check whether the hardware is working properly, or contact a technical support engineer"
         },
         "zh_CN": {
             "description": "驱动器过热保护",
@@ -713,7 +713,7 @@
         "en": {
             "description": "The temperature measuring resistance is damaged or not installed",
             "cause": "",
-            "solution": "Check whether the hardware is working properly, or contact technical support engineer"
+            "solution": "Check whether the hardware is working properly, or contact a technical support engineer"
         },
         "zh_CN": {
             "description": "测温电阻损坏或未安装",
@@ -772,7 +772,7 @@
         "en": {
             "description": "Driver recognition is abnormal",
             "cause": "",
-            "solution": "Check whether the hardware is working properly, or contact technical support engineer"
+            "solution": "Check whether the hardware is working properly, or contact a technical support engineer"
         },
         "zh_CN": {
             "description": "驱动板辨识异常保护",
@@ -831,7 +831,7 @@
         "en": {
             "description": "FPGA configuration is wrong",
             "cause": "",
-            "solution": "System error, please contact technical support engineer"
+            "solution": "System error. Please contact a technical support engineer"
         },
         "zh_CN": {
             "description": "FPGA配置错误",
@@ -890,7 +890,7 @@
         "en": {
             "description": "System error",
             "cause": "",
-            "solution": "Please contact technical support engineer"
+            "solution": "Please contact a technical support engineer"
         },
         "zh_CN": {
             "description": "内部错误",
@@ -947,9 +947,9 @@
         "id": 21122,
         "level": 1,
         "en": {
-            "description": "STO safety wiring is fault",
+            "description": "STO safety wiring is faulty",
             "cause": "",
-            "solution": "System error, please contact technical support engineer"
+            "solution": "System error. Please contact a technical support engineer"
         },
         "zh_CN": {
             "description": "STO安全接线故障保护",
@@ -1006,9 +1006,9 @@
         "id": 21569,
         "level": 1,
         "en": {
-            "description": "Dirver connection is abnormal",
+            "description": "The drive board connection is abnormal",
             "cause": "",
-            "solution": "Check whether the hardware is working properly, or contact technical support engineer"
+            "solution": "Check whether the hardware is working properly, or contact a technical support engineer"
         },
         "zh_CN": {
             "description": "驱动板连接异常保护",
@@ -1185,12 +1185,12 @@
         "en": {
             "description": "The upper and lower limits of the software location are incorrectly set",
             "cause": "",
-            "solution": "Check whether communication cables are reliably connected"
+            "solution": "Set the values of 0x607D-01h and 0x607D-02h correctly"
         },
         "zh_CN": {
             "description": "软件位置上下限设置错误",
             "cause": "",
-            "solution": "正确的设置0x607D-01h，0x607D-02h的值"
+            "solution": "正确地设置0x607D-01h和0x607D-02h的值"
         },
         "zh_hant": {
             "description": "",
@@ -1249,7 +1249,7 @@
         "zh_CN": {
             "description": "原点偏置设置错误",
             "cause": "",
-            "solution": "正确的设置0x607D-01h，0x607D-02h的值，保证原点偏置值0x607C介于二者之间"
+            "solution": "正确地设置0x607D-01h和0x607D-02h的值，确保原点偏置值0x607C介于两者之间"
         },
         "zh_hant": {
             "description": "",
@@ -1301,9 +1301,9 @@
         "id": 28961,
         "level": 1,
         "en": {
-            "description": "Blocking motor overheating protection",
+            "description": "Motor overheating protection due to a stalled rotor",
             "cause": "",
-            "solution": "Check whether the lock gate opens normally or whether the motor is stuck due to mechanical failure"
+            "solution": "Check whether the brake releases properly or whether the motor is jammed due to a mechanical fault"
         },
         "zh_CN": {
             "description": "堵转电机过热保护",
@@ -1421,7 +1421,7 @@
         "en": {
             "description": "Encoder communication is abnormal",
             "cause": "",
-            "solution": "Check the encoder connection or replace the maintenance encoder"
+            "solution": "Check the encoder wiring, or replace or repair the encoder"
         },
         "zh_CN": {
             "description": "编码器通信断线异常保护",
@@ -1480,7 +1480,7 @@
         "en": {
             "description": "Encoder is abnormal",
             "cause": "",
-            "solution": "Check whether the hardware is working properly, or contact technical support engineer"
+            "solution": "Check whether the hardware is working properly, or contact a technical support engineer"
         },
         "zh_CN": {
             "description": "编码器异常故障",
@@ -1539,7 +1539,7 @@
         "en": {
             "description": "Encoder battery is abnormal",
             "cause": "",
-            "solution": "Please contact technical support engineer"
+            "solution": "Please contact a technical support engineer"
         },
         "zh_CN": {
             "description": "编码器电池异常保护",
@@ -1598,7 +1598,7 @@
         "en": {
             "description": "Encoder internal error",
             "cause": "",
-            "solution": "System error, please contact technical support engineer"
+            "solution": "System error. Please contact a technical support engineer"
         },
         "zh_CN": {
             "description": "主编码器内部错误",
@@ -1657,7 +1657,7 @@
         "en": {
             "description": "Encoder CRC check error",
             "cause": "",
-            "solution": "System error, please contact technical support engineer"
+            "solution": "System error. Please contact a technical support engineer"
         },
         "zh_CN": {
             "description": "主编码器CRC校验错误",
@@ -1716,7 +1716,7 @@
         "en": {
             "description": "Auxiliary Encoder is disconnected",
             "cause": "",
-            "solution": "System error, please contact technical support engineer"
+            "solution": "System error. Please contact a technical support engineer"
         },
         "zh_CN": {
             "description": "辅助编码器断线错误",
@@ -1775,7 +1775,7 @@
         "en": {
             "description": "Auxiliary Encoder internal error",
             "cause": "",
-            "solution": "System error, please contact technical support engineer"
+            "solution": "System error. Please contact a technical support engineer"
         },
         "zh_CN": {
             "description": "辅助编码器内部错误",
@@ -1834,7 +1834,7 @@
         "en": {
             "description": "Auxiliary Encoder CRC check error",
             "cause": "",
-            "solution": "System error, please contact technical support engineer"
+            "solution": "System error. Please contact a technical support engineer"
         },
         "zh_CN": {
             "description": "辅助编码器CRC校验错误",
@@ -1950,9 +1950,9 @@
         "id": 29577,
         "level": 1,
         "en": {
-            "description": "The lock power supply is abnormal",
+            "description": "The brake power supply is abnormal",
             "cause": "",
-            "solution": "Check whether the lock is connected or damaged"
+            "solution": "Check whether the brake is connected or damaged"
         },
         "zh_CN": {
             "description": "抱闸电源异常",
@@ -2070,7 +2070,7 @@
         "en": {
             "description": "EtherCAT communication is abnormal",
             "cause": "",
-            "solution": "System error, please contact technical support engineer"
+            "solution": "System error. Please contact a technical support engineer"
         },
         "zh_CN": {
             "description": "EtherCAT通讯异常保护",
@@ -2129,7 +2129,7 @@
         "en": {
             "description": "The XML configuration file was not burned",
             "cause": "",
-            "solution": "System error, please contact technical support engineer"
+            "solution": "System error. Please contact a technical support engineer"
         },
         "zh_CN": {
             "description": "未烧录XML配置文件",
@@ -2188,7 +2188,7 @@
         "en": {
             "description": "The synchronization period is incorrectly configured",
             "cause": "",
-            "solution": "System error, please contact technical support engineer"
+            "solution": "System error. Please contact a technical support engineer"
         },
         "zh_CN": {
             "description": "同步周期配置错误",
@@ -2247,7 +2247,7 @@
         "en": {
             "description": "During synchronous communication, the synchronization signal of the master station is lost",
             "cause": "",
-            "solution": "System error, please contact technical support engineer"
+            "solution": "System error. Please contact a technical support engineer"
         },
         "zh_CN": {
             "description": "同步通信时，主站同步信号丢失",
@@ -2306,7 +2306,7 @@
         "en": {
             "description": "The synchronization period error is too large",
             "cause": "",
-            "solution": "System error, please contact technical support engineer"
+            "solution": "System error. Please contact a technical support engineer"
         },
         "zh_CN": {
             "description": "同步周期误差过大",
@@ -2363,9 +2363,9 @@
         "id": 33920,
         "level": 1,
         "en": {
-            "description": "Output speed is higher than the expected speed",
+            "description": "Motor speed exceeds the maximum limit",
             "cause": "",
-            "solution": "Check whether the linear connection of the motor is normal"
+            "solution": "Check whether the motor wiring phase sequence is correct"
         },
         "zh_CN": {
             "description": "超过最大转速保护",
@@ -2424,7 +2424,7 @@
         "en": {
             "description": "Difference between the set speed and current speed exceeds the range",
             "cause": "",
-            "solution": "Check whether the hardware is working properly, restart the controller, or contact technical support engineer"
+            "solution": "Check whether the hardware is working properly, restart the controller, or contact a technical support engineer"
         },
         "zh_CN": {
             "description": "速度偏差过大保护",
@@ -2540,9 +2540,9 @@
         "id": 34321,
         "level": 1,
         "en": {
-            "description": "Difference between the set positon and current position exceeds the range",
+            "description": "Difference between the set position and current position exceeds the range",
             "cause": "",
-            "solution": "System error, please contact technical support engineer"
+            "solution": "System error. Please contact a technical support engineer"
         },
         "zh_CN": {
             "description": "位置偏差过大保护",
@@ -2599,7 +2599,7 @@
         "id": 34322,
         "level": 1,
         "en": {
-            "description": "Postion is out of range",
+            "description": "The commanded position is out of range",
             "cause": "",
             "solution": "Enter the correct parameters"
         },
@@ -2660,7 +2660,7 @@
         "en": {
             "description": "The full closed-loop position deviation is too large",
             "cause": "",
-            "solution": "Check whether the hardware is working properly, restart the controller, or contact technical support engineer"
+            "solution": "Check whether the hardware is working properly or contact a technical support engineer."
         },
         "zh_CN": {
             "description": "全闭环位置偏差过大",
@@ -2719,7 +2719,7 @@
         "en": {
             "description": "Angle recognition failure",
             "cause": "",
-            "solution": "Check whether the hardware is working properly, restart the controller, or contact technical support engineer"
+            "solution": "Check whether the hardware is working properly or contact a technical support engineer."
         },
         "zh_CN": {
             "description": "角度辨识失败",
@@ -2778,7 +2778,7 @@
         "en": {
             "description": "Parameter identification failure",
             "cause": "",
-            "solution": "Check whether the hardware is working properly, restart the controller, or contact technical support engineer"
+            "solution": "Check whether the hardware is working properly or contact a technical support engineer."
         },
         "zh_CN": {
             "description": "参数辨识失败",

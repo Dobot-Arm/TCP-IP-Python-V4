@@ -1,3 +1,9 @@
+<div align="right">
+
+**English** | [简体中文](README.zh-CN.md)
+
+</div>
+
 # TCP-IP-Python-V4 Project Documentation
 
 ## Project Overview
@@ -15,6 +21,7 @@ This project is the Dobot Robot TCP-IP-CR-Python-V4 secondary development API pr
 ```bash
 # Basic numerical computation library
 pip install numpy
+pip install requests
 
 # JSON data processing (Python built-in, no installation required)
 # import json
@@ -37,7 +44,7 @@ pip install tkinter  # Usually comes with Python
 
 ### Network Configuration Requirements
 
-- Local machine IP address needs to be set to 192.168.X.X network segment
+- Assign the computer an IP address on the 192.168.5.x subnet.
 - Robot needs to be switched to TCP/IP mode
 - Ensure ports 29999 and 30004 are not occupied
 
@@ -49,13 +56,13 @@ pip install tkinter  # Usually comes with Python
 
 - Demonstrates basic robot connection and control flow
 - Contains complete robot operation examples
-- Suitable for beginners to understand project structure
+- Helps beginners understand the project structure.
 
 ### 2. dobot_api.py
 
 **Function**: Core API interface file
 
-- **DobotApi**: Basic communication class, handles TCP connections
+- **DobotApi**: Base communication class that handles TCP connections.
 - **DobotApiDashboard**: Robot control interface class
   - Robot enable/disable
   - Motion control commands (MovJ, MovL, Arc, etc.)
@@ -91,7 +98,7 @@ pip install tkinter  # Usually comes with Python
 
 ### 5. Documentation Files
 
-#### GetError_README.md
+#### [GetError_README.zh-CN.md](GetError_README.zh-CN.md)
 
 **Function**: GetError interface Chinese documentation
 
@@ -99,11 +106,11 @@ pip install tkinter  # Usually comes with Python
 - Contains interface parameters, return values, example code, etc.
 - Provides troubleshooting and precautions
 
-#### GetError_README_EN.md
+#### [GetError_README.en.md](GetError_README.en.md)
 
 **Function**: GetError interface English documentation
 
-- English version of GetError_README.md
+- English version of GetError_README.zh-CN.md
 - Convenient for international users to understand and use
 
 ## Project Directory Structure
@@ -114,9 +121,10 @@ TCP-IP-Python-V4/
 ├── ui.py                      # Graphical interface program
 ├── PythonExample.py           # Python examples
 ├── get_error_example.py       # GetError usage example
-├── GetError_README.md         # GetError Chinese documentation
-├── GetError_README_EN.md      # GetError English documentation
-├── README.md                  # Project documentation
+├── GetError_README.zh-CN.md   # GetError Chinese documentation
+├── GetError_README.en.md      # GetError English documentation
+├── README.md                  # Project documentation (English)
+├── README.zh-CN.md            # Project documentation (Chinese)
 └── files/                     # Other support files
 
 ## Quick Start
@@ -129,11 +137,12 @@ git clone https://github.com/Dobot-Arm/TCP-IP-CR-Python-V4.git
 
 # Install dependencies
 pip install numpy
+pip install requests
 ```
 
 ### 2. Network Configuration
 
-- Set local machine IP to 192.168.X.X network segment
+- Assign the computer an IP address on the 192.168.5.x subnet.
 - Ensure robot is in TCP/IP mode
 
 ### 3. Run Programs
@@ -157,11 +166,11 @@ pip install numpy
 
 ### 2. Connection refused, IP:Port has been occupied
 
-**Solution**: Check if port 29999 is occupied, close the program occupying that port
+**Solution**: Check whether port 29999 is in use. If it is, close the program using it.
 
 ### 3. Control Mode Is Not Tcp
 
-**Solution**: Switch robot mode to TCP/IP mode in DobotStudio Pro
+**Solution**: Switch the robot to TCP/IP mode in DobotStudio Pro.
 
 ### 4. Robot Status Abnormal
 
@@ -169,7 +178,7 @@ pip install numpy
 | ------------------------------------- | ------------------- | ---------------------------------- |
 | Command execution failed              | Command failed      | Check command parameters and robot status |
 | The robot is in an error state       | Robot error state   | Clear alarms and retry             |
-| The robot is in emergency stop state | Emergency stop state| Release emergency stop button      |
+| The robot is in emergency stop state | Emergency stop state| Release the emergency stop button  |
 | The robot is in power down state     | Power down state    | Power on the robot                 |
 
 ## Precautions
@@ -182,7 +191,7 @@ pip install numpy
 
 ## Technical Support
 
-If you encounter problems, please refer to: Project README.md documentation
+If you encounter a problem, consult the following resources.
 
 - GetError related documentation
 - Example code and test programs
@@ -191,5 +200,5 @@ If you encounter problems, please refer to: Project README.md documentation
 ---
 
 **Version**: V4
-**Update Date**: 2025-9-5
+**Update Date**: 2026-11-10
 **Maintainer**: dobot_futingxing

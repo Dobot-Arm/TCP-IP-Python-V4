@@ -37,21 +37,21 @@ class RobotUI(object):
     def __init__(self):
         self.root = Tk()
         self.root.title("Python demo V4")
-        # fixed window size
+        # fixed window size / 设置窗口大小
         self.root.geometry("900x850")
-        # set window icon
+        # set window icon / 设置窗口图标
         # self.root.iconbitmap("images/robot.ico")
 
-        # global state dict
+        # global state dict / 全局状态字典
         self.global_state = {}
 
-        # all button
+        # all button / 按钮列表
         self.button_list = []
 
-        # all entry
+        # all entry / 输入框字典
         self.entry_dict = {}
 
-        # Robot Connect
+        # Robot Connect / 机器人连接区域
         self.frame_robot = LabelFrame(self.root, text="Robot Connect",
                                       labelanchor="nw", bg="#FFFFFF", width=870, height=120, border=2)
 
@@ -75,17 +75,17 @@ class RobotUI(object):
             self.frame_robot, width=7, textvariable=feed_port)
         self.entry_feed.place(rely=0.2, x=520)
 
-        # Connect/DisConnect
+        # Connect/DisConnect / 连接与断开
         self.button_connect = self.set_button(master=self.frame_robot,
                                               text="Connect", rely=0.6, x=630, command=self.connect_port)
         self.button_connect["width"] = 10
         self.global_state["connect"] = False
 
-        # Dashboard Function
+        # Dashboard Function / 控制功能区
         self.frame_dashboard = LabelFrame(self.root, text="Dashboard Function",
                                           labelanchor="nw", bg="#FFFFFF", pady=10, width=870, height=120, border=2)
 
-        # Enable/Disable
+        # Enable/Disable / 使能与下使能
         self.button_enable = self.set_button(master=self.frame_dashboard,
                                              text="Enable", rely=0.1, x=10, command=self.enable)
         self.button_enable["width"] = 7
@@ -94,7 +94,7 @@ class RobotUI(object):
         self.set_button(master=self.frame_dashboard,
                         text="ClearError", rely=0.1, x=200, command=self.clear_error)
 
-        # Speed Ratio
+        # Speed Ratio / 速度倍率
         self.label_speed = Label(self.frame_dashboard, text="Speed Ratio:")
         self.label_speed.place(rely=0.1, x=430)
 
@@ -108,7 +108,7 @@ class RobotUI(object):
         self.set_button(master=self.frame_dashboard,
                         text="Confirm", rely=0.1, x=586, command=self.confirm_speed)
 
-        # DO:Digital Outputs
+        # DO:Digital Outputs / 数字输出（DO）
         self.label_digitial = Label(
             self.frame_dashboard, text="Digital Outputs: Index:")
         self.label_digitial.place(rely=0.55, x=10)
@@ -130,7 +130,7 @@ class RobotUI(object):
         self.set_button(self.frame_dashboard, "Confirm",
                         rely=0.55, x=350, command=self.confirm_do)
 
-        # Move Function
+        # Move Function / 运动控制区
         self.frame_move = LabelFrame(self.root, text="Move Function", labelanchor="nw",
                                      bg="#FFFFFF", width=870, pady=10, height=130, border=2)
 
@@ -170,30 +170,30 @@ class RobotUI(object):
 
         self.frame_feed_log = Frame(
             self.root, bg="#FFFFFF", width=870, pady=10, height=400, border=2)
-        # Feedback
+        # Feedback / 状态反馈区
         self.frame_feed = LabelFrame(self.frame_feed_log, text="Feedback", labelanchor="nw",
                                      bg="#FFFFFF", width=550, height=150)
 
         self.frame_feed.place(relx=0, rely=0, relheight=1)
 
-        # Current Speed Ratio
+        # Current Speed Ratio / 当前速度倍率
         self.set_label(self.frame_feed,
                        text="Current Speed Ratio:", rely=0.05, x=10)
         self.label_feed_speed = self.set_label(
             self.frame_feed, "", rely=0.05, x=145)
         self.set_label(self.frame_feed, text="%", rely=0.05, x=175)
 
-        # Robot Mode
+        # Robot Mode / 机器人运行模式
         self.set_label(self.frame_feed, text="Robot Mode:", rely=0.1, x=10)
         self.label_robot_mode = self.set_label(
             self.frame_feed, "", rely=0.1, x=95)
 
-        # 点动及获取坐标
+        # Jog and get coordinates / 点动及获取坐标
         self.label_feed_dict = {}
         self.set_feed(LABEL_JOINT, 9, 52, 74, 117)
         self.set_feed(LABEL_COORD, 165, 209, 231, 272)
 
-        # Digitial I/O
+        # Digital I/O / 数字输入与输出
         self.set_label(self.frame_feed, "Digital Inputs:", rely=0.8, x=11)
         self.label_di_input = self.set_label(
             self.frame_feed, "", rely=0.8, x=100)
@@ -201,7 +201,7 @@ class RobotUI(object):
         self.label_di_output = self.set_label(
             self.frame_feed, "", rely=0.85, x=100)
 
-        # Error Info
+        # Error Info / 报警信息
         self.frame_err = LabelFrame(self.frame_feed, text="Error Info", labelanchor="nw",
                                     bg="#FFFFFF", width=180, height=50)
         self.frame_err.place(relx=0.65, rely=0, relheight=0.7)
@@ -213,7 +213,7 @@ class RobotUI(object):
         self.set_button(self.frame_feed, "Clear", rely=0.71,
                         x=487, command=self.clear_error_info)
 
-        # Log
+        # Log / 日志
         self.frame_log = LabelFrame(self.frame_feed_log, text="Log", labelanchor="nw",
                                     bg="#FFFFFF", width=300, height=150)
         self.frame_log.place(relx=0.65, rely=0, relheight=1)
@@ -222,7 +222,7 @@ class RobotUI(object):
             self.frame_log, width=270, height=140, relief="flat")
         self.text_log.place(rely=0, relx=0, relheight=1, relwidth=1)
 
-        # initial client
+        # initial client / 初始化客户端
         self.client_dash = None
         self.client_feed = None
 
@@ -236,7 +236,7 @@ class RobotUI(object):
         return alarm_dict
 
     def read_file(self, path):
-        # 读json文件耗时大，选择维护两个变量alarm_controller_list alarm_servo_list
+        # Reading json file is time-consuming, choose to maintain two variables alarm_controller_list alarm_servo_list / 读json文件耗时大，选择维护两个变量alarm_controller_list alarm_servo_list
         # self.read_file("files/alarm_controller.json")
         with open(path, "r", encoding="utf8") as fp:
             json_data = json.load(fp)
@@ -299,7 +299,7 @@ class RobotUI(object):
 
     def connect_port(self):
         if self.global_state["connect"]:
-            print("断开成功")
+            print("Disconnect successful")  # 断开成功 / Disconnect successful
             self.client_dash.close()
             self.client_feed.close()
             self.client_dash = None
@@ -310,7 +310,7 @@ class RobotUI(object):
             self.button_connect["text"] = "Connect"
         else:
             try:
-                print("连接成功")
+                print("Connection successful")  # 连接成功 / Connection successful
                 self.client_dash = DobotApiDashboard(
                     self.entry_ip.get(), int(self.entry_dash.get()), self.text_log)
                 self.client_feed = DobotApiFeedBack(
@@ -337,7 +337,7 @@ class RobotUI(object):
             self.button_enable["text"] = "Enable"
         else:
             self.client_dash.EnableRobot()
-            # if need time sleep
+            # if need time sleep / 如有需要，加入延时
             # time.sleep(0.5)
             self.button_enable["text"] = "Disable"
 
@@ -363,10 +363,10 @@ class RobotUI(object):
 
     def confirm_do(self):
         if self.combo_status.get() == "On":
-            print("高电平")
+            print("High level")  # 高电平 / High level
             self.client_dash.DO(int(self.entry_index.get()), 1)
         else:
-            print("低电平")
+            print("Low level")  # 低电平 / Low level
             self.client_dash.DO(int(self.entry_index.get()), 0)
 
     def set_feed(self, text_list, x1, x2, x3, x4):
@@ -422,7 +422,7 @@ class RobotUI(object):
             if not self.global_state["connect"]:
                 break
 
-            self.client_feed.socket_dobot.setblocking(True)  # 设置为阻塞模式
+            self.client_feed.socket_dobot.setblocking(True)  # Set to blocking mode / 设置为阻塞模式
             data = bytes()
             temp = self.client_feed.socket_dobot.recv(144000)
             if len(temp) > 1440:
@@ -438,7 +438,7 @@ class RobotUI(object):
                 #       np.around(a['tool_vector_actual'], decimals=4))
                 # print('QActual', np.around(a['q_aQActualctual'], decimals=4))
 
-                # Refresh Properties
+                # Refresh Properties / 刷新状态字段
                 self.label_feed_speed["text"] = a["SpeedScaling"][0]
                 self.label_robot_mode["text"] = LABEL_ROBOT_MODE[a["RobotMode"][0]]
                 self.label_di_input["text"] = bin(a["DigitalInputs"][0])[
@@ -446,11 +446,11 @@ class RobotUI(object):
                 self.label_di_output["text"] = bin(a["DigitalOutputs"][0])[
                     2:].rjust(64, '0')
 
-                # Refresh coordinate points
+                # Refresh coordinate points / 刷新关节位置和工具坐标
                 self.set_feed_joint(LABEL_JOINT, a["QActual"])
                 self.set_feed_joint(LABEL_COORD, a["ToolVectorActual"])
 
-                # check alarms
+                # check alarms / 检查报警
                 if a["RobotMode"] == 9:
                     self.display_error_info()
 
@@ -458,7 +458,7 @@ class RobotUI(object):
     def display_error_info(self):
         # Try to use GetError interface first / 优先尝试使用GetError接口
         try:
-            error_info = self.client_dash.GetError("en")  # Use English for UI display
+            error_info = self.client_dash.GetError("en")  # Use English for UI display / 在界面中显示英文报警信息
             if error_info and "errMsg" in error_info and error_info["errMsg"]:
                 # Use new GetError interface / 使用新的GetError接口
                 for error in error_info["errMsg"]:

@@ -1,3 +1,9 @@
+<div align="right">
+
+**English** | [简体中文](GetError_README.zh-CN.md)
+
+</div>
+
 # GetError Interface Usage Guide
 
 ## Overview
@@ -37,7 +43,7 @@ def GetError(self, language="zh_cn"):
     Get robot alarm information
   
     Args:
-        language (str): Language setting, default is "zh_cn"
+        language (str): Language code. Defaults to "zh_cn".
   
     Returns:
         dict: Alarm information dictionary with the following format:
@@ -182,7 +188,7 @@ python get_error_example.py
 ## Important Notes
 
 1. **Network Connection**: Ensure the robot network connection is normal and port 22000 is accessible
-2. **IP Address**: Use the same IP address as when establishing TCP connection
+2. **IP Address**: Use the same IP address you used to establish the TCP connection.
 3. **Language Setting**: Each call will first set the language, then retrieve alarm information
 4. **Error Handling**: It's recommended to add appropriate error handling logic in actual usage
 5. **Connection Management**: Remember to close the connection after use
@@ -198,20 +204,20 @@ python get_error_example.py
    - Verify port 22000 is open
 2. **Returns None**
 
-   - Check if HTTP request is successful
-   - Confirm robot firmware version supports this interface
+   - Check whether the HTTP request succeeded.
+   - Confirm that the robot's firmware version supports this interface.
    - Check network firewall settings
 3. **Language Setting Invalid**
 
-   - Confirm language code spelling is correct
+   - Confirm that the language code is spelled correctly.
    - Check if robot supports the language
-   - Try using default language "zh_cn"
+   - Try using the default language, "zh_cn".
 
 ### Debugging Suggestions
 
 1. First use `test_get_error.py` for basic functionality testing
-2. Check if robot web interface is accessible normally
-3. Use browser to directly access HTTP interface for verification
+2. Check whether the robot's web interface is accessible.
+3. Use a browser to access the HTTP endpoint directly.
 4. Check console output for error messages
 
 ## Update Log
